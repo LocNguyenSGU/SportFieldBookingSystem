@@ -1,0 +1,19 @@
+package com.example.SportFieldBookingSystem.Entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "field_image")
+public class FieldImage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "image_id")
+    private int imageId;
+
+    @ManyToOne
+    @JoinColumn(name = "field_id", nullable = false)
+    private Field field;
+
+    @Column(name = "image_url", length = 255, nullable = false)
+    private String imageUrl;
+}
