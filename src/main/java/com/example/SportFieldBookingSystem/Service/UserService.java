@@ -2,6 +2,7 @@ package com.example.SportFieldBookingSystem.Service;
 
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.User;
@@ -11,9 +12,13 @@ import com.example.SportFieldBookingSystem.Repository.RoleRepository;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Repository.UserRoleRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.RoleServiceImpl;
+import com.example.SportFieldBookingSystem.Service.Impl.UserRoleServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +35,12 @@ public class UserService implements UserServiceImpl {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private RoleRepository roleRepository;
+    private UserRoleServiceImpl userRoleServiceImpl;
     @Autowired
     private UserRoleRepository userRoleRepository;
     @Autowired
     private RoleServiceImpl roleServiceImpl;
+
 
     @Override
 //    public List<UserResponseDTO> getAllUser() {
@@ -109,20 +115,22 @@ public class UserService implements UserServiceImpl {
     }
 
     @Override
-    public List<UserBasicDTO> findAllUsersWithRoles() {
-        List<UserBasicDTO> userBasicDTOList = new ArrayList<>();
+    public Page<UserBasicDTO> findAllUsersWithRoles(int page, int size) {
         try {
-            List<User> userList = userRepository.findAllUsersWithRoles();
-            userBasicDTOList = userList.stream()
-                    .map(userMapper::toBasicDTO)
-                    .collect(Collectors.toList());
+            // Tạo Pageable với page và size
+            Pageable pageable = PageRequest.of(page, size);
+
+            // Lấy Page<User> từ repository
+            Page<User> userPage = userRepository.findAllUsersWithRoles(pageable);
+
+            // Ánh xạ Page<User> sang Page<UserBasicDTO> bằng cách sử dụng map
+            return userPage.map(userMapper::toBasicDTO);
         } catch (Exception e) {
             // Log the exception for debugging
             System.err.println("Error fetching all users: " + e.getMessage());
             // Optionally, throw a custom exception
             throw new RuntimeException("Unable to fetch users", e);
         }
-        return userBasicDTOList;
     }
 
     @Override
@@ -205,5 +213,43 @@ public class UserService implements UserServiceImpl {
     public boolean existsUserByEmail(String email) {
         return userRepository.existsUserByEmail(email);
     }
+
+    @Override
+    public boolean createUser(UserCreateDTO userCreateDTO) {
+        User user = new User();
+        try {
+            // Ánh xạ từ UserCreateDTO sang User
+            user.setUsername(userCreateDTO.getUsername());
+            user.setFullName(userCreateDTO.getFullName());
+            user.setEmail(userCreateDTO.getEmail());
+            user.setPassword(userCreateDTO.getPassword());
+            user.setPhone(userCreateDTO.getPhone());
+
+            // Thiết lập trạng thái
+            if (userCreateDTO.getStatus() != null) {
+                try {
+                    user.setStatus(UserEnum.valueOf(userCreateDTO.getStatus().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    throw new RuntimeException("Invalid status value: " + userCreateDTO.getStatus());
+                }
+            }
+            List<Integer> roleIdList = userCreateDTO.getRoleIdList();
+            User newUser = userRepository.save(user);
+            Role newRole = new Role();
+            for(Integer roleId : roleIdList) {
+                newRole = roleServiceImpl.getRoleByRoleId_ReturnRole(roleId);
+            }
+            UserRole userRole = new UserRole();
+            userRole.setRole(newRole);
+            userRole.setUser(newUser);
+            userRoleServiceImpl.saveUserRole(userRole);
+            return true; // Trả về true nếu lưu thành công
+        } catch (Exception e) {
+            // Có thể log lỗi tại đây nếu cần thiết
+            System.err.println("Error creating user: " + e.getMessage());
+            return false; // Trả về false nếu có lỗi xảy ra
+        }
+    }
+
 
 }

@@ -1,10 +1,12 @@
 package com.example.SportFieldBookingSystem.Controller;
 
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,11 +21,11 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @GetMapping
-    public ResponseEntity<?> getAllUser() {
+    public ResponseEntity<?> getAllUser( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         ResponseData responseData = new ResponseData();
 
         // Lấy danh sách người dùng
-        List<UserBasicDTO> userResponseDTOList = userServiceImpl.findAllUsersWithRoles();
+        Page<UserBasicDTO> userResponseDTOList = userServiceImpl.findAllUsersWithRoles(page, size);
 
         // Kiểm tra nếu danh sách người dùng trống
         if (userResponseDTOList.isEmpty()) {
@@ -62,6 +64,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());
         }
     }
+    @GetMapping("/create")
+    public ResponseEntity<?> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        try {
+            userServiceImpl.createUser(userCreateDTO);
+            return ResponseEntity.ok("User created successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());
+        }
+    }
+
 
 
 

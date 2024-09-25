@@ -6,5 +6,6 @@ import com.example.SportFieldBookingSystem.Entity.UserRole;
 import java.util.List;
 
 public interface UserRoleServiceImpl {
-    public List<UserRoleDTO> getUserRoleByUser_UserId(int userId);
+    List<UserRoleDTO> getUserRoleByUser_UserId(int userId);
+    boolean saveUserRole(UserRole userRole);
 }

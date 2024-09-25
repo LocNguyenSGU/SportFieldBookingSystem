@@ -36,4 +36,16 @@ public class UserRoleService implements UserRoleServiceImpl {
         }
         return userRoleDTOList;
     }
+
+    @Override
+    public boolean saveUserRole(UserRole userRole) {
+        try{
+            userRoleRepository.save(userRole);
+            return true;
+        }catch (Exception e) {
+            // Có thể log lỗi tại đây nếu cần thiết
+            System.err.println("Error creating user: " + e.getMessage());
+            return false; // Trả về false nếu có lỗi xảy ra
+        }
+    }
 }

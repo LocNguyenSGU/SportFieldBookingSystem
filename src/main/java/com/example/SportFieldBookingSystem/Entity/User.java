@@ -14,7 +14,7 @@ public class User { // nguoi dung
     @Column(name = "user_id")
     private int userId;
 
-    @Column(name = "user_code", unique = true, length = 10, updatable = false)
+    @Column(name = "user_code", unique = true, length = 30, updatable = false)
     private String userCode;
 
     @Column(name = "user_name", nullable = false, length = 30)
