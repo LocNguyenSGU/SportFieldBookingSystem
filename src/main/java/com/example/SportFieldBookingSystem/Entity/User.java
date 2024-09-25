@@ -36,7 +36,7 @@ public class User { // nguoi dung
     @Enumerated(EnumType.STRING)
     private UserEnum status;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRole> userRoleList;
     @OneToMany(mappedBy = "user")
     private List<Booking> bookingList;

@@ -1,6 +1,11 @@
 package com.example.SportFieldBookingSystem.DTO.UserDTO;
 
-public class UserResponseDTO {
+import com.example.SportFieldBookingSystem.DTO.UserRoleDTO.UserRoleDTO;
+import com.example.SportFieldBookingSystem.Entity.UserRole;
+
+import java.util.List;
+
+public class UserBasicDTO {
     private int userId;
     private String userCode;
     private String username;
@@ -8,12 +13,13 @@ public class UserResponseDTO {
     private String email;
     private String phone;
     private String status;
+    private List<String> roleNameList;
 
-    public UserResponseDTO() {
+    public UserBasicDTO() {
 
     }
 
-    public UserResponseDTO(int userId, String userCode, String username, String fullName, String email, String phone, String status) {
+    public UserBasicDTO(int userId, String userCode, String username, String fullName, String email, String phone, String status, List<String> roleNameList) {
         this.userId = userId;
         this.userCode = userCode;
         this.username = username;
@@ -21,6 +27,7 @@ public class UserResponseDTO {
         this.email = email;
         this.phone = phone;
         this.status = status;
+        this.roleNameList = roleNameList;
     }
 
     public int getUserId() {
@@ -77,5 +84,13 @@ public class UserResponseDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<String> getRoleNameList() {
+        return roleNameList;
+    }
+
+    public void setRoleNameList(List<String> roleNameList) {
+        this.roleNameList = roleNameList;
     }
 }
