@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FieldResponseDTO {
+public class FieldDetailDTO {
     private int fieldId;
     private String fieldCode;
     private String fieldName;
     private int capacity;
     private double pricePerHour;
+
+//    private FieldTypeDTO fieldType;
+//    private LocationDTO location;
 }

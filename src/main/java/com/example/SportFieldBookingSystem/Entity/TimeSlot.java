@@ -1,10 +1,16 @@
 package com.example.SportFieldBookingSystem.Entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "time_slot")
 public class TimeSlot { //TimeSlot sẽ lưu trữ thông tin về các khoảng thời gian trống của sân thể dục để người dùng có thể đặt sân.
