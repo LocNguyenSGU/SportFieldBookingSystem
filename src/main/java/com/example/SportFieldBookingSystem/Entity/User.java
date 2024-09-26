@@ -20,7 +20,7 @@ public class User { // nguoi dung
     @Column(name = "user_name", nullable = false, length = 30)
     private String username;
 
-    @Column(name = "password", nullable = false, length = 30)
+    @Column(name = "password", nullable = false, length = 90)
     private String password;
 
     @Column(name = "full_name", length = 50)

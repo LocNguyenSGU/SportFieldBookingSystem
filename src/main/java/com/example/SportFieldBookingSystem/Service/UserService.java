@@ -1,6 +1,5 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
@@ -8,7 +7,6 @@ import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Entity.UserRole;
 import com.example.SportFieldBookingSystem.Enum.UserEnum;
-import com.example.SportFieldBookingSystem.Repository.RoleRepository;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Repository.UserRoleRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.RoleServiceImpl;
@@ -104,6 +102,29 @@ public class UserService implements UserServiceImpl {
             } else {
                 // Xử lý khi không tìm thấy người dùng
                 System.out.println("Không tìm thấy người dùng với userCode: " + userCode);
+                return null; // Hoặc ném ngoại lệ tùy theo yêu cầu
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            System.err.println("Error fetching user: " + e.getMessage());
+            // Ném ra một ngoại lệ tùy chọn
+            throw new RuntimeException("Unable to fetch user", e);
+        }
+    }
+
+    @Override
+    public UserBasicDTO findUserWithRolesByUserName(String username) {
+        try {
+            // Tìm người dùng dựa trên userCode
+            Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
+
+            // Kiểm tra xem người dùng có tồn tại hay không
+            if (userOptional.isPresent()) {
+                User user = userOptional.get(); // Lấy người dùng
+                return userMapper.toBasicDTO(user); // Chuyển đổi sang DTO và trả về
+            } else {
+                // Xử lý khi không tìm thấy người dùng
+                System.out.println("Không tìm thấy người dùng với userName: " + username);
                 return null; // Hoặc ném ngoại lệ tùy theo yêu cầu
             }
         } catch (Exception e) {

@@ -55,6 +55,22 @@ public class UserController {
         responseData.setMessage("Successfully retrieved user.");
         return ResponseEntity.ok(responseData);
     }
+
+    @GetMapping("/username/{username}")
+    public ResponseEntity<?> getUserByUserName(@PathVariable String username) {
+        ResponseData responseData = new ResponseData();
+
+        UserBasicDTO userResponseDTO = userServiceImpl.findUserWithRolesByUserName(username);
+
+        if (userResponseDTO == null) {
+            responseData.setMessage("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+        }
+
+        responseData.setData(userResponseDTO);
+        responseData.setMessage("Successfully retrieved user.");
+        return ResponseEntity.ok(responseData);
+    }
     @GetMapping("/update/{userCode}")
     public ResponseEntity<?> updateUser(@PathVariable String userCode, @RequestBody UserUpdateDTO userUpdateDTO) {
         try {

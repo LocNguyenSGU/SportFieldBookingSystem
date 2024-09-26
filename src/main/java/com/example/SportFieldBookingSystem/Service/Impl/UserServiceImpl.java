@@ -15,6 +15,8 @@ public interface UserServiceImpl {
 
     public UserBasicDTO findUserWithRolesByUserCode(String userCode);
 
+    public UserBasicDTO findUserWithRolesByUserName(String username);
+
     public Page<UserBasicDTO> findAllUsersWithRoles(int page, int size);
 
     public void updateUser(String userCode, UserUpdateDTO userUpdateDTO);
