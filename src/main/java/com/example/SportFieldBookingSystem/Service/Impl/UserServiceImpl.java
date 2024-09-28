@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
+import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
@@ -26,6 +27,8 @@ public interface UserServiceImpl {
     public boolean existsUserByEmail(String email);
 
     public boolean createUser(UserCreateDTO userCreateDTO);
+
+    public boolean createUserSignUp(SignupDTO signupDTO);
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.SportFieldBookingSystem.DTO.LoginDTO;
+package com.example.SportFieldBookingSystem.DTO.AuthDTO;
 
 public class LoginDTO {
     private String username;

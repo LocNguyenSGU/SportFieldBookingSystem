@@ -23,11 +23,6 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.authorizeHttpRequests((request) -> request.anyRequest().permitAll());
-//        return httpSecurity.build();
-//    }
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
     @Autowired
@@ -46,8 +41,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((request) -> request
                     .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/group").permitAll()
-                    .requestMatchers("/group/**").permitAll()
+                    .requestMatchers("/user/**").hasRole("admin")
                     .anyRequest().authenticated())
             .formLogin(Customizer.withDefaults())
             .httpBasic(Customizer.withDefaults());

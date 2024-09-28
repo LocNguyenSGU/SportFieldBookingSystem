@@ -2,18 +2,18 @@ package com.example.SportFieldBookingSystem.DTO.UserRoleDTO;
 
 public class UserRoleDTO {
     private int userRoleId;
-    private int role_id;
-    private int user_id;
+    private int roleId;
+    private int userId;
 
 
     public UserRoleDTO() {
 
     }
 
-    public UserRoleDTO(int userRoleId, int role_id, int user_id) {
+    public UserRoleDTO(int userRoleId, int roleId, int userId) {
         this.userRoleId = userRoleId;
-        this.role_id = role_id;
-        this.user_id = user_id;
+        this.roleId = roleId;
+        this.userId = userId;
     }
 
     public int getUserRoleId() {
@@ -24,19 +24,19 @@ public class UserRoleDTO {
         this.userRoleId = userRoleId;
     }
 
-    public int getRole_id() {
-        return role_id;
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void setRole_id(int role_id) {
-        this.role_id = role_id;
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

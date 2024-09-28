@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,5 +17,50 @@ public class RolePermission {
     @JoinColumn(name="permission_id")
     private Permission permission;
 
+    @Column(name = "action", length = 20)
+    @Enumerated(EnumType.STRING)
+    private RolePermissionActionEnum action;
 
+    public RolePermission() {
+
+    }
+
+    public RolePermission(int rolePermissionId, Role role, Permission permission, RolePermissionActionEnum action) {
+        this.rolePermissionId = rolePermissionId;
+        this.role = role;
+        this.permission = permission;
+        this.action = action;
+    }
+
+    public int getRolePermissionId() {
+        return rolePermissionId;
+    }
+
+    public void setRolePermissionId(int rolePermissionId) {
+        this.rolePermissionId = rolePermissionId;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Permission getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permission permission) {
+        this.permission = permission;
+    }
+
+    public RolePermissionActionEnum getAction() {
+        return action;
+    }
+
+    public void setAction(RolePermissionActionEnum action) {
+        this.action = action;
+    }
 }

@@ -4,6 +4,8 @@ import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.LoginServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,14 @@ public class LoginService implements LoginServiceImpl {
     @Override
     public boolean checkLogin(String username, String password) {
         Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
-        if(userOptional.isEmpty()) {
-            System.out.println("Khoong lay duoc user thong qua username");
-            return false;
+        if (userOptional.isEmpty()) {
+            throw new UsernameNotFoundException("Username not found");
         }
         User user = userOptional.get();
-        System.out.println("Da lay duoc user thong qua username");
-        return passwordEncoder.matches(password, user.getPassword());
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        return true;
     }
+
 }

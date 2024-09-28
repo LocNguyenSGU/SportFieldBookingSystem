@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Service;
 
+import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +40,8 @@ public class UserService implements UserServiceImpl {
     private UserRoleRepository userRoleRepository;
     @Autowired
     private RoleServiceImpl roleServiceImpl;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -243,7 +247,7 @@ public class UserService implements UserServiceImpl {
             user.setUsername(userCreateDTO.getUsername());
             user.setFullName(userCreateDTO.getFullName());
             user.setEmail(userCreateDTO.getEmail());
-            user.setPassword(userCreateDTO.getPassword());
+            user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
             user.setPhone(userCreateDTO.getPhone());
 
             // Thiết lập trạng thái
@@ -270,6 +274,28 @@ public class UserService implements UserServiceImpl {
             System.err.println("Error creating user: " + e.getMessage());
             return false; // Trả về false nếu có lỗi xảy ra
         }
+    }
+
+    @Override
+    public boolean createUserSignUp(SignupDTO signupDTO) {
+        User user = new User();
+        try {
+            user.setUsername(signupDTO.getUsername());
+            user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
+            user.setEmail(signupDTO.getEmail());
+            user.setStatus(UserEnum.valueOf(UserEnum.ACTIVE.name()));
+            User newUser = userRepository.save(user);
+
+            Role role = roleServiceImpl.getRoleByRoleId_ReturnRole(3); // role 3: khach hang
+            UserRole userRole = new UserRole();
+            userRole.setUser(newUser);
+            userRole.setRole(role);
+            userRoleServiceImpl.saveUserRole(userRole);
+            return true;
+        }catch (Exception e) {
+            System.out.println("Error creating user while signup: " + e.getMessage());
+        }
+        return false;
     }
 
 
