@@ -5,6 +5,7 @@ import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
+import com.example.SportFieldBookingSystem.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,14 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<?> getAllUser( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         ResponseData responseData = new ResponseData();
 
         // Lấy danh sách người dùng
-        Page<UserBasicDTO> userResponseDTOList = userServiceImpl.findAllUsersWithRoles(page, size);
+        Page<UserBasicDTO> userResponseDTOList = userService.findAllUsersWithRoles(page, size);
 
         // Kiểm tra nếu danh sách người dùng trống
         if (userResponseDTOList.isEmpty()) {
@@ -44,7 +45,7 @@ public class UserController {
     public ResponseEntity<?> getUserByUserCode(@PathVariable String userCode) {
         ResponseData responseData = new ResponseData();
 
-        UserBasicDTO userResponseDTO = userServiceImpl.findUserWithRolesByUserCode(userCode);
+        UserBasicDTO userResponseDTO = userService.findUserWithRolesByUserCode(userCode);
 
         if (userResponseDTO == null) {
             responseData.setMessage("User not found.");
@@ -60,7 +61,7 @@ public class UserController {
     public ResponseEntity<?> getUserByUserName(@PathVariable String username) {
         ResponseData responseData = new ResponseData();
 
-        UserBasicDTO userResponseDTO = userServiceImpl.findUserWithRolesByUserName(username);
+        UserBasicDTO userResponseDTO = userService.findUserWithRolesByUserName(username);
 
         if (userResponseDTO == null) {
             responseData.setMessage("User not found.");
@@ -74,7 +75,7 @@ public class UserController {
     @GetMapping("/update/{userCode}")
     public ResponseEntity<?> updateUser(@PathVariable String userCode, @RequestBody UserUpdateDTO userUpdateDTO) {
         try {
-            userServiceImpl.updateUser(userCode, userUpdateDTO);
+            userService.updateUser(userCode, userUpdateDTO);
             return ResponseEntity.ok("User updated successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());
@@ -83,7 +84,7 @@ public class UserController {
     @GetMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody UserCreateDTO userCreateDTO) {
         try {
-            userServiceImpl.createUser(userCreateDTO);
+            userService.createUser(userCreateDTO);
             return ResponseEntity.ok("User created successfully.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());

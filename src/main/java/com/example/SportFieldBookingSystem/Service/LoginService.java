@@ -11,24 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
-public class LoginService implements LoginServiceImpl {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+public interface LoginService {
 
-    @Override
-    public boolean checkLogin(String username, String password) {
-        Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
-        if (userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found");
-        }
-        User user = userOptional.get();
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
-        return true;
-    }
+    boolean checkLogin(String username, String password);
 
 }

@@ -7,6 +7,8 @@ import com.example.SportFieldBookingSystem.Security.JwtToken;
 import com.example.SportFieldBookingSystem.Service.CustomUserDetailsService;
 import com.example.SportFieldBookingSystem.Service.Impl.LoginServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
+import com.example.SportFieldBookingSystem.Service.LoginService;
+import com.example.SportFieldBookingSystem.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
-    private LoginServiceImpl loginServiceImpl;
+    private LoginService loginService;
     @Autowired
     private JwtToken jwtToken;
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
     @PostMapping("/login")
@@ -35,7 +37,7 @@ public class AuthController {
         ResponseData responseData = new ResponseData();
         try {
             // Kiểm tra đăng nhập
-            if (loginServiceImpl.checkLogin(loginDTO.getUsername(), loginDTO.getPassword())) {
+            if (loginService.checkLogin(loginDTO.getUsername(), loginDTO.getPassword())) {
                 responseData.setMessage("Login success");
                 responseData.setData(jwtToken.generateToken(loginDTO.getUsername()));
                 // Trả về 200 OK nếu đăng nhập thành công
@@ -62,11 +64,11 @@ public class AuthController {
     public ResponseEntity<?> registerAccount(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            if (userServiceImpl.existsUserByEmail(signupDTO.getEmail())) {
+            if (userService.existsUserByEmail(signupDTO.getEmail())) {
                 responseData.setMessage("Email has already been used");
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
-            if (userServiceImpl.existsUserByUsername(signupDTO.getUsername())) {
+            if (userService.existsUserByUsername(signupDTO.getUsername())) {
                 responseData.setMessage("Username has already been used");
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
@@ -74,7 +76,7 @@ public class AuthController {
                 responseData.setMessage("Passwords do not match");
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
-            userServiceImpl.createUserSignUp(signupDTO);
+            userService.createUserSignUp(signupDTO);
             responseData.setMessage("Registration successful");
         } catch (Exception e) {
             System.out.println(e);
