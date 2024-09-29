@@ -1,6 +1,7 @@
 package com.example.SportFieldBookingSystem.Entity;
 
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
+import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import jakarta.persistence.*;
 
 @Entity
@@ -20,6 +21,10 @@ public class RolePermission {
     @Column(name = "action", length = 20)
     @Enumerated(EnumType.STRING)
     private RolePermissionActionEnum action;
+
+    @Column(name = "status", length = 20)
+    @Enumerated(EnumType.STRING)
+    private RolePermissionEnum status;
 
     public RolePermission() {
 
@@ -62,5 +67,13 @@ public class RolePermission {
 
     public void setAction(RolePermissionActionEnum action) {
         this.action = action;
+    }
+
+    public RolePermissionEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(RolePermissionEnum status) {
+        this.status = status;
     }
 }
