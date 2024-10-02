@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Service;
 
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
 import com.example.SportFieldBookingSystem.DTO.RolePermissionDTO.RolePermissionCreateDTO;
@@ -21,7 +22,13 @@ public interface RoleService {
     Role getRoleByRoleId_ReturnRole(int roleId);
     Role createRole(RoleDTO roleDTO);
 
-    public boolean createRoleWithPermission(RoleCreateDTO roleCreateDTO);
-    public boolean existsByRoleName(String roleName);
+    boolean createRoleWithPermission(RoleCreateDTO roleCreateDTO);
+    boolean existsByRoleName(String roleName);
+
+    RoleByUserDTO
+    getListRoleByUserRoleList_User_UserName(String userName);
+
+    int getRoleIdByRoleName(String roleName);
+
 
 }

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Service;
 public interface PermissionService {
 
     Permission getPermissionByPermissionId(int permissionId);
+
+    int getPermissionIdByPermissionName(String permissionName);
 }

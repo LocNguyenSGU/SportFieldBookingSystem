@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
 import com.example.SportFieldBookingSystem.DTO.RolePermissionDTO.RolePermissionCreateDTO;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 @Lazy
@@ -82,5 +84,35 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public boolean existsByRoleName(String roleName) {
         return roleRepository.existsByRoleName(roleName);
+    }
+
+    @Override
+    public RoleByUserDTO getListRoleByUserRoleList_User_UserName(String userName) {
+        try{
+            List<Role> roleList = roleRepository.findListRoleByUserRoleList_User_Username(userName);
+            RoleByUserDTO roleByUserDTO = new RoleByUserDTO();
+            if(roleList == null) {
+                return null;
+            }
+            roleByUserDTO.setUserName(userName);
+            for(Role role : roleList) {
+                roleByUserDTO.setRoleName(role.getRoleName());
+                break;
+            }
+            return roleByUserDTO;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
+    @Override
+    public int getRoleIdByRoleName(String roleName) {
+        try {
+            return roleRepository.findRoleIdByRoleName(roleName);
+        }catch (Exception e) {
+            System.out.println(e);
+        }
+        return -1;
     }
 }

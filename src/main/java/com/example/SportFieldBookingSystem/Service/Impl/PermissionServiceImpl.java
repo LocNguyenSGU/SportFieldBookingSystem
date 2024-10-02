@@ -20,4 +20,15 @@ public class PermissionServiceImpl implements PermissionService {
         }
         return null;
     }
+
+    @Override
+    public int getPermissionIdByPermissionName(String permissionName) {
+        try {
+            return permissionRepository.findPermissionIdByPermissionName(permissionName);
+        }catch (Exception e) {
+            System.out.println(e);
+        }
+        return -1;
+    }
+
 }

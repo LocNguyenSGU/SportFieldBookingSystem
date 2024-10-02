@@ -15,4 +15,5 @@ import org.springframework.stereotype.Service;
 public interface RolePermissionService {
 
     boolean createRolePermission(RolePermissionCreateDTO rolePermissionCreateDTO);
+    boolean existsByRoleIdAndPermissionIdAndActionAndStatus(int roleId, int permissionId, RolePermissionActionEnum action, RolePermissionEnum status);
 }

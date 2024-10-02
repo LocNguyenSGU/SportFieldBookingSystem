@@ -40,4 +40,9 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         }
         return false;
     }
+
+    @Override
+    public boolean existsByRoleIdAndPermissionIdAndActionAndStatus(int roleId, int permissionId, RolePermissionActionEnum action, RolePermissionEnum status) {
+        return rolePermissionRepository.existsByRole_RoleIdAndPermission_PermissionIdAndActionAndStatus(roleId, permissionId, action, status);
+    }
 }
