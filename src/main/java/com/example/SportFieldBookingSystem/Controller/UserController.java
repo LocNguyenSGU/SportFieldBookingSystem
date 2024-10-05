@@ -57,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/username/{username}")
+    @PostMapping("/username/{username}")
     public ResponseEntity<?> getUserByUserName(@PathVariable String username) {
         ResponseData responseData = new ResponseData();
 
@@ -74,20 +74,26 @@ public class UserController {
     }
     @GetMapping("/update/{userCode}")
     public ResponseEntity<?> updateUser(@PathVariable String userCode, @RequestBody UserUpdateDTO userUpdateDTO) {
+        ResponseData responseData = new ResponseData();
         try {
             userService.updateUser(userCode, userUpdateDTO);
-            return ResponseEntity.ok("User updated successfully.");
+            responseData.setMessage("User updated successfully.");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());
+            responseData.setMessage("Error updating user: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        ResponseData responseData = new ResponseData();
         try {
+            responseData.setMessage("User created successfully.");
             userService.createUser(userCreateDTO);
-            return ResponseEntity.ok("User created successfully.");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating user: " + e.getMessage());
+            responseData.setMessage("Error creating user: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
 

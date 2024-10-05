@@ -9,8 +9,7 @@ import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Entity.UserRole;
 import com.example.SportFieldBookingSystem.Enum.UserEnum;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
-import com.example.SportFieldBookingSystem.Repository.UserRoleRepository;
-import com.example.SportFieldBookingSystem.Service.Mapper.UserMapper;
+import com.example.SportFieldBookingSystem.Mapper.UserMapper;
 import com.example.SportFieldBookingSystem.Service.RoleService;
 import com.example.SportFieldBookingSystem.Service.UserRoleService;
 import com.example.SportFieldBookingSystem.Service.UserService;
@@ -165,23 +164,27 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            if(userUpdateDTO.getUsername() != null) {
-                if(existsUserByUsername(userUpdateDTO.getUsername())){
+            if (userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().equals(user.getUsername())) {
+                if (existsUserByUsername(userUpdateDTO.getUsername())) {
                     throw new RuntimeException("Username already exists.");
                 }
+                user.setUsername(userUpdateDTO.getUsername()); // Cập nhật username nếu hợp lệ
             }
-            if(userUpdateDTO.getEmail() != null) {
-                if(existsUserByEmail(userUpdateDTO.getEmail())){
+
+            if (userUpdateDTO.getEmail() != null && !userUpdateDTO.getEmail().equals(user.getEmail())) {
+                if (existsUserByEmail(userUpdateDTO.getEmail())) {
                     throw new RuntimeException("Email already exists.");
                 }
+                user.setEmail(userUpdateDTO.getEmail()); // Cập nhật email nếu hợp lệ
             }
+
 
             // Cập nhật thông tin người dùng
             user.setUsername(userUpdateDTO.getUsername());
             user.setEmail(userUpdateDTO.getEmail());
             user.setPhone(userUpdateDTO.getPhone());
             user.setFullName(userUpdateDTO.getFullName());
-            user.setPassword(userUpdateDTO.getPassword());
+            user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
 
             // Cập nhật trạng thái
             if (userUpdateDTO.getStatus() != null) {

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Lazy
 public class RolePermissionServiceImpl implements RolePermissionService {
@@ -44,5 +46,21 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     public boolean existsByRoleIdAndPermissionIdAndActionAndStatus(int roleId, int permissionId, RolePermissionActionEnum action, RolePermissionEnum status) {
         return rolePermissionRepository.existsByRole_RoleIdAndPermission_PermissionIdAndActionAndStatus(roleId, permissionId, action, status);
+    }
+
+    @Override
+    public void updateRolePermission(RolePermission rolePermission) {
+        // Kiểm tra xem RolePermission có tồn tại trong cơ sở dữ liệu không
+        Optional<RolePermission> existingRolePermission = rolePermissionRepository.findById(rolePermission.getRolePermissionId());
+
+        if (!existingRolePermission.isPresent()) {
+            throw new RuntimeException("RolePermission not found for ID: " + rolePermission.getRolePermissionId());
+        }
+
+        // Cập nhật các thuộc tính cần thiết (chỉ cần cập nhật trạng thái active)
+        RolePermission updatedRolePermission = existingRolePermission.get();
+        updatedRolePermission.setStatus(RolePermissionEnum.ACTIVE);
+
+        rolePermissionRepository.save(updatedRolePermission);
     }
 }

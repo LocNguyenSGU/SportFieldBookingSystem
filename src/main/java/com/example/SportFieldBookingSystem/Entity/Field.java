@@ -39,6 +39,8 @@ public class Field { // san
     private FieldEnum status;
     @OneToMany(mappedBy = "field")
     private List<Booking> bookingList;
+    @OneToMany(mappedBy = "field")
+    private List<Review> reviewList;
 
     @OneToMany(mappedBy = "field")
     private List<TimeSlot> timeSlotList;

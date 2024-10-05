@@ -32,10 +32,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
         String userRoleName = roleByUserDTO.getRoleName();
         int roleId = roleService.getRoleIdByRoleName(userRoleName);
         int permissionId = permissionService.getPermissionIdByPermissionName(permissionName);
-        if (rolePermissionService.existsByRoleIdAndPermissionIdAndActionAndStatus(roleId, permissionId, RolePermissionActionEnum.valueOf(actionName), RolePermissionEnum.ACTIVE)) {
-            return true;
-        }
-        return false;
+        return rolePermissionService.existsByRoleIdAndPermissionIdAndActionAndStatus(roleId, permissionId, RolePermissionActionEnum.valueOf(actionName), RolePermissionEnum.ACTIVE);
     }
 
 

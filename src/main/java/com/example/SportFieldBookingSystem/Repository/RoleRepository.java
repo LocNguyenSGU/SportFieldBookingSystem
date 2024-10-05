@@ -12,6 +12,7 @@ import java.util.List;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
     Role findRoleByRoleId(int roleId);
     boolean existsByRoleName(String roleName);
+    boolean existsByRoleNameAndRoleIdNot(String roleName, int roleId);
     @Query("SELECT r.roleId FROM Role r WHERE r.roleName = :roleName")
     int findRoleIdByRoleName(@Param("roleName") String roleName);
     List<Role> findListRoleByUserRoleList_User_Username(String userName);

@@ -3,7 +3,7 @@ package com.example.SportFieldBookingSystem.Service.Impl;
 import com.example.SportFieldBookingSystem.DTO.UserRoleDTO.UserRoleDTO;
 import com.example.SportFieldBookingSystem.Entity.UserRole;
 import com.example.SportFieldBookingSystem.Repository.UserRoleRepository;
-import com.example.SportFieldBookingSystem.Service.Mapper.UserRoleMapper;
+import com.example.SportFieldBookingSystem.Mapper.UserRoleMapper;
 import com.example.SportFieldBookingSystem.Service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

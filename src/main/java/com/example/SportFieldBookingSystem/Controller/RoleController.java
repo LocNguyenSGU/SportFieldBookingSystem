@@ -2,6 +2,7 @@ package com.example.SportFieldBookingSystem.Controller;
 
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleCreateDTO;
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.RoleService;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,9 +28,11 @@ public class RoleController {
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
             roleService.createRoleWithPermission(roleCreateDTO);
-            return ResponseEntity.ok("User created successfully.");
+            responseData.setMessage("Role created successfully.");
+            return new ResponseEntity<>(responseData, HttpStatus.CREATED);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error create role with permission: " + e.getMessage());
+            responseData.setMessage("Error create role with permission: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
     @GetMapping("/user/{userName}")
@@ -48,7 +48,20 @@ public class RoleController {
             responseData.setMessage("Lay role name theo userName");
             return new  ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error get role by userName: " + e.getMessage());
+            responseData.setMessage("Error get role by userName: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/update")
+    public ResponseEntity<?> updateRoleWithPermission(@RequestBody RoleUpdateDTO roleUpdateDTO) {
+        ResponseData responseData = new ResponseData();
+        try {
+            roleService.updateRoleWithPermission(roleUpdateDTO);
+            responseData.setMessage("Role updated successfully.");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            responseData.setMessage("Error update role with permission: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
 

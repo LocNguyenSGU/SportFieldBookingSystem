@@ -1,4 +1,4 @@
-package com.example.SportFieldBookingSystem.Service.Mapper;
+package com.example.SportFieldBookingSystem.Mapper;
 
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.Entity.User;
