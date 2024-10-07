@@ -8,4 +8,6 @@ import java.util.List;
 public interface ReviewService {
     Page<ReviewDTO> getAllReview(int page, int size);
 
+    List<ReviewDTO> getAllReviewByFieldId(int fieldId);
+
 }

@@ -3,11 +3,17 @@ package com.example.SportFieldBookingSystem.Entity;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Enum.UserEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "field")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Field { // san
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
