@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.DTO.FieldImageDTO;
 
+import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldResponseDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FieldImageResponseDTO {
     private int fieldImageId;
-    private int fieldId;
-    private String fieldImageUrl;
+    private String fieldImageURL;
+    private FieldResponseDTO field;
 }
