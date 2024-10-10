@@ -35,7 +35,7 @@ public class FieldImageServiceImpl implements FieldImageService {
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
             fieldImageResponseDTO.setFieldImageId(fieldImgSave.getImageId());
-            fieldImageResponseDTO.setFieldImageUrl(fieldImgSave.getImageUrl());
+            fieldImageResponseDTO.setFieldImageURL(fieldImgSave.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error creating field image", e);
@@ -52,7 +52,7 @@ public class FieldImageServiceImpl implements FieldImageService {
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
             fieldImageResponseDTO.setFieldImageId(fieldImgSave.getImageId());
-            fieldImageResponseDTO.setFieldImageUrl(fieldImgSave.getImageUrl());
+            fieldImageResponseDTO.setFieldImageURL(fieldImgSave.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error updating field image", e);
@@ -65,7 +65,7 @@ public class FieldImageServiceImpl implements FieldImageService {
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
             fieldImageResponseDTO.setFieldImageId(fieldImage.getImageId());
-            fieldImageResponseDTO.setFieldImageUrl(fieldImage.getImageUrl());
+            fieldImageResponseDTO.setFieldImageURL(fieldImage.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
             throw new RuntimeException("Error getting field image", e);
@@ -79,7 +79,7 @@ public class FieldImageServiceImpl implements FieldImageService {
             for (FieldImage fieldImage : fieldImageList) {
                 FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
                 fieldImageResponseDTO.setFieldImageId(fieldImage.getImageId());
-                fieldImageResponseDTO.setFieldImageUrl(fieldImage.getImageUrl());
+                fieldImageResponseDTO.setFieldImageURL(fieldImage.getImageUrl());
                 fieldImageResponseDTOList.add(fieldImageResponseDTO);
             }
             return fieldImageResponseDTOList;

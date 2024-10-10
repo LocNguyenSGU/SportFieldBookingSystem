@@ -33,7 +33,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             TimeSlot timeSlotSave = timeSlotRepository.save(timeSlot);
 
             TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-            timeSlotResponseDTO.setId(timeSlotSave.getTimeslotId());
+            timeSlotResponseDTO.setTimeslotId(timeSlotSave.getTimeslotId());
             timeSlotResponseDTO.setStartTime(timeSlotSave.getStartTime());
             timeSlotResponseDTO.setEndTime(timeSlotSave.getEndTime());
             timeSlotResponseDTO.setDate(timeSlotSave.getDate());
@@ -49,7 +49,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             List<TimeSlot> timeSlots = timeSlotRepository.findAll();
             for (TimeSlot timeSlot : timeSlots) {
                 TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-                timeSlotResponseDTO.setId(timeSlot.getTimeslotId());
+                timeSlotResponseDTO.setTimeslotId(timeSlot.getTimeslotId());
                 timeSlotResponseDTO.setStartTime(timeSlot.getStartTime());
                 timeSlotResponseDTO.setEndTime(timeSlot.getEndTime());
                 timeSlotResponseDTO.setDate(timeSlot.getDate());
@@ -65,7 +65,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         try {
             TimeSlot timeSlot = timeSlotRepository.findById(timeslotId).get();
             TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-            timeSlotResponseDTO.setId(timeSlot.getTimeslotId());
+            timeSlotResponseDTO.setTimeslotId(timeSlot.getTimeslotId());
             timeSlotResponseDTO.setStartTime(timeSlot.getStartTime());
             timeSlotResponseDTO.setEndTime(timeSlot.getEndTime());
             timeSlotResponseDTO.setDate(timeSlot.getDate());
@@ -85,7 +85,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
             TimeSlot timeSlotSave = timeSlotRepository.save(timeSlot);
             TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-            timeSlotResponseDTO.setId(timeSlotSave.getTimeslotId());
+            timeSlotResponseDTO.setTimeslotId(timeSlotSave.getTimeslotId());
             timeSlotResponseDTO.setStartTime(timeSlotSave.getStartTime());
             timeSlotResponseDTO.setEndTime(timeSlotSave.getEndTime());
             timeSlotResponseDTO.setDate(timeSlotSave.getDate());
