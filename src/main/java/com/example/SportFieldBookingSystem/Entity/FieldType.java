@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,4 +21,6 @@ public class FieldType { // loai san
     private String fieldTypeName;
     @Column(name="field_type_desc")
     private String fieldTypeDesc;
+    @OneToMany(mappedBy = "fieldType")
+    private List<Field> fields;
 }

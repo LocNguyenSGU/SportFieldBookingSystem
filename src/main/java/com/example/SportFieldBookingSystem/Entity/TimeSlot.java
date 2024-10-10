@@ -20,7 +20,7 @@ public class TimeSlot { //TimeSlot sẽ lưu trữ thông tin về các khoảng
     private int timeslotId;
 
     @ManyToOne
-    @JoinColumn(name = "field_id", nullable = false)
+    @JoinColumn(name = "field_id")
     private Field field;
 
     @Column(name = "date", nullable = false)

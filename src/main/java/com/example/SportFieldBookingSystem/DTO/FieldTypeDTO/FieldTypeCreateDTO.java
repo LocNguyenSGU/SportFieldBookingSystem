@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FieldTypeRequestDTO {
+public class FieldTypeCreateDTO {
     private String fieldTypeName;
     private String fieldTypeDescription;
 }

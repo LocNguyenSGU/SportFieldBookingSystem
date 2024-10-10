@@ -13,7 +13,6 @@ public class FieldDetailDTO {
     private String fieldName;
     private int capacity;
     private double pricePerHour;
-
 //    private FieldTypeDTO fieldType;
 //    private LocationDTO location;
 }

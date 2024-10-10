@@ -15,14 +15,13 @@ import java.util.Date;
 @Entity
 @Table(name = "field_maintenance")
 public class FieldMaintenance { // thong tin ve cac lan bao tri san
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "maintenance_id")
     private int maintenanceId;
 
     @ManyToOne
-    @JoinColumn(name = "field_id", nullable = false)
+    @JoinColumn(name = "field_id")
     private Field field;
 
     @Column(name = "maintenance_date", nullable = false)

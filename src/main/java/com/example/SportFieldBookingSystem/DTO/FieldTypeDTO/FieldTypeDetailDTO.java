@@ -4,11 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
-public class FieldTypeDTO {
-    private int fieldTypeId;
-    private String fieldTypeName;
-    private String fieldTypeDescription;
+public class FieldTypeDetailDTO {
+
 }
