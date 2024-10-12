@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "userRoleList", target = "roleNameList", qualifiedByName = "mapUserRoleToRoleNameList")
+//    @Mapping(source = "userRoleList", target = "roleNameList", qualifiedByName = "mapUserRoleToRoleNameList")
     UserBasicDTO toBasicDTO(User user);
 
     @Named("mapUserRoleToRoleNameList")

@@ -50,6 +50,7 @@ public class User { // nguoi dung
     @OneToMany(mappedBy = "user")
     private List<Review> reviewList;
 
+
     @OneToMany(mappedBy = "user")
     private List<Favorite> favoriteList;
 
