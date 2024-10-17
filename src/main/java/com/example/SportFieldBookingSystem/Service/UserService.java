@@ -1,14 +1,33 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.UserDTO.UserResponseDTO;
-import com.example.SportFieldBookingSystem.Entity.User;
-import com.example.SportFieldBookingSystem.Repository.UserRepository;
-import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
+import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
 import java.util.List;
+
+public interface UserService {
+    List<UserBasicDTO> getAllUser();
+    UserBasicDTO getUserByUserCode(String userCode);
+
+    UserBasicDTO findUserWithRolesByUserCode(String userCode);
+
+    UserBasicDTO findUserWithRolesByUserName(String username);
+
+    Page<UserBasicDTO> findAllUsersWithRoles(int page, int size);
+
+    void updateUser(String userCode, UserUpdateDTO userUpdateDTO);
+
+    boolean existsUserByUsername(String userName);
+
+    boolean existsUserByEmail(String email);
+
+    boolean createUser(UserCreateDTO userCreateDTO);
+
+    boolean createUserSignUp(SignupDTO signupDTO);
+
 @Service
 public class UserService implements UserServiceImpl {
     @Autowired
@@ -42,6 +61,5 @@ public class UserService implements UserServiceImpl {
     public UserResponseDTO getUserByUserCode(String userCode) {
         return null;
     }
-
 
 }

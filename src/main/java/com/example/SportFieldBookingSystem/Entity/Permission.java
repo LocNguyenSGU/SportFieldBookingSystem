@@ -15,4 +15,36 @@ public class Permission { // quyen han
     private String permissionName;
     @OneToMany(mappedBy = "permission")
     private List<RolePermission> rolePermissionList;
+
+    public Permission(){}
+
+    public Permission(int permissionId, String permissionName, List<RolePermission> rolePermissionList) {
+        this.permissionId = permissionId;
+        this.permissionName = permissionName;
+        this.rolePermissionList = rolePermissionList;
+    }
+
+    public int getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(int permissionId) {
+        this.permissionId = permissionId;
+    }
+
+    public String getPermissionName() {
+        return permissionName;
+    }
+
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
+    }
+
+    public List<RolePermission> getRolePermissionList() {
+        return rolePermissionList;
+    }
+
+    public void setRolePermissionList(List<RolePermission> rolePermissionList) {
+        this.rolePermissionList = rolePermissionList;
+    }
 }
