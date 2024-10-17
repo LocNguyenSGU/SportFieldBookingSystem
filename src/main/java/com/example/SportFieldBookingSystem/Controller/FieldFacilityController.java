@@ -11,10 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 @RestController
-@RequestMapping("/fieldFacility")
+@RequestMapping("/api/facilities")
 public class FieldFacilityController {
     private final FieldFacilityService fieldFacilityService;
 
@@ -23,92 +24,31 @@ public class FieldFacilityController {
         this.fieldFacilityService = fieldFacilityService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createFieldFacility(@RequestBody FieldFacilityCreateDTO fieldFacilityCreateDTO) {
-        ResponseData responseData = new ResponseData();
-        try {
-            FieldFacilityResponseDTO fieldFacilityResponseDTO = fieldFacilityService.createFieldFacility(fieldFacilityCreateDTO);
-            if (fieldFacilityResponseDTO == null) {
-                responseData.setMessage("Field facility could not be created");
-                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-            }
-            responseData.setData(fieldFacilityResponseDTO);
-            responseData.setMessage("Field facility created successfully");
-            return new ResponseEntity<>(responseData, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping
+    public ResponseEntity<?> createFieldFacility(@RequestBody FieldFacilityCreateDTO fieldFacilityCreateDTO) throws URISyntaxException {
+        FieldFacilityResponseDTO savedDTO = fieldFacilityService.createFieldFacility(fieldFacilityCreateDTO);
+        return ResponseEntity.created(new URI("/api/fieldFacilities/" + savedDTO.getFieldFacilityId())).body(savedDTO);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateFieldFacility(@PathVariable int id,
                                                         @RequestBody FieldFacilityUpdateDTO fieldFacilityUpdateDTO){
-        ResponseData responseData = new ResponseData();
-        try {
-            FieldFacilityResponseDTO responseDTO = fieldFacilityService.updateFieldFacility(id, fieldFacilityUpdateDTO);
-            if (responseDTO == null) {
-                responseData.setMessage("Field facility could not be updated");
-                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-            }
-            responseData.setData(responseDTO);
-            responseData.setMessage("Field facility updated successfully");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        FieldFacilityResponseDTO updatedDTO = fieldFacilityService.updateFieldFacility(id, fieldFacilityUpdateDTO);
+        return ResponseEntity.ok(updatedDTO);
     }
-    @GetMapping("/getAll")
-    public ResponseEntity<?> getAll(){
-        ResponseData responseData = new ResponseData();
-        try {
-            List<FieldFacilityResponseDTO> fieldFacs = fieldFacilityService.getAllFieldFacility();
-            if (fieldFacs.isEmpty()) {
-                responseData.setMessage("No field facility found");
-                return new ResponseEntity<>(responseData, HttpStatus.NO_CONTENT);
-            }
-            responseData.setData(fieldFacs);
-            responseData.setMessage("All field facility found");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
-        }
+    @GetMapping
+    public List<FieldFacilityResponseDTO> getAll(){
+        return fieldFacilityService.getAllFieldFacility();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFieldFacility(@PathVariable int id){
-        ResponseData responseData = new ResponseData();
-        try {
-            FieldFacilityResponseDTO fieldFacilityResponseDTO = fieldFacilityService.getFieldFacilityById(id);
-            if (fieldFacilityResponseDTO == null) {
-                responseData.setMessage("Field facility could not be found");
-                return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
-            }
-            responseData.setData(fieldFacilityResponseDTO);
-            responseData.setMessage("Field facility found");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (Exception e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public FieldFacilityResponseDTO getFieldFacility(@PathVariable int id){
+        return fieldFacilityService.getFieldFacilityById(id);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFieldFacility(@PathVariable int id){
-        ResponseData responseData = new ResponseData();
-        try {
-            fieldFacilityService.deleteFieldFacility(id);
-            responseData.setMessage("Field facility deleted successfully");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        fieldFacilityService.deleteFieldFacility(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.attribute.URISyntax;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fieldImage")
+@RequestMapping("/api/images")
 public class FieldImageController {
     private final FieldImageService fieldImageService;
 
@@ -24,22 +27,10 @@ public class FieldImageController {
         this.fieldImageService = fieldImageService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createFieldImage(@RequestBody FieldImageCreateDTO fieldImage) {
-        ResponseData responseData = new ResponseData();
-        try {
-            FieldImageResponseDTO fieldImageResponseDTO = fieldImageService.createFieldImage(fieldImage);
-            if (fieldImageResponseDTO != null) {
-                responseData.setData(fieldImageResponseDTO);
-                responseData.setMessage("FieldImage created successfully");
-                return new ResponseEntity<>(responseData, HttpStatus.CREATED);
-            }
-            responseData.setMessage("FieldImage creation failed");
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            responseData.setMessage(e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping
+    public ResponseEntity<?> createFieldImage(@RequestBody FieldImageCreateDTO fieldImage) throws URISyntaxException {
+        FieldImageResponseDTO saveDTO = fieldImageService.createFieldImage(fieldImage);
+        return ResponseEntity(new URI("/api/images" + saveDTO.getFieldImageId())).body(saveDTO);
     }
 
     @GetMapping("/update/{id}")

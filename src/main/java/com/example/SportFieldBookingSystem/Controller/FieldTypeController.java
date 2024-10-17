@@ -13,7 +13,7 @@ import com.example.SportFieldBookingSystem.Service.FieldTypeService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fieldType")
+@RequestMapping("/api/fieldType")
 public class FieldTypeController {
     private final FieldTypeService fieldTypeService;
 
@@ -30,7 +30,7 @@ public class FieldTypeController {
             FieldTypeResponseDTO createdFieldType = fieldTypeService.createFieldType(fieldTypeCreateDTO);
             if (createdFieldType == null) {
                 responseData.setMessage("FieldType not created");
-                return new ResponseEntity<>(responseData, HttpStatus.CREATED);
+                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
 
             responseData.setData(createdFieldType);

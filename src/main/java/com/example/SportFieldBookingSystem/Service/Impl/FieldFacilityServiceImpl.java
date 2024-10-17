@@ -19,9 +19,6 @@ public class FieldFacilityServiceImpl implements FieldFacilityService {
 
     // Create FieldFacility
     public FieldFacilityResponseDTO createFieldFacility(FieldFacilityCreateDTO fieldFacilityCreateDTO) {
-        if (fieldFacilityCreateDTO == null) {
-            throw new IllegalArgumentException("FieldTypeCreateDTO cannot be null");
-        }
         try {
             // Convert DTO to Entity
             FieldFacility fieldFac = new FieldFacility();
