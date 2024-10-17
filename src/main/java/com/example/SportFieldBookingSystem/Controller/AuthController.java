@@ -51,27 +51,30 @@ public class AuthController {
         try {
             if (loginService.checkLogin(loginDTO.getUsername(), loginDTO.getPassword())) {
                 String refreshToken = jwtToken.generateRefreshToken(loginDTO.getUsername());
+                String accessToken = jwtToken.generateToken(loginDTO.getUsername());
                 ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)// Chỉ dùng Http, không thể truy cập từ JavaScript
                         .secure(true)  // Chỉ gửi cookie qua HTTPS
-                        .path("http://localhost:8080/auth/refresh_token")// Đường dẫn của API refresh token
+                        .path("/")
                         .maxAge(7 * 24 * 60 * 60)
                         .build();
-
+                responseData.setStatus(200);
                 responseData.setMessage("Login success");
-                responseData.setData(jwtToken.generateToken(loginDTO.getUsername()));
+                responseData.setData(accessToken);
                 return ResponseEntity.ok()
                         .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                         .body(responseData);
             }
         } catch (UsernameNotFoundException e) {
+            responseData.setStatus(404);
             responseData.setMessage("Login failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
         } catch (BadCredentialsException e) {
+            responseData.setStatus(401);
             responseData.setMessage("Login failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
         }
-
+        responseData.setStatus(500);
         responseData.setMessage("Login failed: Unknown error");
         return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -79,57 +82,80 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerAccount(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
-        Map<String, String> errorMap = new HashMap<>(); // Dùng Map để lưu lỗi theo cặp field - message
-        boolean hasErrors = false; // Cờ để kiểm tra nếu có lỗi
+        Map<String, String> errorMap = new HashMap<>(); // Lưu lỗi theo cặp field - message
+        boolean hasErrors = false; // Cờ kiểm tra lỗi
 
-        // Kiểm tra xem email đã tồn tại hay chưa
+        // Kiểm tra email đã tồn tại chưa
         if (userService.existsUserByEmail(signupDTO.getEmail())) {
             errorMap.put("email", "Email has already been used");
-            hasErrors = true; // Bật cờ lỗi
+            hasErrors = true;
         }
 
-        // Kiểm tra xem username đã tồn tại hay chưa
+        // Kiểm tra username đã tồn tại chưa
         if (userService.existsUserByUsername(signupDTO.getUsername())) {
             errorMap.put("username", "Username has already been used");
-            hasErrors = true; // Bật cờ lỗi
+            hasErrors = true;
         }
 
-        // Kiểm tra xem mật khẩu có khớp hay không
+        // Kiểm tra mật khẩu khớp hay không
         if (!signupDTO.getRePassword().equals(signupDTO.getPassword())) {
             errorMap.put("password", "Passwords do not match");
-            hasErrors = true; // Bật cờ lỗi
+            hasErrors = true;
         }
 
-        // Nếu có bất kỳ lỗi nào thì trả về danh sách lỗi
+        // Nếu có lỗi, trả về danh sách lỗi
         if (hasErrors) {
+            responseData.setStatus(400);
             responseData.setMessage("Validation failed");
-            responseData.setData(errorMap); // Gửi danh sách lỗi dưới dạng Map
-            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            responseData.setData(errorMap); // Trả danh sách lỗi
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST); // 400
         }
 
-        // Không có lỗi thì tiến hành đăng ký người dùng
+        // Nếu không có lỗi, tiến hành đăng ký
         try {
+            responseData.setStatus(200);
             userService.createUserSignUp(signupDTO);
             responseData.setMessage("Registration successful");
+            return new ResponseEntity<>(responseData, HttpStatus.CREATED);
         } catch (Exception e) {
-            System.out.println(e);
+            responseData.setStatus(500);
+            System.out.println("Error during signup: " + e);
             responseData.setMessage("An error occurred while processing your request.");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody LogoutDTO logoutDTO) {
+    public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
         try {
             String idToken = jwtToken.getIdTokenFromJwtToken(logoutDTO.getToken());
-            String userName = jwtToken.getUsernameFromJwtToken(logoutDTO.getToken());
             Date expirationTime = jwtToken.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
 
+            String refreshToken = "";
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("refreshToken")) {
+                        refreshToken = cookie.getValue();
+                        System.out.println("refreshToken: " + refreshToken);
+                    }
+                }
+            }
+            if(refreshToken != "")  {
+                invalidTokenService.saveInvalidTokenIntoDatabase(new InvalidTokenDTO(jwtToken.getIdTokenFromJwtToken(refreshToken),jwtToken.getExpirationTimeTokenFromJwtToken(refreshToken)));
+            }
+
+            ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0) // Xóa cookie
+                    .build();
+
+            // Lấy refresh token từ cookie
             responseData.setStatus(200);
             responseData.setMessage("dang xuat thanh cong");
             responseData.setData("");
@@ -156,7 +182,7 @@ public class AuthController {
             }
         }
         // Kiểm tra refresh token có hợp lệ không
-        if (refreshToken != null && jwtToken.validateJwtToken(refreshToken)) {
+        if (refreshToken != null && jwtToken.validateJwtToken(refreshToken) && !invalidTokenService.existsByIdToken(refreshToken)) {
             String username = jwtToken.getUsernameFromJwtToken(refreshToken);
             String newAccessToken = jwtToken.generateToken(username);
             responseData.setStatus(200);
@@ -164,7 +190,7 @@ public class AuthController {
             responseData.setData(newAccessToken);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } else {
-            responseData.setStatus(401);
+            responseData.setStatus(400);
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);

@@ -40,6 +40,10 @@ public class Field { // san
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
+
     @Column(name = "status", length = 20)
     @Enumerated(EnumType.STRING)
     private FieldEnum status;
