@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.example.SportFieldBookingSystem.DTO.UserDTO.UserResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,8 +33,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    private UserMapper userMapper = new UserMapper();
     @Autowired
     @Lazy
     private UserRoleService userRoleService;

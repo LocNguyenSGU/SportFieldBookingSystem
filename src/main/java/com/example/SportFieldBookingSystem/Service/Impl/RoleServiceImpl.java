@@ -33,8 +33,7 @@ import java.util.*;
 public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private RoleMapper roleMapper;
+    private RoleMapper roleMapper = new RoleMapper();
     @Autowired
     @Lazy
     private RolePermissionService rolePermissionService;

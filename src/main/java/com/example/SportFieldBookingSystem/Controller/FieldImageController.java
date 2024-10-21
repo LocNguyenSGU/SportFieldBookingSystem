@@ -27,11 +27,11 @@ public class FieldImageController {
         this.fieldImageService = fieldImageService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createFieldImage(@RequestBody FieldImageCreateDTO fieldImage) throws URISyntaxException {
-        FieldImageResponseDTO saveDTO = fieldImageService.createFieldImage(fieldImage);
-        return ResponseEntity(new URI("/api/images" + saveDTO.getFieldImageId())).body(saveDTO);
-    }
+//    @PostMapping
+//    public ResponseEntity<?> createFieldImage(@RequestBody FieldImageCreateDTO fieldImage) throws URISyntaxException {
+//        FieldImageResponseDTO saveDTO = fieldImageService.createFieldImage(fieldImage);
+//        return ResponseEntity(new URI("/api/images" + saveDTO.getFieldImageId())).body(saveDTO);
+//    }
 
     @GetMapping("/update/{id}")
     public ResponseEntity<?> updateFieldImage(@PathVariable int id, @RequestBody FieldImageUpdateDTO fieldImage) {

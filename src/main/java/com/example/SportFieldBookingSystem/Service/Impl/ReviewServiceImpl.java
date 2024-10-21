@@ -20,8 +20,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private ReviewMapper reviewMapper;
+    private ReviewMapper reviewMapper = new ReviewMapper();
 
     @Override
     public Page<ReviewDTO> getAllReview(int page, int size) {

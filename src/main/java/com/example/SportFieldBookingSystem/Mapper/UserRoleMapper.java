@@ -4,7 +4,19 @@ import com.example.SportFieldBookingSystem.DTO.UserRoleDTO.UserRoleDTO;
 import com.example.SportFieldBookingSystem.Entity.UserRole;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
-public interface UserRoleMapper {
-    UserRoleDTO toUserRoleDTO(UserRole userRole);
+public class UserRoleMapper {
+
+    public UserRoleDTO toUserRoleDTO(UserRole userRole) {
+        if ( userRole == null ) {
+            return null;
+        }
+
+        UserRoleDTO userRoleDTO = new UserRoleDTO();
+
+        if ( userRole.getUserRoleId() != null ) {
+            userRoleDTO.setUserRoleId( userRole.getUserRoleId() );
+        }
+
+        return userRoleDTO;
+    }
 }

@@ -10,16 +10,15 @@ import org.mapstruct.Named;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+public class UserMapper {
 
-//    @Mapping(source = "userRoleList", target = "roleNameList", qualifiedByName = "mapUserRoleToRoleNameList")
-    UserBasicDTO toBasicDTO(User user);
+    public UserBasicDTO toBasicDTO(User user) {
+        if ( user == null ) {
+            return null;
+        }
 
-    @Named("mapUserRoleToRoleNameList")
-    default List<String> mapUserRolesToRoleNames(List<UserRole> userRoles) {
-        return userRoles.stream()
-                .map(userRole -> userRole.getRole().getRoleName()) // Giả định UserRole có phương thức getRoleName
-                .collect(Collectors.toList());
+        UserBasicDTO userBasicDTO = new UserBasicDTO();
+
+        return userBasicDTO;
     }
 }

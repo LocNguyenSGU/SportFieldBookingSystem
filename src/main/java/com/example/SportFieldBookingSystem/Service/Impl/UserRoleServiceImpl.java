@@ -18,8 +18,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Autowired
     @Lazy
     private UserRoleRepository userRoleRepository;
-    @Autowired
-    private UserRoleMapper userRoleMapper;
+    private UserRoleMapper userRoleMapper = new UserRoleMapper();
     @Override
     public List<UserRoleDTO> getUserRoleByUser_UserId(int userId) {
         List<UserRoleDTO> userRoleDTOList = new ArrayList<>();

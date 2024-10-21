@@ -14,9 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "field")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Field { // san
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
