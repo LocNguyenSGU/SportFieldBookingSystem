@@ -1,68 +1,38 @@
-package com.example.SportFieldBookingSystem.Entity;
+package com.example.SportFieldBookingSystem.DTO.BookingDTO;
 
+import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Entity.Invoice;
+import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Enum.BookingEnum;
-import com.example.SportFieldBookingSystem.Enum.FieldEnum;
-import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
-@Entity
-@Table(name = "booking")
-public class Booking { // dat san
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "booking_id")
+public class BookingResponseDTO {
     private int bookingId;
-
-    @Column(name = "booking_code", unique = true, length = 10, updatable = false)
     private String bookingCode;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "field_id")
+    private int iduser;
     private Field field;
-
-    @Column(name = "booking_date")
     private LocalDate bookingDate;
-
-    @Column(name = "start_time")
     private LocalTime startTime;
-
-    @Column(name = "end_time")
     private LocalTime endTime;
-
-    @Column(name = "status", length = 20)
-    @Enumerated(EnumType.STRING)
     private BookingEnum status;
-
-    @Column(name = "total_price")
     private double totalPrice;
+    private int idInvoice;
 
-    @ManyToOne
-    @JoinColumn(name="invoice_id")
-    private Invoice invoice;
-
-    public Booking() {
-
-    }
-
-    public Booking(int bookingId, String bookingCode, User user, Field field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, Invoice invoice) {
+    public BookingResponseDTO(int bookingId, String bookingCode, int user, Field field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
         this.bookingId = bookingId;
         this.bookingCode = bookingCode;
-        this.user = user;
+        this.iduser = user;
         this.field = field;
         this.bookingDate = bookingDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
         this.totalPrice = totalPrice;
-        this.invoice = invoice;
+        this.idInvoice = invoice;
     }
+    public BookingResponseDTO(){}
 
     public int getBookingId() {
         return bookingId;
@@ -80,12 +50,12 @@ public class Booking { // dat san
         this.bookingCode = bookingCode;
     }
 
-    public User getUser() {
-        return user;
+    public int getUser() {
+        return iduser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(int user) {
+        this.iduser = user;
     }
 
     public Field getField() {
@@ -136,11 +106,11 @@ public class Booking { // dat san
         this.totalPrice = totalPrice;
     }
 
-    public Invoice getInvoice() {
-        return invoice;
+    public int getInvoice() {
+        return idInvoice;
     }
 
-    public void setInvoice(Invoice invoice) {
-        this.invoice = invoice;
+    public void setInvoice(int invoice) {
+        this.idInvoice = invoice;
     }
 }
