@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-
 public interface UserService {
     List<UserBasicDTO> getAllUser();
     UserBasicDTO getUserByUserCode(String userCode);
@@ -29,6 +28,38 @@ public interface UserService {
 
     boolean createUserSignUp(SignupDTO signupDTO);
 
+@Service
+public class UserService implements UserServiceImpl {
+    @Autowired
+    private UserRepository userRepository;
 
+    @Override
+    public List<UserResponseDTO> getAllUser() {
+        List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
+        try {
+            List<User> userList = userRepository.findAll();
+            for (User user : userList) {
+                UserResponseDTO userResponseDTO = new UserResponseDTO();
+                userResponseDTO.setUserId(user.getUserId());
+                userResponseDTO.setUserCode(user.getUserCode());
+                userResponseDTO.setEmail(user.getEmail());
+                userResponseDTO.setUsername(user.getUsername());
+                userResponseDTO.setFullName(user.getFullName());
+                userResponseDTO.setPhone(user.getPhone());
+                userResponseDTO.setStatus(user.getStatus().toString());
+                userResponseDTOList.add(userResponseDTO);
+            }
+        } catch (Exception e) {
+            // Log the error message for debugging
+            System.err.println("Error fetching all users: " + e.getMessage());
+            // Optional: you can throw a custom exception here
+        }
+        return userResponseDTOList;
+    }
+
+    @Override
+    public UserResponseDTO getUserByUserCode(String userCode) {
+        return null;
+    }
 
 }

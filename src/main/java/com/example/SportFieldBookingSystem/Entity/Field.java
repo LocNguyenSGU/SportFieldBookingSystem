@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "field")
 @Data
@@ -33,7 +36,7 @@ public class Field { // san
     private double pricePerHour;
 
     @ManyToOne
-    @JoinColumn(name = "fieldType_id")
+    @JoinColumn(name = "fieldType_id", nullable = false)
     private FieldType fieldType;
 
     @ManyToOne
@@ -55,16 +58,16 @@ public class Field { // san
     @OneToMany(mappedBy = "field")
     private List<TimeSlot> timeSlotList;
 
-    @OneToMany(mappedBy = "field")
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldImage> fieldImageList;
 
     @OneToMany(mappedBy = "field")
     private List<Favorite> favoriteList;
 
-    @OneToMany(mappedBy = "field")
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldFacility> fieldFacilityList;
 
-    @OneToMany(mappedBy = "field")
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldMaintenance> fieldMaintenanceList ;
 
 }

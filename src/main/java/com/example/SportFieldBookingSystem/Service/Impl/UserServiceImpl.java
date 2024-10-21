@@ -21,6 +21,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserResponseDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -300,5 +302,4 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
-
 }
