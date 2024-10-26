@@ -55,7 +55,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/review").permitAll()
                         .requestMatchers("/role/update")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí quyền", "EDIT"))
                         .requestMatchers("/user/update/**")
@@ -83,7 +82,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // Địa chỉ front-end
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // Địa chỉ front-end
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         source.registerCorsConfiguration("/**", config);

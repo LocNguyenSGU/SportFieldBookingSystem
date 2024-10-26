@@ -129,8 +129,8 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            String idToken = jwtToken.getIdTokenFromJwtToken(logoutDTO.getToken());
-            Date expirationTime = jwtToken.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
+            String idToken = jwtToken.getIdTokenFromExpiredJwtToken(logoutDTO.getToken());
+            Date expirationTime = jwtToken.getExpirationTimeFromExpiredJwtToken(logoutDTO.getToken());
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
 
@@ -145,7 +145,7 @@ public class AuthController {
                 }
             }
             if(refreshToken != "")  {
-                invalidTokenService.saveInvalidTokenIntoDatabase(new InvalidTokenDTO(jwtToken.getIdTokenFromJwtToken(refreshToken),jwtToken.getExpirationTimeTokenFromJwtToken(refreshToken)));
+                invalidTokenService.saveInvalidTokenIntoDatabase(new InvalidTokenDTO(jwtToken.getIdTokenFromExpiredJwtToken(refreshToken),jwtToken.getExpirationTimeFromExpiredJwtToken(refreshToken)));
             }
 
             ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
