@@ -62,4 +62,7 @@ public class User { // nguoi dung
 
     @OneToMany(mappedBy = "user")
     private List<Coupon> couponList ;
+
+    @Column(name="refresh_password_token")
+    private String refreshPasswordToken;
 }

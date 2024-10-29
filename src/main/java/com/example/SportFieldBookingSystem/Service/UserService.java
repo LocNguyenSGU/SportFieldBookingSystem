@@ -7,6 +7,7 @@ import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     List<UserBasicDTO> getAllUser();
@@ -25,8 +26,13 @@ public interface UserService {
 
     boolean existsUserByEmail(String email);
 
+    Optional<UserBasicDTO> getUserByUsername(String userName);
+
     boolean createUser(UserCreateDTO userCreateDTO);
 
     boolean createUserSignUp(SignupDTO signupDTO);
+    String createPasswordResetToken(String email);
+
+    UserBasicDTO getUserByEmail(String email);
 
 }

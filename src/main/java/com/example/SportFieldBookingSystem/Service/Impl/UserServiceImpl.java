@@ -10,6 +10,7 @@ import com.example.SportFieldBookingSystem.Entity.UserRole;
 import com.example.SportFieldBookingSystem.Enum.UserEnum;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Mapper.UserMapper;
+import com.example.SportFieldBookingSystem.Security.JwtToken;
 import com.example.SportFieldBookingSystem.Service.RoleService;
 import com.example.SportFieldBookingSystem.Service.UserRoleService;
 import com.example.SportFieldBookingSystem.Service.UserService;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtToken jwtToken;
 
 
     @Override
@@ -243,6 +246,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserBasicDTO> getUserByUsername(String userName) {
+        Optional<User> userOptional = userRepository.findByUsername(userName);
+        return Optional.ofNullable(userMapper.toBasicDTO(userOptional.get()));
+    }
+
+    @Override
+    public UserBasicDTO getUserByEmail(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()){
+            return userMapper.toBasicDTO(userOptional.get());
+        }
+        return null;
+    }
+
+    @Override
     public boolean createUser(UserCreateDTO userCreateDTO) {
         User user = new User();
         try {
@@ -300,4 +318,21 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    @Override
+    public String createPasswordResetToken(String email) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("tai khoang khong co voi " + email);
+        }
+
+        String tokenRefreshPassword = jwtToken.generateToken(email);
+        User user = userOptional.get();
+        user.setRefreshPasswordToken(tokenRefreshPassword);
+        userRepository.save(user);
+        return tokenRefreshPassword;
+    }
+
+
+
 }

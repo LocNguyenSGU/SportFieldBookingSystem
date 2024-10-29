@@ -18,6 +18,12 @@ public class UserMapper {
         }
 
         UserBasicDTO userBasicDTO = new UserBasicDTO();
+        userBasicDTO.setUserId(user.getUserId());
+        userBasicDTO.setUsername(user.getUsername());
+        userBasicDTO.setUserCode(user.getUserCode());
+        userBasicDTO.setEmail(userBasicDTO.getEmail());
+        userBasicDTO.setPhone(userBasicDTO.getPhone());
+        userBasicDTO.setStatus(String.valueOf(user.getStatus()));
 
         return userBasicDTO;
     }
