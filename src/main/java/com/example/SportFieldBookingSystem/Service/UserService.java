@@ -4,6 +4,7 @@ import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
+import com.example.SportFieldBookingSystem.Entity.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public interface UserService {
 
     void updateUser(String userCode, UserUpdateDTO userUpdateDTO);
 
+    boolean updateUser(UserUpdateDTO userUpdateDTO);
+
     boolean existsUserByUsername(String userName);
 
     boolean existsUserByEmail(String email);
@@ -34,5 +37,7 @@ public interface UserService {
     String createPasswordResetToken(String email);
 
     UserBasicDTO getUserByEmail(String email);
+
+    Optional<User> getUserEntityByEmail(String email);
 
 }

@@ -235,6 +235,19 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User not found");
         }
     }
+
+    @Override
+    public boolean updateUser(UserUpdateDTO userUpdateDTO) {
+        Optional<User> userOptional = userRepository.findByEmail(userUpdateDTO.getEmail());
+        if(userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean existsUserByUsername(String userName) {
         return userRepository.existsUserByUsername(userName);
@@ -258,6 +271,11 @@ public class UserServiceImpl implements UserService {
             return userMapper.toBasicDTO(userOptional.get());
         }
         return null;
+    }
+
+    @Override
+    public Optional<User> getUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override

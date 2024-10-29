@@ -23,8 +23,8 @@ public class JwtToken {
     private String secretKey;
     @Autowired
     private InvalidTokenService invalidTokenService;
-    private final long JWT_EXPIRATION = 15 * 1000L; // 15
-    private final long JWT_REFRESH_EXPIRATION = 45 * 1000L; // 45 s
+    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15
+    private final long JWT_REFRESH_EXPIRATION = 45 * 60 * 1000L; // 45 s
 
     // Tạo JWT từ username
     public String generateToken(String data) {
@@ -120,8 +120,7 @@ public class JwtToken {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            System.out.println("Invalid JWT token: " + e.getMessage());
+            return false;
         }
-        return false;
     }
 }

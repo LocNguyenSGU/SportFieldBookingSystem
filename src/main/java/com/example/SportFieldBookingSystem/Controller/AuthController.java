@@ -1,12 +1,11 @@
 package com.example.SportFieldBookingSystem.Controller;
 
-import com.example.SportFieldBookingSystem.DTO.AuthDTO.ForgotPasswordDTO;
-import com.example.SportFieldBookingSystem.DTO.AuthDTO.LoginDTO;
-import com.example.SportFieldBookingSystem.DTO.AuthDTO.LogoutDTO;
-import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
+import com.example.SportFieldBookingSystem.DTO.AuthDTO.*;
 import com.example.SportFieldBookingSystem.DTO.InvalidToken.InvalidTokenDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Email;
+import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Security.JwtToken;
@@ -228,100 +227,103 @@ public class AuthController {
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-//    @PostMapping("/reset_password")
-//    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
-//
-//        ResponseData responseData = new ResponseData();
-//        String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
-//        if (!isValidJwtFormat(refreshPasswordToken)) {
-//            responseData.setStatusCode(400);
-//            responseData.setMessage("Token không hợp lệ");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-//        }
-//        String idRefreshPasswordToken = jwtTokenProvider.getIdTokenFromExpiredJwtToken(refreshPasswordToken);
-//
-//        // Kiểm tra token có hợp lệ không
-//        if (refreshPasswordToken == null || !jwtTokenProvider.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
-//            responseData.setStatusCode(400);
-//            responseData.setMessage("Token không hợp lệ");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // Lấy email từ token
-//        String email = jwtTokenProvider.getUserNameFromJwtToken(refreshPasswordToken);
-//
-//        // Lấy thời gian hết hạn của token và chuyển từ Date sang LocalDateTime
-//        Date expirationDate = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshPasswordToken);
-//        LocalDateTime expirationTime = expirationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//
-//        // So sánh thời gian hết hạn với thời gian hiện tại
-//        if (expirationTime.isBefore(LocalDateTime.now())) {
-//            responseData.setStatusCode(400);
-//            responseData.setMessage("Token đã hết hạn");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // Tìm tài khoản dựa trên email
-//        Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByEmail(email);
-//        if (taiKhoanOptional.isEmpty()) {
-//            responseData.setStatusCode(404);
-//            responseData.setMessage("Không tìm thấy người dùng");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
-//        }
-//
-//        // Lấy tài khoản và cập nhật mật khẩu mới
-//        TaiKhoan taiKhoan = taiKhoanOptional.get();
-//        if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getReNewPassword())) {
-//            responseData.setStatusCode(400);
-//            responseData.setMessage("Mật khẩu nhập lại không khớp");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
-//        }
-//        taiKhoan.setMatKhau(resetPasswordDTO.getNewPassword());
-//
-//        // Cập nhật tài khoản với mật khẩu mới
-//        boolean isSuccess = taiKhoanService.updateTaiKhoan_RefreshPassword(taiKhoan);
-//
-//        // Loại bỏ token
-//        if (isSuccess) {
-//            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
-//            invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
-//            responseData.setStatusCode(200);
-//            responseData.setMessage("Đặt lại mật khẩu thành công");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.OK);
-//        } else {
-//            responseData.setStatusCode(500);
-//            responseData.setMessage("Đặt lại mật khẩu thất bại");
-//            responseData.setData("");
-//            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    private String getRefreshTokenFromRequest(HttpServletRequest httpServletRequest) {
-//        String refreshToken = null;
-//
-//        // Lấy refresh token từ cookie
-//        Cookie[] cookies = httpServletRequest.getCookies();
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if (cookie.getName().equals("refreshToken")) {
-//                    refreshToken = cookie.getValue();
-//                    System.out.println("refreshToken: " + refreshToken);
-//                }
-//            }
-//        }
-//        return refreshToken;
-//    }
-//
-//    private boolean isValidJwtFormat(String token) {
-//        // Kiểm tra token không null và có đúng định dạng JWT
-//        return token != null && token.split("\\.").length == 3;
-//    }
+    @PostMapping("/reset_password")
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
+
+        ResponseData responseData = new ResponseData();
+        String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
+        if (!isValidJwtFormat(refreshPasswordToken)) {
+            responseData.setStatus(400);
+            responseData.setMessage("Token không hợp lệ");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+        String idRefreshPasswordToken = jwtToken.getIdTokenFromExpiredJwtToken(refreshPasswordToken);
+
+        // Kiểm tra token có hợp lệ không
+        if (refreshPasswordToken == null || !jwtToken.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
+            responseData.setStatus(400);
+            responseData.setMessage("Token không hợp lệ");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+
+        // Lấy email từ token
+        String email = jwtToken.getUsernameFromJwtToken(refreshPasswordToken);
+
+        // Lấy thời gian hết hạn của token và chuyển từ Date sang LocalDateTime
+        Date expirationDate = jwtToken.getExpirationTimeTokenFromJwtToken(refreshPasswordToken);
+        LocalDateTime expirationTime = expirationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        // So sánh thời gian hết hạn với thời gian hiện tại
+        if (expirationTime.isBefore(LocalDateTime.now())) {
+            responseData.setStatus(400);
+            responseData.setMessage("Token đã hết hạn");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+
+        // Tìm tài khoản dựa trên email
+        Optional<User> userOptional = userService.getUserEntityByEmail(email);
+        if (userOptional.isEmpty()) {
+            responseData.setStatus(404);
+            responseData.setMessage("Không tìm thấy người dùng");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+
+        // Lấy tài khoản và cập nhật mật khẩu mới
+        User user = userOptional.get();
+        if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getReNewPassword())) {
+            responseData.setStatus(400);
+            responseData.setMessage("Mật khẩu nhập lại không khớp");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+        }
+        user.setPassword(resetPasswordDTO.getNewPassword());
+        UserUpdateDTO userUpdateDTO = new UserUpdateDTO();
+        userUpdateDTO.setPassword(user.getPassword());
+        userUpdateDTO.setEmail(user.getEmail());
+
+        // Cập nhật tài khoản với mật khẩu mới
+        boolean isSuccess = userService.updateUser(userUpdateDTO);
+
+        // Loại bỏ token
+        if (isSuccess) {
+            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
+            invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+            responseData.setStatus(200);
+            responseData.setMessage("Đặt lại mật khẩu thành công");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } else {
+            responseData.setStatus(500);
+            responseData.setMessage("Đặt lại mật khẩu thất bại");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private String getRefreshTokenFromRequest(HttpServletRequest httpServletRequest) {
+        String refreshToken = null;
+
+        // Lấy refresh token từ cookie
+        Cookie[] cookies = httpServletRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    refreshToken = cookie.getValue();
+                    System.out.println("refreshToken: " + refreshToken);
+                }
+            }
+        }
+        return refreshToken;
+    }
+
+    private boolean isValidJwtFormat(String token) {
+        // Kiểm tra token không null và có đúng định dạng JWT
+        return token != null && token.split("\\.").length == 3;
+    }
 
 
 }
