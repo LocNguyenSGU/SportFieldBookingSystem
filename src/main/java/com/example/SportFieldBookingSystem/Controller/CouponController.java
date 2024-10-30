@@ -15,8 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class CouponController {
 
@@ -117,21 +119,25 @@ public class CouponController {
 
     // Sửa Coupon
     @PutMapping("/coupon/{id}")
-    public ResponseEntity<ResponseData> updateCoupon(@PathVariable int id, @RequestBody Coupon couponDetails) {
+    public ResponseEntity<ResponseData> updateCoupon(@PathVariable int id, @RequestBody CouponResponseDTO couponDetails) {
         ResponseData responseData = new ResponseData();
 
         try {
+            // Kiểm tra coupon có tồn tại không
+            CouponResponseDTO existingCoupon = couponServiceImpl.getCouponById(id);
             boolean exists = couponServiceImpl.isCouponExists(couponDetails.getCode());
-            CouponResponseDTO updatedCoupon = new CouponResponseDTO();
-            if (exists) {
-
-                updatedCoupon = couponServiceImpl.updateCoupon(id, couponDetails);
-                if (updatedCoupon == null) {
-                    responseData.setMessage("Coupon not found for update");
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
-                }
+            if(exists && !Objects.equals(existingCoupon.getCode(), couponDetails.getCode())){
+                responseData.setMessage("This code is already existed");
+                responseData.setStatus(401);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
+            }
+            if (existingCoupon == null) {
+                responseData.setMessage("Coupon not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
             }
 
+            // Cập nhật coupon
+            CouponResponseDTO updatedCoupon = couponServiceImpl.updateCoupon(id, couponDetails);
             responseData.setMessage("Update coupon success");
             responseData.setData(updatedCoupon);
             return ResponseEntity.ok(responseData);
@@ -140,4 +146,5 @@ public class CouponController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
     }
+
 }

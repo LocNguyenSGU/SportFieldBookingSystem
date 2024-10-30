@@ -11,7 +11,14 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests((request) -> request.anyRequest().permitAll());
+        httpSecurity
+                .csrf(csrf -> csrf.disable()) // Vô hiệu hóa CSRF nếu không cần thiết
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()) // Cho phép tất cả các yêu cầu
+                .cors(cors -> {
+                    // Đảm bảo rằng CORS được cấu hình qua WebConfig
+                });
+
         return httpSecurity.build();
     }
 }

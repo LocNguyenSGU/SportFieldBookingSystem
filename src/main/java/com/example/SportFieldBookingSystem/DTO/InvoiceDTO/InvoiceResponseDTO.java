@@ -9,17 +9,15 @@ import java.util.List;
 public class InvoiceResponseDTO {
     private int invoiceId;
     private String invoiceCode;
-    private List<Booking> bookingList;
     private Date invDate;
     private Double totalAmount;
     private InvoiceEnum paymentStatus;
 
     public InvoiceResponseDTO(){}
 
-    public InvoiceResponseDTO(int invoiceId, String invoiceCode, List<Booking> bookingId, Date invDate, Double totalAmount, InvoiceEnum paymentStatus) {
+    public InvoiceResponseDTO(int invoiceId, String invoiceCode, Date invDate, Double totalAmount, InvoiceEnum paymentStatus) {
         this.invoiceId = invoiceId;
         this.invoiceCode = invoiceCode;
-        this.bookingList = bookingId;
         this.invDate = invDate;
         this.totalAmount = totalAmount;
         this.paymentStatus = paymentStatus;
@@ -47,14 +45,6 @@ public class InvoiceResponseDTO {
 
     public void setInvDate(Date invDate) {
         this.invDate = invDate;
-    }
-
-    public List<Booking> getBookingList() {
-        return bookingList;
-    }
-
-    public void setBookingList(List<Booking> bookingList) {
-        this.bookingList = bookingList;
     }
 
     public String getInvoiceCode() {

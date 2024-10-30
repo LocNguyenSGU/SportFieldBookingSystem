@@ -29,7 +29,6 @@ public class InvoiceService implements InvoiceServiceImpl {
                 InvoiceResponseDTO invoiceResponseDTO = new InvoiceResponseDTO();
                 invoiceResponseDTO.setInvoiceId(invoice.getInvoiceId());
                 invoiceResponseDTO.setInvoiceCode(invoice.getInvoiceCode());
-                invoiceResponseDTO.setBookingList(invoice.getBookingList());
                 invoiceResponseDTO.setInvDate(invoice.getInvDate());
                 invoiceResponseDTO.setTotalAmount(invoice.getTotalAmount());
                 invoiceResponseDTO.setPaymentStatus(invoice.getStatus());
@@ -52,7 +51,6 @@ public class InvoiceService implements InvoiceServiceImpl {
             Invoice invoice = invoiceRepo.findByInvoiceCode(code);
             invoiceResponseDTO.setInvoiceId(invoice.getInvoiceId());
             invoiceResponseDTO.setInvoiceCode(invoice.getInvoiceCode());
-            invoiceResponseDTO.setBookingList(invoice.getBookingList());
             invoiceResponseDTO.setInvDate(invoice.getInvDate());
             invoiceResponseDTO.setTotalAmount(invoice.getTotalAmount());
             invoiceResponseDTO.setPaymentStatus(invoice.getStatus());
@@ -71,7 +69,6 @@ public class InvoiceService implements InvoiceServiceImpl {
             Invoice newInvoice = new Invoice();
             // Mapping dữ liệu từ DTO sang Entity
             newInvoice.setInvoiceCode(invoiceRequestDTO.getInvoiceCode());
-            newInvoice.setBookingList(invoiceRequestDTO.getBookingList());
             newInvoice.setInvDate(invoiceRequestDTO.getInvDate());
             newInvoice.setTotalAmount(invoiceRequestDTO.getTotalAmount());
             newInvoice.setStatus(invoiceRequestDTO.getPaymentStatus());
@@ -79,8 +76,7 @@ public class InvoiceService implements InvoiceServiceImpl {
             invoiceRepo.save(newInvoice);
 
             // Mapping từ Entity sang DTO để trả về
-            return new InvoiceResponseDTO(newInvoice.getInvoiceId(), newInvoice.getInvoiceCode(),
-                    newInvoice.getBookingList(), newInvoice.getInvDate(), newInvoice.getTotalAmount(), newInvoice.getStatus());
+            return new InvoiceResponseDTO(newInvoice.getInvoiceId(), newInvoice.getInvoiceCode(), newInvoice.getInvDate(), newInvoice.getTotalAmount(), newInvoice.getStatus());
         } catch (Exception e) {
             System.err.println("Error creating invoice: " + e.getMessage());
             return null;
@@ -95,16 +91,13 @@ public class InvoiceService implements InvoiceServiceImpl {
                 return null;
             }
 
-            // Cập nhật thông tin
-            invoice.setBookingList(invoiceRequestDTO.getBookingList());
             invoice.setInvDate(invoiceRequestDTO.getInvDate());
             invoice.setTotalAmount(invoiceRequestDTO.getTotalAmount());
             invoice.setStatus(invoiceRequestDTO.getPaymentStatus());
 
             invoiceRepo.save(invoice);
 
-            return new InvoiceResponseDTO(invoice.getInvoiceId(), invoice.getInvoiceCode(),
-                    invoice.getBookingList(), invoice.getInvDate(), invoice.getTotalAmount(), invoice.getStatus());
+            return new InvoiceResponseDTO(invoice.getInvoiceId(), invoice.getInvoiceCode(), invoice.getInvDate(), invoice.getTotalAmount(), invoice.getStatus());
         } catch (Exception e) {
             System.err.println("Error updating invoice: " + e.getMessage());
             return null;
