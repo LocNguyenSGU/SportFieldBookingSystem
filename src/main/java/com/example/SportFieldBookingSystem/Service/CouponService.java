@@ -2,7 +2,9 @@ package com.example.SportFieldBookingSystem.Service;
 
 import com.example.SportFieldBookingSystem.DTO.CouponDTO.CouponResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Coupon;
+import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Repository.CouponRespository;
+import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.CouponServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,8 @@ import java.util.List;
 @Service
 public class CouponService implements CouponServiceImpl {
     private final CouponRespository couponRepo;
-
+    @Autowired
+    private UserRepository userRepo;
     @Autowired
     public CouponService(CouponRespository couponRepo) {
         this.couponRepo = couponRepo;
@@ -80,11 +83,12 @@ public class CouponService implements CouponServiceImpl {
     }
 
     @Override
-    public CouponResponseDTO updateCoupon(int id, Coupon couponDetails) {
+    public CouponResponseDTO updateCoupon(int id, CouponResponseDTO couponDetails) {
         try {
             Coupon existingCoupon = couponRepo.findById(id).orElse(null);
             if (existingCoupon != null) {
-                existingCoupon.setUser(couponDetails.getUser());
+                User u = userRepo.findById(1).get();
+                existingCoupon.setUser(u);
                 existingCoupon.setCode(couponDetails.getCode());
                 existingCoupon.setExpirationDate(couponDetails.getExpirationDate());
                 existingCoupon.setDiscountValue(couponDetails.getDiscountValue());

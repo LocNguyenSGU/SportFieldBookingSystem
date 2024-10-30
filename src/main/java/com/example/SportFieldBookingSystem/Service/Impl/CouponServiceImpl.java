@@ -10,6 +10,6 @@ public interface CouponServiceImpl{
     public CouponResponseDTO getCouponById(int id);
     CouponResponseDTO createCoupon(Coupon coupon);
     boolean deleteCoupon(int id);
-    CouponResponseDTO updateCoupon(int id, Coupon couponDetails);
+    CouponResponseDTO updateCoupon(int id, CouponResponseDTO couponDetails);
     public boolean isCouponExists(String code);
 }

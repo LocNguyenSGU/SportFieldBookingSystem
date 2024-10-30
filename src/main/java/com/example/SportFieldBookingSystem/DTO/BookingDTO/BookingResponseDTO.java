@@ -12,7 +12,7 @@ public class BookingResponseDTO {
     private int bookingId;
     private String bookingCode;
     private int iduser;
-    private Field field;
+    private int idField;
     private LocalDate bookingDate;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -20,11 +20,11 @@ public class BookingResponseDTO {
     private double totalPrice;
     private int idInvoice;
 
-    public BookingResponseDTO(int bookingId, String bookingCode, int user, Field field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
+    public BookingResponseDTO(int bookingId, String bookingCode, int user, int field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
         this.bookingId = bookingId;
         this.bookingCode = bookingCode;
         this.iduser = user;
-        this.field = field;
+        this.idField = field;
         this.bookingDate = bookingDate;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -58,12 +58,12 @@ public class BookingResponseDTO {
         this.iduser = user;
     }
 
-    public Field getField() {
-        return field;
+    public int getField() {
+        return idField;
     }
 
-    public void setField(Field field) {
-        this.field = field;
+    public void setField(int field) {
+        this.idField = field;
     }
 
     public LocalDate getBookingDate() {

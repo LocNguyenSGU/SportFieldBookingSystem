@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class BookingController {
 
@@ -50,7 +51,7 @@ public class BookingController {
 
     // Tạo mới Booking
     @PostMapping("/booking")
-    public ResponseEntity<?> createBooking(@RequestBody Booking booking) {
+    public ResponseEntity<?> createBooking(@RequestBody BookingResponseDTO booking) {
         BookingResponseDTO createdBooking = bookingServiceImpl.createNewBooking(booking);
         if (createdBooking == null) {
             responseData.setMessage("create booking failed");
@@ -65,13 +66,17 @@ public class BookingController {
     @PutMapping("/booking/{id}")
     public ResponseEntity<?> updateBooking(@PathVariable int id, @RequestBody Booking bookingDetails) {
         BookingResponseDTO updatedBooking = bookingServiceImpl.updateBooking(id, bookingDetails);
+
         if (updatedBooking == null) {
-            responseData.setMessage("booking with id " + id + " not found or update failed");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+            responseData.setMessage("Booking with ID " + id + " not found or time conflict with existing bookings");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseData);
         }
-        responseData.setMessage("update booking success!");
+
+        responseData.setMessage("Update booking success!");
         responseData.setData(updatedBooking);
         return ResponseEntity.ok(responseData);
     }
+
+
 
 }

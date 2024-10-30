@@ -1,25 +1,45 @@
 package com.example.SportFieldBookingSystem.Service;
 
 import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
+import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Entity.Invoice;
+import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Repository.BookingRepository;
+import com.example.SportFieldBookingSystem.Repository.InvoiceRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.BookingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BookingService implements BookingServiceImpl {
 
+    @Autowired
     private final BookingRepository bookingRepo;
+    @Autowired
+    private InvoiceRepository invoiceRepo;
 
     @Autowired
     public BookingService(BookingRepository bookingRepo) {
         this.bookingRepo = bookingRepo;
     }
-
+    @Override
+    public boolean checkForOverlappingBookings(int bookingId, int fieldId, LocalDate bookingDate, LocalTime startTime, LocalTime endTime) {
+        List<Booking> overlappingBookings = bookingRepo.findOverlappingBookings(
+                fieldId,
+                bookingId,
+                bookingDate,
+                startTime,
+                endTime
+        );
+        return !overlappingBookings.isEmpty();
+    }
     @Override
     public List<BookingResponseDTO> getAllBooking() {
         List<BookingResponseDTO> listBookingDTO = new ArrayList<>();
@@ -30,11 +50,11 @@ public class BookingService implements BookingServiceImpl {
                 BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
                 bookingResponseDTO.setBookingId(booking.getBookingId());
                 bookingResponseDTO.setUser(booking.getUser().getUserId());
-                bookingResponseDTO.setField(booking.getField());
+                bookingResponseDTO.setField(booking.getField().getFieldId());
                 bookingResponseDTO.setBookingCode(booking.getBookingCode());
                 bookingResponseDTO.setStartTime(booking.getStartTime());
                 bookingResponseDTO.setEndTime(booking.getEndTime());
-
+                bookingResponseDTO.setTotalPrice(booking.getTotalPrice());
                 listBookingDTO.add(bookingResponseDTO);
             }
         } catch (Exception e) {
@@ -53,7 +73,7 @@ public class BookingService implements BookingServiceImpl {
                         booking.getBookingId(),
                         booking.getBookingCode(),
                         booking.getUser().getUserId(),
-                        booking.getField(),
+                        booking.getField().getFieldId(),
                         booking.getBookingDate(),
                         booking.getStartTime(),
                         booking.getEndTime(),
@@ -69,14 +89,30 @@ public class BookingService implements BookingServiceImpl {
     }
 
     @Override
-    public BookingResponseDTO createNewBooking(Booking booking) {
+    public BookingResponseDTO createNewBooking(BookingResponseDTO booking) {
         try {
-            Booking updatedBooking = bookingRepo.save(booking);
+            Invoice invoiceEntity = invoiceRepo.findById(booking.getInvoice()).get();
+            Booking updatedBooking = new Booking();
+            updatedBooking.setBookingDate(booking.getBookingDate());
+            updatedBooking.setBookingCode(booking.getBookingCode());
+            updatedBooking.setInvoice(invoiceEntity);
+            updatedBooking.setEndTime(booking.getEndTime());
+            updatedBooking.setStartTime(booking.getStartTime());
+            updatedBooking.setTotalPrice(booking.getTotalPrice());
+            updatedBooking.setStatus(booking.getStatus());
+            Field field = new Field();
+            field.setFieldId(booking.getField());
+            updatedBooking.setField(field);
+            User u = new User();
+            u.setUserId(booking.getUser());
+            updatedBooking.setUser(u);
+
+            bookingRepo.save(updatedBooking);
             return new BookingResponseDTO(
                     updatedBooking.getBookingId(),
                     updatedBooking.getBookingCode(),
                     updatedBooking.getUser().getUserId(),
-                    updatedBooking.getField(),
+                    updatedBooking.getField().getFieldId(),
                     updatedBooking.getBookingDate(),
                     updatedBooking.getStartTime(),
                     updatedBooking.getEndTime(),
@@ -106,7 +142,7 @@ public class BookingService implements BookingServiceImpl {
                         updatedBooking.getBookingId(),
                         updatedBooking.getBookingCode(),
                         updatedBooking.getUser().getUserId(),
-                        updatedBooking.getField(),
+                        updatedBooking.getField().getFieldId(),
                         updatedBooking.getBookingDate(),
                         updatedBooking.getStartTime(),
                         updatedBooking.getEndTime(),
