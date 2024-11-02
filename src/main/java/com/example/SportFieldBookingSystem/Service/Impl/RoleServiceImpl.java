@@ -1,13 +1,11 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleCreateDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleUpdateDTO;
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.*;
 import com.example.SportFieldBookingSystem.DTO.RolePermissionDTO.RolePermissionCreateDTO;
 import com.example.SportFieldBookingSystem.Entity.Permission;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.RolePermission;
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import com.example.SportFieldBookingSystem.Repository.PermissionRepository;
@@ -19,6 +17,8 @@ import com.example.SportFieldBookingSystem.Service.RolePermissionService;
 import com.example.SportFieldBookingSystem.Service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -69,6 +70,7 @@ public class RoleServiceImpl implements RoleService {
         try {
             Role role = new Role();
             role.setRoleName(roleDTO.getRoleName());
+            role.setTrangThaiActive(roleDTO.getActiveEnum());
             Role roleNew = roleRepository.save(role);
             return roleNew;
         } catch (Exception e) {
@@ -82,6 +84,7 @@ public class RoleServiceImpl implements RoleService {
         try{
             RoleDTO roleDTO = new RoleDTO();
             roleDTO.setRoleName(roleCreateDTO.getRoleName());
+            roleDTO.setActiveEnum(roleCreateDTO.getActiveEnum());
             Role roleNew = createRole(roleDTO);
             List<RolePermissionCreateDTO> rolePermissionDTOList = roleCreateDTO.getRolePermissionDTOList();
             for(RolePermissionCreateDTO r : rolePermissionDTOList) {
@@ -117,8 +120,9 @@ public class RoleServiceImpl implements RoleService {
 
             // Cập nhật tên role nếu tên không trùng
             role.setRoleName(roleUpdateDTO.getRoleName());
-            roleRepository.save(role);
         }
+        role.setTrangThaiActive(roleUpdateDTO.getActiveEnum());
+        roleRepository.save(role);
 
         // Lấy danh sách quyền hiện tại của role
         List<RolePermission> currentRolePermissions = role.getRolePermissionList();
@@ -126,8 +130,10 @@ public class RoleServiceImpl implements RoleService {
         // Tạo một tập hợp (Set) để lưu các cặp quyền mới (permissionId, action)
         Set<String> newPermissionsSet = new HashSet<>();
         for (RolePermissionCreateDTO rolePermissionCreateDTO : roleUpdateDTO.getRolePermissionDTOList()) {
-            // Kết hợp permissionId và action thành chuỗi duy nhất để dễ so sánh
-            String key = rolePermissionCreateDTO.getPermissionId() + "_" + rolePermissionCreateDTO.getAction();
+            int permissionId = rolePermissionCreateDTO.getPermissionId();
+            RolePermissionActionEnum action = rolePermissionCreateDTO.getAction();
+            System.out.println("Permission ID: " + permissionId + ", Action: " + action);
+            String key = permissionId + "_" + action;
             newPermissionsSet.add(key);
         }
 
@@ -159,6 +165,7 @@ public class RoleServiceImpl implements RoleService {
             // Tách chuỗi key ra để lấy permissionId và action
             String[] parts = newPermissionKey.split("_");
             int permissionId = Integer.parseInt(parts[0]);
+            System.out.println("ID cac quyen moi la: " + permissionId);
             String action = parts[1];
 
             // Tạo mới quyền
@@ -207,5 +214,36 @@ public class RoleServiceImpl implements RoleService {
             System.out.println(e);
         }
         return -1;
+    }
+
+    @Override
+    public List<RoleResponseDTO> getAllRole() {
+        List<Role> roleList = roleRepository.findAllByRolePermissionList_status(RolePermissionEnum.ACTIVE);
+        return roleList.stream()
+                .map(RoleMapper::toRoleResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<RoleResponseDTO> searchRoleByRoleName(String roleName, int page, int size) {
+
+        Page<Role> rolePage = roleRepository.findByRoleNameContainingIgnoreCase(roleName, PageRequest.of(page, size));
+        return rolePage.map(RoleMapper::toRoleResponseDTO);
+    }
+
+    @Override
+    public RoleResponseDTO getRoleDetailById(int roleId) {
+        Role role = roleRepository.findRoleByRoleId(roleId);
+        role.setRolePermissionList(
+                role.getRolePermissionList().stream()
+                        .filter(rp -> rp.getStatus() == RolePermissionEnum.ACTIVE)
+                        .collect(Collectors.toList())
+        );
+        return RoleMapper.toRoleResponseDTO(role);
+    }
+
+    @Override
+    public boolean existsByRoleNameAndNotRoleIdNot(String roleName, int roleId) {
+        return roleRepository.existsByRoleNameAndRoleIdNot(roleName, roleId);
     }
 }

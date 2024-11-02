@@ -1,10 +1,10 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleCreateDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleDTO;
-import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleUpdateDTO;
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.*;
 import com.example.SportFieldBookingSystem.Entity.Role;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface RoleService {
 
@@ -21,6 +21,13 @@ public interface RoleService {
     getListRoleByUserRoleList_User_UserName(String userName);
 
     int getRoleIdByRoleName(String roleName);
+
+    List<RoleResponseDTO> getAllRole();
+
+    Page<RoleResponseDTO> searchRoleByRoleName(String roleName, int page, int size);
+
+    RoleResponseDTO getRoleDetailById(int roleId);
+    boolean existsByRoleNameAndNotRoleIdNot(String roleName, int roleId);
 
 
 }

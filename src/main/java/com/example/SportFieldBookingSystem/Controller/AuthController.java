@@ -65,7 +65,7 @@ public class AuthController {
                         .path("/")
                         .maxAge(7 * 24 * 60 * 60)
                         .build();
-                responseData.setStatus(200);
+                responseData.setStatusCode(200);
                 responseData.setMessage("Login success");
                 responseData.setData(accessToken);
                 return ResponseEntity.ok()
@@ -73,15 +73,15 @@ public class AuthController {
                         .body(responseData);
             }
         } catch (UsernameNotFoundException e) {
-            responseData.setStatus(404);
+            responseData.setStatusCode(404);
             responseData.setMessage("Login failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
         } catch (BadCredentialsException e) {
-            responseData.setStatus(401);
+            responseData.setStatusCode(401);
             responseData.setMessage("Login failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
         }
-        responseData.setStatus(500);
+        responseData.setStatusCode(500);
         responseData.setMessage("Login failed: Unknown error");
         return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -112,7 +112,7 @@ public class AuthController {
 
         // Nếu có lỗi, trả về danh sách lỗi
         if (hasErrors) {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Validation failed");
             responseData.setData(errorMap); // Trả danh sách lỗi
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST); // 400
@@ -120,12 +120,12 @@ public class AuthController {
 
         // Nếu không có lỗi, tiến hành đăng ký
         try {
-            responseData.setStatus(200);
+            responseData.setStatusCode(200);
             userService.createUserSignUp(signupDTO);
             responseData.setMessage("Registration successful");
             return new ResponseEntity<>(responseData, HttpStatus.CREATED);
         } catch (Exception e) {
-            responseData.setStatus(500);
+            responseData.setStatusCode(500);
             System.out.println("Error during signup: " + e);
             responseData.setMessage("An error occurred while processing your request.");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -163,12 +163,12 @@ public class AuthController {
                     .build();
 
             // Lấy refresh token từ cookie
-            responseData.setStatus(200);
+            responseData.setStatusCode(200);
             responseData.setMessage("dang xuat thanh cong");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            responseData.setStatus(500);
+            responseData.setStatusCode(500);
             responseData.setMessage("dang xuat that bai" + e);
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -192,12 +192,12 @@ public class AuthController {
         if (refreshToken != null && jwtToken.validateJwtToken(refreshToken) && !invalidTokenService.existsByIdToken(refreshToken)) {
             String username = jwtToken.getUsernameFromJwtToken(refreshToken);
             String newAccessToken = jwtToken.generateToken(username);
-            responseData.setStatus(200);
+            responseData.setStatusCode(200);
             responseData.setMessage("tao moi access token thanh cong");
             responseData.setData(newAccessToken);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } else {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
@@ -209,7 +209,7 @@ public class AuthController {
         String email = forgotPasswordDTO.getEmail();
         UserBasicDTO userBasicDTO = userService.getUserByEmail(email);
         if (userBasicDTO == null) {
-            responseData.setStatus(404);
+            responseData.setStatusCode(404);
             responseData.setMessage("tai khoan khong co voi " + email);
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
@@ -221,7 +221,7 @@ public class AuthController {
         emailSend.setToEmail(email);
         emailSend.setSubject("Reset Your Password");
         emailService.sendHtmlEMail(emailSend, resetLink, userBasicDTO.getUsername());
-        responseData.setStatus(200);
+        responseData.setStatusCode(200);
         responseData.setMessage("Reset password link has been sent to your email");
         responseData.setData("");
         return new ResponseEntity<>(responseData, HttpStatus.OK);
@@ -233,7 +233,7 @@ public class AuthController {
         ResponseData responseData = new ResponseData();
         String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
         if (!isValidJwtFormat(refreshPasswordToken)) {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Token không hợp lệ");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
@@ -242,7 +242,7 @@ public class AuthController {
 
         // Kiểm tra token có hợp lệ không
         if (refreshPasswordToken == null || !jwtToken.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Token không hợp lệ");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
@@ -257,7 +257,7 @@ public class AuthController {
 
         // So sánh thời gian hết hạn với thời gian hiện tại
         if (expirationTime.isBefore(LocalDateTime.now())) {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Token đã hết hạn");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
@@ -266,7 +266,7 @@ public class AuthController {
         // Tìm tài khoản dựa trên email
         Optional<User> userOptional = userService.getUserEntityByEmail(email);
         if (userOptional.isEmpty()) {
-            responseData.setStatus(404);
+            responseData.setStatusCode(404);
             responseData.setMessage("Không tìm thấy người dùng");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
@@ -275,7 +275,7 @@ public class AuthController {
         // Lấy tài khoản và cập nhật mật khẩu mới
         User user = userOptional.get();
         if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getReNewPassword())) {
-            responseData.setStatus(400);
+            responseData.setStatusCode(400);
             responseData.setMessage("Mật khẩu nhập lại không khớp");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
@@ -292,12 +292,12 @@ public class AuthController {
         if (isSuccess) {
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
-            responseData.setStatus(200);
+            responseData.setStatusCode(200);
             responseData.setMessage("Đặt lại mật khẩu thành công");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } else {
-            responseData.setStatus(500);
+            responseData.setStatusCode(500);
             responseData.setMessage("Đặt lại mật khẩu thất bại");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -324,6 +324,10 @@ public class AuthController {
         // Kiểm tra token không null và có đúng định dạng JWT
         return token != null && token.split("\\.").length == 3;
     }
+
+
+
+
 
 
 }

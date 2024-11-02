@@ -128,7 +128,7 @@ public class CouponController {
             boolean exists = couponServiceImpl.isCouponExists(couponDetails.getCode());
             if(exists && !Objects.equals(existingCoupon.getCode(), couponDetails.getCode())){
                 responseData.setMessage("This code is already existed");
-                responseData.setStatus(401);
+                responseData.setStatusCode(401);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseData);
             }
             if (existingCoupon == null) {

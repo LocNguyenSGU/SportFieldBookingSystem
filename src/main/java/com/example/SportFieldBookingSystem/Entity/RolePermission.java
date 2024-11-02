@@ -3,9 +3,15 @@ package com.example.SportFieldBookingSystem.Entity;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="role_permission")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RolePermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,54 +32,4 @@ public class RolePermission {
     @Enumerated(EnumType.STRING)
     private RolePermissionEnum status;
 
-    public RolePermission() {
-
-    }
-
-    public RolePermission(int rolePermissionId, Role role, Permission permission, RolePermissionActionEnum action) {
-        this.rolePermissionId = rolePermissionId;
-        this.role = role;
-        this.permission = permission;
-        this.action = action;
-    }
-
-    public int getRolePermissionId() {
-        return rolePermissionId;
-    }
-
-    public void setRolePermissionId(int rolePermissionId) {
-        this.rolePermissionId = rolePermissionId;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Permission getPermission() {
-        return permission;
-    }
-
-    public void setPermission(Permission permission) {
-        this.permission = permission;
-    }
-
-    public RolePermissionActionEnum getAction() {
-        return action;
-    }
-
-    public void setAction(RolePermissionActionEnum action) {
-        this.action = action;
-    }
-
-    public RolePermissionEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(RolePermissionEnum status) {
-        this.status = status;
-    }
 }

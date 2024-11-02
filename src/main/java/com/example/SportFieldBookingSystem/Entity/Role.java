@@ -1,11 +1,18 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name="role")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role { // vai tro
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,44 +25,7 @@ public class Role { // vai tro
     @OneToMany(mappedBy = "role")
     private List<UserRole> userRoleList;
 
-    public Role() {
-
-    }
-    public Role(int roleId, String roleName, List<RolePermission> rolePermissionList, List<UserRole> userRoleList) {
-        this.roleId = roleId;
-        this.roleName = roleName;
-        this.rolePermissionList = rolePermissionList;
-        this.userRoleList = userRoleList;
-    }
-    public int getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public List<RolePermission> getRolePermissionList() {
-        return rolePermissionList;
-    }
-
-    public void setRolePermissionList(List<RolePermission> rolePermissionList) {
-        this.rolePermissionList = rolePermissionList;
-    }
-
-    public List<UserRole> getUserRoleList() {
-        return userRoleList;
-    }
-
-    public void setUserRoleList(List<UserRole> userRoleList) {
-        this.userRoleList = userRoleList;
-    }
+    @Column(name = "active_status")
+    @Enumerated(EnumType.STRING)
+    private ActiveEnum trangThaiActive;
 }
