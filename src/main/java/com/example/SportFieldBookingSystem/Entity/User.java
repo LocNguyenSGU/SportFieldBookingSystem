@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -53,7 +54,6 @@ public class User { // nguoi dung
     @OneToMany(mappedBy = "user")
     private List<Review> reviewList;
 
-
     @OneToMany(mappedBy = "user")
     private List<Favorite> favoriteList;
 
@@ -65,4 +65,7 @@ public class User { // nguoi dung
 
     @Column(name="refresh_password_token")
     private String refreshPasswordToken;
+
+    @Column(name="date_create")
+    private LocalDateTime thoiGianTao;
 }

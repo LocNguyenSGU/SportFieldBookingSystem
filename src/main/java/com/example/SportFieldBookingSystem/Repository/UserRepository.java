@@ -29,5 +29,18 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUsername(String userName);
 
+    @Query("SELECT u FROM User u " +
+            "JOIN u.userRoleList ur " +
+            "JOIN ur.role r " +
+            "WHERE (:username IS NULL OR u.username LIKE %:username%) " +
+            "AND (:phone IS NULL OR u.phone LIKE %:phone%) " +
+            "AND (:roleName IS NULL OR r.roleName LIKE %:roleName%)")
+    Page<User> findByUsernamePhoneAndRole(
+            @Param("username") String username,
+            @Param("phone") String phone,
+            @Param("roleName") String roleName,
+            Pageable pageable
+    );
+
 
 }

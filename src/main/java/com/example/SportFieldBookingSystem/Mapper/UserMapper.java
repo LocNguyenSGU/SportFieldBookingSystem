@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Mapper;
 
+import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Entity.UserRole;
@@ -21,10 +22,12 @@ public class UserMapper {
         userBasicDTO.setUserId(user.getUserId());
         userBasicDTO.setUsername(user.getUsername());
         userBasicDTO.setUserCode(user.getUserCode());
-        userBasicDTO.setEmail(userBasicDTO.getEmail());
-        userBasicDTO.setPhone(userBasicDTO.getPhone());
+        userBasicDTO.setEmail(user.getEmail());
+        userBasicDTO.setFullName(user.getFullName());
+        userBasicDTO.setThoiGianTao(user.getThoiGianTao());
+        userBasicDTO.setPhone(user.getPhone());
         userBasicDTO.setStatus(String.valueOf(user.getStatus()));
-
+        userBasicDTO.setRole(RoleMapper.toRoleResponseDTO(user.getUserRoleList().getFirst().getRole()));
         return userBasicDTO;
     }
 }

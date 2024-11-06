@@ -351,6 +351,15 @@ public class UserServiceImpl implements UserService {
         return tokenRefreshPassword;
     }
 
+    @Override
+    public Page<UserBasicDTO> getByUsernamePhoneAndRole(String userName, String phone, String roleName, int page, int size) {
+        System.out.println("userName" +  userName);
+        System.out.println("phone" +  phone);
+        System.out.println("roleName" +  roleName);
+
+        Page<User> userPage = userRepository.findByUsernamePhoneAndRole(userName, phone, roleName, PageRequest.of(page, size));
+        return userPage.map(userMapper::toBasicDTO);
+    }
 
 
 }
