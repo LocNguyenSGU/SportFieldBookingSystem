@@ -1,102 +1,38 @@
 package com.example.SportFieldBookingSystem.DTO.UserDTO;
 
-import java.util.List;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.util.List;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserUpdateDTO {
     private int userId;
     private String userCode;
+
+    @NotBlank(message = "Username cannot be blank")
     private String username;
+
+    @NotBlank(message = "Full name cannot be blank")
     private String fullName;
+
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email should be valid")
     private String email;
-    private String password;
+
+    @NotBlank(message = "Phone cannot be blank")
     private String phone;
+
     private String status;
+
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    private String password;
+
     private List<Integer> roleIdList;
-    public UserUpdateDTO() {
-
-    }
-
-    public UserUpdateDTO(int userId, String userCode, String username, String fullName, String email, String password, String phone, String status, List<Integer> roleIdList) {
-        this.userId = userId;
-        this.userCode = userCode;
-        this.username = username;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.status = status;
-        this.roleIdList = roleIdList;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public String getUserCode() {
-        return userCode;
-    }
-
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public List<Integer> getRoleIdList() {
-        return roleIdList;
-    }
-
-    public void setRoleIdList(List<Integer> roleIdList) {
-        this.roleIdList = roleIdList;
-    }
 }

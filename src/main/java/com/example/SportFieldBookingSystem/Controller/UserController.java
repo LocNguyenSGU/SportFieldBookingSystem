@@ -41,21 +41,21 @@ public class UserController {
     }
 
     // Thêm phương thức để lấy người dùng theo userCode
-    @GetMapping("/{userCode}")
-    public ResponseEntity<?> getUserByUserCode(@PathVariable String userCode) {
-        ResponseData responseData = new ResponseData();
-
-        UserBasicDTO userResponseDTO = userService.findUserWithRolesByUserCode(userCode);
-
-        if (userResponseDTO == null) {
-            responseData.setMessage("User not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
-        }
-
-        responseData.setData(userResponseDTO);
-        responseData.setMessage("Successfully retrieved user.");
-        return ResponseEntity.ok(responseData);
-    }
+//    @GetMapping("/{userCode}")
+//    public ResponseEntity<?> getUserByUserCode(@PathVariable String userCode) {
+//        ResponseData responseData = new ResponseData();
+//
+//        UserBasicDTO userResponseDTO = userService.findUserWithRolesByUserCode(userCode);
+//
+//        if (userResponseDTO == null) {
+//            responseData.setMessage("User not found.");
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+//        }
+//
+//        responseData.setData(userResponseDTO);
+//        responseData.setMessage("Successfully retrieved user.");
+//        return ResponseEntity.ok(responseData);
+//    }
 
     @PostMapping("/username/{username}")
     public ResponseEntity<?> getUserByUserName(@PathVariable String username) {
@@ -72,14 +72,18 @@ public class UserController {
         responseData.setMessage("Successfully retrieved user.");
         return ResponseEntity.ok(responseData);
     }
-    @GetMapping("/update/{userCode}")
-    public ResponseEntity<?> updateUser(@PathVariable String userCode, @RequestBody UserUpdateDTO userUpdateDTO) {
+    @PostMapping("/update/{userId}")
+    public ResponseEntity<?> updateUser(@PathVariable int userId, @RequestBody UserUpdateDTO userUpdateDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            userService.updateUser(userCode, userUpdateDTO);
+            userService.updateUser(userId, userUpdateDTO);
+            responseData.setStatusCode(200);
             responseData.setMessage("User updated successfully.");
+            responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
+            responseData.setStatusCode(400);
+            responseData.setData("");
             responseData.setMessage("Error updating user: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
@@ -100,7 +104,7 @@ public class UserController {
     @GetMapping("/search")
     public ResponseEntity<ResponseData> searchUsers(
             @RequestParam(required = false) String username,
-            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String email,
             @RequestParam(required = false) String roleName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -108,7 +112,7 @@ public class UserController {
         ResponseData responseData = new ResponseData();
         try {
             // Call service with search parameters and pagination details
-            Page<UserBasicDTO> userBasicDTOPage = userService.getByUsernamePhoneAndRole(username, phone, roleName, page, size);
+            Page<UserBasicDTO> userBasicDTOPage = userService.getByUsernameEmailAndRole(username, email, roleName, page, size);
 
             // Set up response data with results and success status
             responseData.setStatusCode(200);
@@ -123,6 +127,23 @@ public class UserController {
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserByUserId(@PathVariable int userId) {
+        ResponseData responseData = new ResponseData();
+
+        UserBasicDTO userResponseDTO = userService.getUserByUserId(userId);
+
+        if (userResponseDTO == null) {
+            responseData.setStatusCode(404);
+            responseData.setMessage("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+        }
+        responseData.setStatusCode(200);
+        responseData.setData(userResponseDTO);
+        responseData.setMessage("Successfully retrieved user.");
+        return ResponseEntity.ok(responseData);
     }
 
 

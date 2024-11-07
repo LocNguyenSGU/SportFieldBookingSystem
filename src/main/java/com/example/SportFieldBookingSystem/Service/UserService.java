@@ -21,7 +21,7 @@ public interface UserService {
 
     Page<UserBasicDTO> findAllUsersWithRoles(int page, int size);
 
-    void updateUser(String userCode, UserUpdateDTO userUpdateDTO);
+    void updateUser(int userId, UserUpdateDTO userUpdateDTO);
 
     boolean updateUser(UserUpdateDTO userUpdateDTO);
 
@@ -40,6 +40,8 @@ public interface UserService {
 
     Optional<User> getUserEntityByEmail(String email);
 
-    Page<UserBasicDTO> getByUsernamePhoneAndRole(String userName, String phone, String roleName, int page, int size);
+    Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size);
+
+    UserBasicDTO getUserByUserId(int userId);
 
 }

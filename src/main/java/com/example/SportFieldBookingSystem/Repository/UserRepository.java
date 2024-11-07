@@ -33,11 +33,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "JOIN u.userRoleList ur " +
             "JOIN ur.role r " +
             "WHERE (:username IS NULL OR u.username LIKE %:username%) " +
-            "AND (:phone IS NULL OR u.phone LIKE %:phone%) " +
+            "AND (:email IS NULL OR u.email LIKE %:email%) " +
             "AND (:roleName IS NULL OR r.roleName LIKE %:roleName%)")
     Page<User> findByUsernamePhoneAndRole(
             @Param("username") String username,
-            @Param("phone") String phone,
+            @Param("email") String email,
             @Param("roleName") String roleName,
             Pageable pageable
     );

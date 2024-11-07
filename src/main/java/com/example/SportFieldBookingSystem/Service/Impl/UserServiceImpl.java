@@ -162,8 +162,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(String userCode, UserUpdateDTO userUpdateDTO) {
-        Optional<User> optionalUser = userRepository.findUserWithRolesByUserCode(userCode);
+    public void updateUser(int userId, UserUpdateDTO userUpdateDTO) {
+        Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
@@ -187,7 +187,6 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userUpdateDTO.getEmail());
             user.setPhone(userUpdateDTO.getPhone());
             user.setFullName(userUpdateDTO.getFullName());
-            user.setPassword(passwordEncoder.encode(userUpdateDTO.getPassword()));
 
             // Cập nhật trạng thái
             if (userUpdateDTO.getStatus() != null) {
@@ -352,13 +351,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserBasicDTO> getByUsernamePhoneAndRole(String userName, String phone, String roleName, int page, int size) {
+    public Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size) {
         System.out.println("userName" +  userName);
-        System.out.println("phone" +  phone);
+        System.out.println("email" +  email);
         System.out.println("roleName" +  roleName);
 
-        Page<User> userPage = userRepository.findByUsernamePhoneAndRole(userName, phone, roleName, PageRequest.of(page, size));
+        Page<User> userPage = userRepository.findByUsernamePhoneAndRole(userName, email, roleName, PageRequest.of(page, size));
         return userPage.map(userMapper::toBasicDTO);
+    }
+
+    @Override
+    public UserBasicDTO getUserByUserId(int userId) {
+        try {
+            // Tìm người dùng dựa trên userCode
+            Optional<User> userOptional = userRepository.findById(userId);
+
+            // Kiểm tra xem người dùng có tồn tại hay không
+            if (userOptional.isPresent()) {
+                User user = userOptional.get(); // Lấy người dùng
+                return userMapper.toBasicDTO(user); // Chuyển đổi sang DTO và trả về
+            } else {
+                // Xử lý khi không tìm thấy người dùng
+                System.out.println("Không tìm thấy người dùng với id: " + userId);
+                return null; // Hoặc ném ngoại lệ tùy theo yêu cầu
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            System.err.println("Error fetching user: " + e.getMessage());
+            // Ném ra một ngoại lệ tùy chọn
+            throw new RuntimeException("Unable to fetch user", e);
+        }
     }
 
 
