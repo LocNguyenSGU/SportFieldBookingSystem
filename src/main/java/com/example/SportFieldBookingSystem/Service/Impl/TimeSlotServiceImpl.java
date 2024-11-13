@@ -1,5 +1,7 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
+import com.example.SportFieldBookingSystem.DTO.Exception.ResourceNotFoundException;
+import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotResponseDTO;
@@ -7,19 +9,22 @@ import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import com.example.SportFieldBookingSystem.Repository.TimeSlotRepository;
 import com.example.SportFieldBookingSystem.Service.TimeSlotService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TimeSlotServiceImpl implements TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
-
+    private final ModelMapper modelMapper;
     @Autowired
-    public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository) {
+    public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository, ModelMapper modelMapper) {
         this.timeSlotRepository = timeSlotRepository;
+        this.modelMapper = modelMapper;
     }
 
     // create
@@ -44,35 +49,14 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     public List<TimeSlotResponseDTO> getAllTimeSlots() {
-        List<TimeSlotResponseDTO> timeSlotResponseDTOList = new ArrayList<>();
-        try {
-            List<TimeSlot> timeSlots = timeSlotRepository.findAll();
-            for (TimeSlot timeSlot : timeSlots) {
-                TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-                timeSlotResponseDTO.setTimeslotId(timeSlot.getTimeslotId());
-                timeSlotResponseDTO.setStartTime(timeSlot.getStartTime());
-                timeSlotResponseDTO.setEndTime(timeSlot.getEndTime());
-                timeSlotResponseDTO.setDate(timeSlot.getDate());
-                timeSlotResponseDTOList.add(timeSlotResponseDTO);
-            }
-            return timeSlotResponseDTOList;
-        } catch (Exception e) {
-            throw new RuntimeException("Time slot creation failed");
-        }
+        return timeSlotRepository.findAll().stream()
+                .map(timeSlot -> modelMapper.map(timeSlot, TimeSlotResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     public TimeSlotResponseDTO getTimeSlot(int timeslotId) {
-        try {
-            TimeSlot timeSlot = timeSlotRepository.findById(timeslotId).get();
-            TimeSlotResponseDTO timeSlotResponseDTO = new TimeSlotResponseDTO();
-            timeSlotResponseDTO.setTimeslotId(timeSlot.getTimeslotId());
-            timeSlotResponseDTO.setStartTime(timeSlot.getStartTime());
-            timeSlotResponseDTO.setEndTime(timeSlot.getEndTime());
-            timeSlotResponseDTO.setDate(timeSlot.getDate());
-            return timeSlotResponseDTO;
-        } catch (Exception e) {
-            throw new RuntimeException("Time slot creation failed");
-        }
+        TimeSlot timeSlot = timeSlotRepository.findById(timeslotId).orElseThrow(() -> new ResourceNotFoundException("Not found time slot with id: " + timeslotId));
+        return modelMapper.map(timeSlot, TimeSlotResponseDTO.class);
     }
 
     public TimeSlotResponseDTO updateTimeSlot(int id, TimeSlotUpdateDTO timeSlotUpdateDTO) {

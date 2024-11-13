@@ -23,7 +23,7 @@ public class FieldTypeController {
     }
 
     // Tạo mới FieldType
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<?> createFieldType(@RequestBody FieldTypeCreateDTO fieldTypeCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
@@ -42,11 +42,10 @@ public class FieldTypeController {
     }
 
     // Cập nhật FieldType
-    @PutMapping("/update/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<?> updateFieldType(@PathVariable int id, @RequestBody FieldTypeUpdateDTO fieldTypeUpdateDTO) {
         try {
             ResponseData responseData = new ResponseData();
-
             FieldTypeResponseDTO updatedFieldType = fieldTypeService.updateFieldType(id, fieldTypeUpdateDTO);
             if (updatedFieldType == null) {
                 responseData.setMessage("FieldType not updated");
@@ -84,7 +83,7 @@ public class FieldTypeController {
     }
 
     // Lấy tất cả FieldTypes
-    @GetMapping("/getAll")
+    @GetMapping()
     public ResponseEntity<?> getAllFieldTypes() {
         try {
             ResponseData responseData = new ResponseData();
@@ -104,7 +103,7 @@ public class FieldTypeController {
 
 
     // Xóa FieldType
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFieldType(@PathVariable Integer id) {
         try {
             ResponseData responseData = new ResponseData();

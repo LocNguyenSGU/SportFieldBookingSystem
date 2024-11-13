@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("timeSlot")
+@RequestMapping("api/timeSlot")
 public class TimeSlotController {
     private final TimeSlotService timeSlotService;
 
@@ -23,7 +23,7 @@ public class TimeSlotController {
         this.timeSlotService = timeSlotService;
     }
 
-    @PostMapping("create")
+    @PostMapping()
     public ResponseEntity<?> createTimeSlot(@RequestBody TimeSlotCreateDTO timeSlotCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
@@ -43,7 +43,7 @@ public class TimeSlotController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateTimeSlot(@RequestBody TimeSlotUpdateDTO timeSlotUpdateDTO, @PathVariable int id) {
         ResponseData responseData = new ResponseData();
         try {
@@ -63,7 +63,7 @@ public class TimeSlotController {
         }
     }
 
-    @GetMapping("/getAll")
+    @GetMapping()
     public ResponseEntity<?> getAllTimeSlot()
     {
         ResponseData responseData = new ResponseData();
@@ -104,7 +104,7 @@ public class TimeSlotController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<?> deleteTimeSlot(@PathVariable int id) {
         ResponseData responseData = new ResponseData();
         try {

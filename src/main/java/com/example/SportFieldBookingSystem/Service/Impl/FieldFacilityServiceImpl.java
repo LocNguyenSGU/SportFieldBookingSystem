@@ -22,7 +22,7 @@ public class FieldFacilityServiceImpl implements FieldFacilityService {
         try {
             // Convert DTO to Entity
             FieldFacility fieldFac = new FieldFacility();
-            fieldFac.setFacilityName(fieldFacilityCreateDTO.getFacilityName());
+            fieldFac.setFacilityName(fieldFacilityCreateDTO.getFieldFacilityName());
 
             // Save entity to DB
             FieldFacility fieldFacSave = fieldFacilityRepository.save(fieldFac);
@@ -71,7 +71,7 @@ public class FieldFacilityServiceImpl implements FieldFacilityService {
         try {
             FieldFacility fieldFacility = fieldFacilityRepository.findById(id).get();
 
-            fieldFacility.setFacilityName(fieldFacilityUpdateDTO.getFacilityName());
+            fieldFacility.setFacilityName(fieldFacilityUpdateDTO.getFieldFacilityName());
             FieldFacility fieldFacSave = fieldFacilityRepository.save(fieldFacility);
 
             FieldFacilityResponseDTO fieldFacRs = new FieldFacilityResponseDTO();

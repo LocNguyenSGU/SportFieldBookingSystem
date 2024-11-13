@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Setter
 @NoArgsConstructor
 public class FieldResponseDTO {
-    private int fieldId;
     private String fieldCode;
     private String fieldName;
     private int capacity;

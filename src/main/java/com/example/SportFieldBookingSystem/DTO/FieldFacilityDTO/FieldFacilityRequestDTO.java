@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Setter
 @NoArgsConstructor
 public class FieldFacilityRequestDTO {
-    private int fieldId;
-    private String facilityName;
+    private int fieldFacilityId;
+    private String fieldfFacilityName;
 }

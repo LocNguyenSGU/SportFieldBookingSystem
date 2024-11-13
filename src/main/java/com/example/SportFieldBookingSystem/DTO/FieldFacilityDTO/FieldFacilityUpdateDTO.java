@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FieldFacilityUpdateDTO {
-    private String facilityName;
+    private String fieldFacilityName;
 }
