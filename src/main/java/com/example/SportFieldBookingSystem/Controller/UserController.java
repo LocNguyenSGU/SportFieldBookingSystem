@@ -6,6 +6,7 @@ import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
 import com.example.SportFieldBookingSystem.Service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -88,16 +91,49 @@ public class UserController {
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+    @PostMapping("/create")
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         ResponseData responseData = new ResponseData();
+        Map<String, String> errorMap = new HashMap<>(); // Lưu lỗi theo cặp field - message
+        boolean hasErrors = false; // Cờ kiểm tra lỗi
+
+        // Kiểm tra email đã tồn tại chưa
+        if (userService.existsUserByEmail(userCreateDTO.getEmail())) {
+            errorMap.put("email", "Email has already been used");
+            hasErrors = true;
+        }
+
+        // Kiểm tra username đã tồn tại chưa
+        if (userService.existsUserByUsername(userCreateDTO.getUsername())) {
+            errorMap.put("username", "Username has already been used");
+            hasErrors = true;
+        }
+
+        // Kiểm tra mật khẩu khớp hay không
+        if (!userCreateDTO.getRePassword().equals(userCreateDTO.getPassword())) {
+            errorMap.put("password", "Passwords do not match");
+            hasErrors = true;
+        }
+
+        // Nếu có lỗi, trả về danh sách lỗi
+        if (hasErrors) {
+            responseData.setStatusCode(400);
+            responseData.setMessage("Validation failed");
+            responseData.setData(errorMap); // Trả danh sách lỗi
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST); // 400
+        }
+
+        // Nếu không có lỗi, tiến hành đăng ký
         try {
-            responseData.setMessage("User created successfully.");
+            responseData.setStatusCode(200);
             userService.createUser(userCreateDTO);
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+            responseData.setMessage("Tao moi user thanh cong");
+            return new ResponseEntity<>(responseData, HttpStatus.CREATED);
         } catch (Exception e) {
-            responseData.setMessage("Error creating user: " + e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            responseData.setStatusCode(500);
+            System.out.println("Error during tao moi user: " + e);
+            responseData.setMessage("An error occurred while processing your request.");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
