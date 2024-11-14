@@ -3,6 +3,7 @@ package com.example.SportFieldBookingSystem.Service;
 import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserGetDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.User;
 import org.springframework.data.domain.Page;
@@ -43,5 +44,4 @@ public interface UserService {
     Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size);
 
     UserBasicDTO getUserByUserId(int userId);
-
 }

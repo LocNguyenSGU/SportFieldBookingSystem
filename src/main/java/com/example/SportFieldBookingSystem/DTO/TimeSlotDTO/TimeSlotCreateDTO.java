@@ -11,6 +11,7 @@ import java.sql.Date;
 @Getter
 @NoArgsConstructor
 public class TimeSlotCreateDTO {
+    private int id;
     private Date date;
     private Time startTime;
     private Time endTime;

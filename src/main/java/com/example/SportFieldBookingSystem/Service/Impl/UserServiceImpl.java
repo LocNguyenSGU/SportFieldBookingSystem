@@ -3,6 +3,7 @@ package com.example.SportFieldBookingSystem.Service.Impl;
 import com.example.SportFieldBookingSystem.DTO.AuthDTO.SignupDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserGetDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.User;
@@ -14,6 +15,7 @@ import com.example.SportFieldBookingSystem.Security.JwtToken;
 import com.example.SportFieldBookingSystem.Service.RoleService;
 import com.example.SportFieldBookingSystem.Service.UserRoleService;
 import com.example.SportFieldBookingSystem.Service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -44,6 +46,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtToken jwtToken;
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Override
@@ -382,6 +386,5 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Unable to fetch user", e);
         }
     }
-
 
 }

@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Controller;
 
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingDTO;
 import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
@@ -60,6 +61,16 @@ public class BookingController {
         responseData.setMessage("create booking success!");
         responseData.setData(createdBooking);
         return ResponseEntity.ok(responseData);
+    }
+
+    @PostMapping("/bookings")
+    public ResponseEntity<List<BookingDTO>> createBookings(@RequestBody BookingDTO bookingDTO) {
+        try {
+            List<BookingDTO> createdBookings = bookingServiceImpl.createBookings(bookingDTO);
+            return new ResponseEntity<>(createdBookings, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     // Cập nhật Booking

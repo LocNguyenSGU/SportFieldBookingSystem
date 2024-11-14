@@ -1,14 +1,24 @@
 package com.example.SportFieldBookingSystem.Service;
 
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingDTO;
 import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.Event;
+import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
+import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserGetDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
 import com.example.SportFieldBookingSystem.Entity.User;
+import com.example.SportFieldBookingSystem.Enum.BookingEnum;
 import com.example.SportFieldBookingSystem.Repository.BookingRepository;
+import com.example.SportFieldBookingSystem.Repository.FieldRepository;
 import com.example.SportFieldBookingSystem.Repository.InvoiceRepository;
+import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.BookingServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +26,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService implements BookingServiceImpl {
@@ -24,9 +37,19 @@ public class BookingService implements BookingServiceImpl {
     private final BookingRepository bookingRepo;
     @Autowired
     private InvoiceRepository invoiceRepo;
-
+    @Autowired
+    private UserRepository userRepo;
+    @Autowired
+    private FieldRepository fieldRepo;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private FieldService fieldService;
     @Autowired
     public BookingService(BookingRepository bookingRepo) {
+
         this.bookingRepo = bookingRepo;
     }
     @Override
@@ -157,4 +180,58 @@ public class BookingService implements BookingServiceImpl {
         return null;
     }
 
+    public List<BookingDTO> createBookings(BookingDTO bookingDTO) {
+        List<Booking> createdBookings = new ArrayList<>();
+
+        // Kiểm tra và lấy thông tin người dùng
+        System.out.println("Fetching user with ID: " + bookingDTO.getUserId());
+        UserBasicDTO userGetDTO = userService.getUserByUserId(bookingDTO.getUserId());
+        FieldGetDTO fieldGetDTO = fieldService.getFieldById(bookingDTO.getFieldId());
+        System.out.println(userGetDTO.getFullName());
+        // Tạo một booking cho mỗi event trong danh sách
+        System.out.println("Selected events: " + bookingDTO.getSelectedEvents().size());
+        for (Event selectedEvent : bookingDTO.getSelectedEvents()) {
+            System.out.println("Processing event with start time: " + selectedEvent.getStart()
+                    + " and end time: " + selectedEvent.getEnd());
+
+            Booking booking = new Booking();
+            booking.setBookingCode(generateBookingCode()); // Đảm bảo mã là duy nhất
+            System.out.println("Generated booking code: " + booking.getBookingCode());
+
+            booking.setUser(modelMapper.map(userGetDTO, User.class));
+            booking.setField(modelMapper.map(fieldGetDTO, Field.class));
+            booking.setBookingDate(bookingDTO.getDate());
+            System.out.println("Booking date set to: " + bookingDTO.getDate());
+
+            booking.setStartTime(selectedEvent.getStart());
+            booking.setEndTime(selectedEvent.getEnd());
+            booking.setTotalPrice(selectedEvent.getTotalPrice());
+            System.out.println("Total price set to: " + selectedEvent.getTotalPrice());
+
+            booking.setStatus(BookingEnum.PENDING); // Trạng thái mặc định
+            System.out.println("Booking status set to: " + BookingEnum.PENDING);
+
+            // Lưu booking và thêm vào danh sách kết quả
+            Booking savedBooking = bookingRepo.save(booking);
+            System.out.println("Booking saved with ID: " + savedBooking.getBookingId());
+            createdBookings.add(savedBooking);
+        }
+
+        // Chuyển đổi kết quả sang BookingDTO và trả về
+        System.out.println("Converting bookings to BookingDTO...");
+        List<BookingDTO> bookingDTOList = createdBookings.stream()
+                .map(bookingRS -> modelMapper.map(bookingRS, BookingDTO.class))
+                .collect(Collectors.toList());
+        System.out.println("Conversion completed. Total bookings created: " + bookingDTOList.size());
+
+        return bookingDTOList;
     }
+
+
+
+
+
+    private String generateBookingCode() {
+        return UUID.randomUUID().toString().substring(0, 10);
+    }
+}
