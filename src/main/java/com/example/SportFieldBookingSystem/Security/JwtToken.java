@@ -23,8 +23,8 @@ public class JwtToken {
     private String secretKey;
     @Autowired
     private InvalidTokenService invalidTokenService;
-    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15
-    private final long JWT_REFRESH_EXPIRATION = 45 * 60 * 1000L; // 45 s
+    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15 phut
+    private final long JWT_REFRESH_EXPIRATION = 45 * 60 * 1000L; // 45 phut
 
     // Tạo JWT từ username
     public String generateToken(String data) {

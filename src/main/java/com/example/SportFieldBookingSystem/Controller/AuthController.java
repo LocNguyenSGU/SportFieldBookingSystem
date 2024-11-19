@@ -3,15 +3,22 @@ package com.example.SportFieldBookingSystem.Controller;
 import com.example.SportFieldBookingSystem.DTO.AuthDTO.*;
 import com.example.SportFieldBookingSystem.DTO.InvalidToken.InvalidTokenDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
+import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Email;
 import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
+import com.example.SportFieldBookingSystem.Repository.UserRepository;
 import com.example.SportFieldBookingSystem.Security.JwtToken;
 import com.example.SportFieldBookingSystem.Service.*;
 import com.example.SportFieldBookingSystem.Service.Impl.LoginServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,18 +29,14 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
@@ -51,14 +54,18 @@ public class AuthController {
     private InvalidTokenService invalidTokenService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseData> login( @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            if (loginService.checkLogin(loginDTO.getUsername(), loginDTO.getPassword())) {
-                String refreshToken = jwtToken.generateRefreshToken(loginDTO.getUsername());
-                String accessToken = jwtToken.generateToken(loginDTO.getUsername());
+            if (loginService.checkLogin(loginDTO.getEmail(), loginDTO.getPassword())) {
+                String refreshToken = jwtToken.generateRefreshToken(loginDTO.getEmail());
+                String accessToken = jwtToken.generateToken(loginDTO.getEmail());
                 ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)// Chỉ dùng Http, không thể truy cập từ JavaScript
                         .secure(true)  // Chỉ gửi cookie qua HTTPS
@@ -84,6 +91,63 @@ public class AuthController {
         responseData.setStatusCode(500);
         responseData.setMessage("Login failed: Unknown error");
         return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/google/{accessToken}")
+    public ResponseEntity<ResponseData> googleLogin(@PathVariable String accessToken) {
+        ResponseData responseData = new ResponseData();
+
+        try {
+            // Gửi yêu cầu để lấy thông tin người dùng từ Google API
+            String url = "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessToken;
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> userInfo = restTemplate.getForObject(url, HashMap.class);
+
+            if (userInfo == null || !userInfo.containsKey("email")) {
+                responseData.setStatusCode(401);
+                responseData.setMessage("Invalid Google Access Token");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
+
+            // Lấy email và thông tin người dùng từ phản hồi
+            String email = (String) userInfo.get("email");
+            String fullName = (String) userInfo.get("name");
+
+
+            // Kiểm tra người dùng đã tồn tại hay chưa
+            Boolean existsUserByEmail = userService.existsUserByEmail(email);
+            User user = new User();
+            if (!existsUserByEmail) {
+                user.setEmail(email);
+                user.setFullName(fullName);
+                user.setPassword(passwordEncoder.encode("123456"));
+                userRepository.save(user);
+            }
+
+            // Tạo JWT token
+            String myAccessToken = jwtToken.generateToken(user.getEmail());
+            String refreshToken = jwtToken.generateRefreshToken(user.getEmail());
+
+            // Set refresh token vào cookie
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .build();
+
+            responseData.setStatusCode(200);
+            responseData.setMessage("Google Login Success");
+            responseData.setData(myAccessToken);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    .body(responseData);
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("Google Login Failed: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/signup")

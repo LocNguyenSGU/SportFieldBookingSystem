@@ -13,6 +13,6 @@ import java.util.Optional;
 
 public interface LoginService {
 
-    boolean checkLogin(String username, String password);
+    boolean checkLogin(String email, String password);
 
 }

@@ -19,10 +19,10 @@ public class LoginServiceImpl implements LoginService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean checkLogin(String username, String password) {
-        Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
+    public boolean checkLogin(String email, String password) {
+        Optional<User> userOptional = userRepository.findUserWithRolesByEmail(email);
         if (userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found");
+            throw new UsernameNotFoundException("email not found");
         }
         User user = userOptional.get();
         if (!passwordEncoder.matches(password, user.getPassword())) {
