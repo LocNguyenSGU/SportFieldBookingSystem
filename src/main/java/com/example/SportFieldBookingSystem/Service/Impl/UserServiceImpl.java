@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -291,6 +292,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(userCreateDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
             user.setPhone(userCreateDTO.getPhone());
+            user.setThoiGianTao(LocalDateTime.now());
 
             // Thiết lập trạng thái
             if (userCreateDTO.getStatus() != null) {
@@ -326,6 +328,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
             user.setEmail(signupDTO.getEmail());
             user.setStatus(UserEnum.valueOf(UserEnum.ACTIVE.name()));
+            user.setThoiGianTao(LocalDateTime.now());
             User newUser = userRepository.save(user);
 
             Role role = roleService.getRoleByRoleId_ReturnRole(3); // role 3: khach hang

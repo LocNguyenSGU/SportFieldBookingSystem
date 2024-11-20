@@ -33,7 +33,6 @@ public interface UserService {
     Optional<UserBasicDTO> getUserByUsername(String userName);
 
     boolean createUser(UserCreateDTO userCreateDTO);
-
     boolean createUserSignUp(SignupDTO signupDTO);
     String createPasswordResetToken(String email);
 
@@ -44,4 +43,6 @@ public interface UserService {
     Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size);
 
     UserBasicDTO getUserByUserId(int userId);
+
+
 }

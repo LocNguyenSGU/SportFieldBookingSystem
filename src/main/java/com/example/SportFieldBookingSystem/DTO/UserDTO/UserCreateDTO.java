@@ -1,83 +1,43 @@
 package com.example.SportFieldBookingSystem.DTO.UserDTO;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserCreateDTO {
+    @NotBlank(message = "Username is required")
+    @Size(min = 6, max = 20, message = "Username must be between 6 and 20 characters")
     private String username;
+
+    @NotBlank(message = "Full name is required")
     private String fullName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
+
+    @NotBlank(message = "Re-entering password is required")
+    private String rePassword;
+
+    @NotBlank(message = "Phone number is required")
     private String phone;
+
+    @NotBlank(message = "Status is required")
     private String status;
+
+    @NotEmpty(message = "Role list is required and cannot be empty")
     private List<Integer> roleIdList;
-
-    public UserCreateDTO() {
-
-    }
-
-    public UserCreateDTO( String username, String fullName, String email, String password, String phone, String status, List<Integer> roleIdList) {
-        this.username = username;
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.status = status;
-        this.roleIdList = roleIdList;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public List<Integer> getRoleIdList() {
-        return roleIdList;
-    }
-
-    public void setRoleIdList(List<Integer> roleIdList) {
-        this.roleIdList = roleIdList;
-    }
 }
