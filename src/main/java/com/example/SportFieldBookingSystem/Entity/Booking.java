@@ -3,6 +3,7 @@ package com.example.SportFieldBookingSystem.Entity;
 import com.example.SportFieldBookingSystem.Enum.BookingEnum;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "booking")
+@Data
 public class Booking { // dat san
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

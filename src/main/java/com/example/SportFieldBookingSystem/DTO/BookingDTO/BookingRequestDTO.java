@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class BookingDTO {
+public class BookingRequestDTO {
 
     private int userId;
     private int fieldId;

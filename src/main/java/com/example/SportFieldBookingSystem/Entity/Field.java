@@ -40,6 +40,9 @@ public class Field { // san
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @Column(name = "field_address")
+    private String fieldAddress;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;

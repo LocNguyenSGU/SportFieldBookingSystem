@@ -1,21 +1,32 @@
 package com.example.SportFieldBookingSystem.Service;
 
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceRequestDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
+import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
+import com.example.SportFieldBookingSystem.Enum.BookingEnum;
+import com.example.SportFieldBookingSystem.Enum.InvoiceEnum;
 import com.example.SportFieldBookingSystem.Repository.InvoiceRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
 @Service
 public class InvoiceService implements InvoiceServiceImpl {
 
-    final private InvoiceRepository invoiceRepo;
+    private final InvoiceRepository invoiceRepo;
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public InvoiceService(InvoiceRepository invoiceRepo){
+    public InvoiceService(InvoiceRepository invoiceRepo, ModelMapper modelMapper){
         this.invoiceRepo = invoiceRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -64,19 +75,19 @@ public class InvoiceService implements InvoiceServiceImpl {
     }
 
     @Override
-    public InvoiceResponseDTO createInvoice(InvoiceResponseDTO invoiceRequestDTO) {
+    public Invoice createInvoice(InvoiceRequestDTO invoiceDTO) {
         try {
-            Invoice newInvoice = new Invoice();
-            // Mapping dữ liệu từ DTO sang Entity
-            newInvoice.setInvoiceCode(invoiceRequestDTO.getInvoiceCode());
-            newInvoice.setInvDate(invoiceRequestDTO.getInvDate());
-            newInvoice.setTotalAmount(invoiceRequestDTO.getTotalAmount());
-            newInvoice.setStatus(invoiceRequestDTO.getPaymentStatus());
+            Invoice invoice = new Invoice();
+            invoice.setInvoiceCode(UUID.randomUUID().toString().substring(0, 10).toUpperCase());
+            invoice.setName(invoiceDTO.getName());
+            invoice.setPhoneNumber(invoiceDTO.getPhoneNumber());
+            invoice.setEmail(invoiceDTO.getEmail());
+            invoice.setTotalAmount(invoiceDTO.getTotalAmount());
+            invoice.setInvDate(new Date());
+            invoice.setStatus(InvoiceEnum.PENDING);
 
-            invoiceRepo.save(newInvoice);
 
-            // Mapping từ Entity sang DTO để trả về
-            return new InvoiceResponseDTO(newInvoice.getInvoiceId(), newInvoice.getInvoiceCode(), newInvoice.getInvDate(), newInvoice.getTotalAmount(), newInvoice.getStatus());
+            return invoiceRepo.save(invoice);
         } catch (Exception e) {
             System.err.println("Error creating invoice: " + e.getMessage());
             return null;
@@ -116,6 +127,18 @@ public class InvoiceService implements InvoiceServiceImpl {
             System.err.println("Error deleting invoice: " + e.getMessage());
             return false;
         }
+    }
+
+    public void updateInvoiceStatus(int invoiceId, InvoiceEnum status) {
+        Invoice invoice = invoiceRepo.findById(invoiceId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+        invoice.setStatus(status);
+
+        for (Booking booking : invoice.getBookingList()) {
+            booking.setStatus(status == InvoiceEnum.PAID ? BookingEnum.CONFIRMED : BookingEnum.CANCELLED);
+        }
+
+        invoiceRepo.save(invoice);
     }
 
 

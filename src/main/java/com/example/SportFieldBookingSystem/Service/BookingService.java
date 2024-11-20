@@ -1,13 +1,10 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingDTO;
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingRequestDTO;
 import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.BookingDTO.Event;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
-import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
-import com.example.SportFieldBookingSystem.DTO.UserDTO.UserGetDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
@@ -26,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -180,17 +176,17 @@ public class BookingService implements BookingServiceImpl {
         return null;
     }
 
-    public List<BookingDTO> createBookings(BookingDTO bookingDTO) {
+    public List<BookingRequestDTO> createBookings(BookingRequestDTO bookingRequestDTO, Invoice invoice) {
         List<Booking> createdBookings = new ArrayList<>();
 
         // Kiểm tra và lấy thông tin người dùng
-        System.out.println("Fetching user with ID: " + bookingDTO.getUserId());
-        UserBasicDTO userGetDTO = userService.getUserByUserId(bookingDTO.getUserId());
-        FieldGetDTO fieldGetDTO = fieldService.getFieldById(bookingDTO.getFieldId());
+        System.out.println("Fetching user with ID: " + bookingRequestDTO.getUserId());
+        UserBasicDTO userGetDTO = userService.getUserByUserId(bookingRequestDTO.getUserId());
+        FieldGetDTO fieldGetDTO = fieldService.getFieldById(bookingRequestDTO.getFieldId());
         System.out.println(userGetDTO.getFullName());
         // Tạo một booking cho mỗi event trong danh sách
-        System.out.println("Selected events: " + bookingDTO.getSelectedEvents().size());
-        for (Event selectedEvent : bookingDTO.getSelectedEvents()) {
+        System.out.println("Selected events: " + bookingRequestDTO.getSelectedEvents().size());
+        for (Event selectedEvent : bookingRequestDTO.getSelectedEvents()) {
             System.out.println("Processing event with start time: " + selectedEvent.getStart()
                     + " and end time: " + selectedEvent.getEnd());
 
@@ -200,14 +196,16 @@ public class BookingService implements BookingServiceImpl {
 
             booking.setUser(modelMapper.map(userGetDTO, User.class));
             booking.setField(modelMapper.map(fieldGetDTO, Field.class));
-            booking.setBookingDate(bookingDTO.getDate());
-            System.out.println("Booking date set to: " + bookingDTO.getDate());
+            booking.setBookingDate(bookingRequestDTO.getDate());
+            System.out.println("Booking date set to: " + bookingRequestDTO.getDate());
 
             booking.setStartTime(selectedEvent.getStart());
+            System.out.println(booking.getStartTime());
             booking.setEndTime(selectedEvent.getEnd());
+            System.out.println(booking.getEndTime());
             booking.setTotalPrice(selectedEvent.getTotalPrice());
             System.out.println("Total price set to: " + selectedEvent.getTotalPrice());
-
+            booking.setInvoice(invoice);
             booking.setStatus(BookingEnum.PENDING); // Trạng thái mặc định
             System.out.println("Booking status set to: " + BookingEnum.PENDING);
 
@@ -219,17 +217,13 @@ public class BookingService implements BookingServiceImpl {
 
         // Chuyển đổi kết quả sang BookingDTO và trả về
         System.out.println("Converting bookings to BookingDTO...");
-        List<BookingDTO> bookingDTOList = createdBookings.stream()
-                .map(bookingRS -> modelMapper.map(bookingRS, BookingDTO.class))
+        List<BookingRequestDTO> bookingRequestDTOList = createdBookings.stream()
+                .map(bookingRS -> modelMapper.map(bookingRS, BookingRequestDTO.class))
                 .collect(Collectors.toList());
-        System.out.println("Conversion completed. Total bookings created: " + bookingDTOList.size());
+        System.out.println("Conversion completed. Total bookings created: " + bookingRequestDTOList.size());
 
-        return bookingDTOList;
+        return bookingRequestDTOList;
     }
-
-
-
-
 
     private String generateBookingCode() {
         return UUID.randomUUID().toString().substring(0, 10);

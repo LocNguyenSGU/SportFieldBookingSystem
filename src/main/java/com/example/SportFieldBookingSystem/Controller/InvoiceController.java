@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Controller;
 
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceRequestDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
@@ -63,25 +64,25 @@ public class InvoiceController {
     }
 
     // Tạo mới hóa đơn
-    @PostMapping("/invoice")
-    public ResponseEntity<ResponseData> createInvoice(@RequestBody InvoiceResponseDTO invoiceRequestDTO) {
-        ResponseData responseData = new ResponseData();
-
-        try {
-            InvoiceResponseDTO createdInvoice = invoiceServiceImpl.createInvoice(invoiceRequestDTO);
-            if (createdInvoice == null) {
-                responseData.setMessage("Failed to create invoice");
-                return ResponseEntity.badRequest().body(responseData);
-            }
-
-            responseData.setMessage("Create invoice success");
-            responseData.setData(createdInvoice);
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
-        } catch (Exception e) {
-            responseData.setMessage("An error occurred while creating the invoice: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
-        }
-    }
+//    @PostMapping("/invoice")
+//    public ResponseEntity<ResponseData> createInvoice(@RequestBody InvoiceRequestDTO invoiceRequestDTO) {
+//        ResponseData responseData = new ResponseData();
+//
+//        try {
+//            InvoiceResponseDTO createdInvoice = invoiceServiceImpl.createInvoice(invoiceRequestDTO);
+//            if (createdInvoice == null) {
+//                responseData.setMessage("Failed to create invoice");
+//                return ResponseEntity.badRequest().body(responseData);
+//            }
+//
+//            responseData.setMessage("Create invoice success");
+//            responseData.setData(createdInvoice);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(responseData);
+//        } catch (Exception e) {
+//            responseData.setMessage("An error occurred while creating the invoice: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+//        }
+//    }
 
     // Cập nhật hóa đơn
     @PutMapping("/invoice/{id}")
