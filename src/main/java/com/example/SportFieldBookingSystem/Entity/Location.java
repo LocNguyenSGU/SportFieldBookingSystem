@@ -2,6 +2,8 @@ package com.example.SportFieldBookingSystem.Entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "location")
 public class Location { // dia diem
@@ -14,4 +16,7 @@ public class Location { // dia diem
     @ManyToOne
     @JoinColumn(name="street_id")
     private Street street;
+
+    @OneToMany(mappedBy = "location")
+    private List<Field> fields;
 }

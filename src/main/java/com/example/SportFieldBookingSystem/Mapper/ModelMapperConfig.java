@@ -20,14 +20,14 @@ public class ModelMapperConfig {
 
 //        modelMapper.typeMap(TimeSlot.class, TimeSlotResponseDTO.class)
 //                .addMappings(mapper -> mapper.map(TimeSlot::getField, TimeSlotResponseDTO::setField));
-        Converter<Collection<?>, List<?>> collectionToListConverter = new Converter<Collection<?>, List<?>>() {
-            @Override
-            public List<?> convert(MappingContext<Collection<?>, List<?>> context) {
-                return new ArrayList<>(context.getSource());
-            }
-        };
+//        Converter<Collection<?>, List<?>> collectionToListConverter = new Converter<Collection<?>, List<?>>() {
+//            @Override
+//            public List<?> convert(MappingContext<Collection<?>, List<?>> context) {
+//                return new ArrayList<>(context.getSource());
+//            }
+//        };
 
-        modelMapper.addConverter(collectionToListConverter);
+//        modelMapper.addConverter(collectionToListConverter);
         return modelMapper;
     }
 }

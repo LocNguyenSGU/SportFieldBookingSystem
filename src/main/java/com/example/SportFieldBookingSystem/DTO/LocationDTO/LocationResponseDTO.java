@@ -8,7 +8,5 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class LocationResponseDTO {
-    private int locationId;
     private String locationNumber;
-    private int streetId;
 }

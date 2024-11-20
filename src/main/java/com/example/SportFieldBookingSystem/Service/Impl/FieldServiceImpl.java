@@ -47,7 +47,7 @@ public class FieldServiceImpl implements FieldService {
     @Override
     public FieldGetDTO getFieldById(int fieldId) {
         Field field = fieldRepository.findById(fieldId).orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
-        Hibernate.initialize(field.getTimeSlotList());
+//        Hibernate.initialize(field.getTimeSlotList());
         return modelMapper.map(field, FieldGetDTO.class);
     }
 
