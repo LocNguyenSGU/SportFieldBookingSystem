@@ -19,26 +19,26 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> userOptional = userRepository.findUserWithRolesByEmail(email);
         if(userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with username: " + email);
         }
             User user = userOptional.get();
         List<GrantedAuthority> authorityList = user.getUserRoleList().stream()
                 .map(userRole -> new SimpleGrantedAuthority("ROLE_" + userRole.getRole().getRoleName()))
                 .collect(Collectors.toList());
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 authorityList
         );
     }
 
-    public boolean hasRole(String username, String roleName) {
-        Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
+    public boolean hasRole(String email, String roleName) {
+        Optional<User> userOptional = userRepository.findUserWithRolesByEmail(email);
         if(userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with username: " + email);
         }
         User user = userOptional.get();
         return user.getUserRoleList().stream()

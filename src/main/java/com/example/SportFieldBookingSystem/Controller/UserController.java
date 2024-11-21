@@ -6,17 +6,20 @@ import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
 import com.example.SportFieldBookingSystem.Service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/user")
@@ -180,6 +183,46 @@ public class UserController {
         responseData.setData(userResponseDTO);
         responseData.setMessage("Successfully retrieved user.");
         return ResponseEntity.ok(responseData);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMyInfo(Authentication authentication) {
+        ResponseData responseData = new ResponseData();
+        if(authentication == null) {
+            responseData.setData("");
+            responseData.setStatusCode(400);
+            responseData.setMessage("Token het han roi, khong lay duoc thong tin");
+            return new ResponseEntity<>(responseData, HttpStatus.FORBIDDEN);
+        }
+        String email = authentication.getName();
+        System.out.println("Email: " + email);
+        try {
+            UserBasicDTO userBasicDTO = userService.getUserByEmail(email);
+            if(userBasicDTO == null)
+            {
+                responseData.setStatusCode(404);
+                responseData.setData("");
+                responseData.setMessage("Tài khoản không tồn tại.");
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
+            } else {
+                // Nếu tồn tại tài khoản
+                responseData.setStatusCode(200);
+                responseData.setMessage("Thông tin tài khoản");
+                responseData.setData(userBasicDTO);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
+            }
+        } catch (EntityNotFoundException e) {
+            responseData.setStatusCode(404);
+            responseData.setData("");
+            responseData.setMessage("Tài khoản không tồn tại.");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setData("");
+            responseData.setMessage("Đã xảy ra lỗi khi lấy thông tin tài khoản: " + e);
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
