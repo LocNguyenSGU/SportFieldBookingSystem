@@ -40,7 +40,7 @@ public interface UserService {
 
     Optional<User> getUserEntityByEmail(String email);
 
-    Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size);
+    Page<UserBasicDTO> getByEmailPhoneAndRole(String email,String phone, String roleName, int page, int size);
 
     UserBasicDTO getUserByUserId(int userId);
 

@@ -15,9 +15,6 @@ public class UserUpdateDTO {
     private int userId;
     private String userCode;
 
-    @NotBlank(message = "Username cannot be blank")
-    private String username;
-
     @NotBlank(message = "Full name cannot be blank")
     private String fullName;
 

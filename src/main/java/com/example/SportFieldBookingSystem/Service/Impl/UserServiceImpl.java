@@ -172,24 +172,16 @@ public class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
 
-            if (userUpdateDTO.getUsername() != null && !userUpdateDTO.getUsername().equals(user.getUsername())) {
-                if (existsUserByUsername(userUpdateDTO.getUsername())) {
-                    throw new RuntimeException("Username already exists.");
-                }
-                user.setUsername(userUpdateDTO.getUsername()); // Cập nhật username nếu hợp lệ
-            }
-
-            if (userUpdateDTO.getEmail() != null && !userUpdateDTO.getEmail().equals(user.getEmail())) {
-                if (existsUserByEmail(userUpdateDTO.getEmail())) {
-                    throw new RuntimeException("Email already exists.");
-                }
-                user.setEmail(userUpdateDTO.getEmail()); // Cập nhật email nếu hợp lệ
-            }
-
-
-            // Cập nhật thông tin người dùng
-            user.setUsername(userUpdateDTO.getUsername());
-            user.setEmail(userUpdateDTO.getEmail());
+//            if (userUpdateDTO.getEmail() != null && !userUpdateDTO.getEmail().equals(user.getEmail())) {
+//                if (existsUserByEmail(userUpdateDTO.getEmail())) {
+//                    throw new RuntimeException("Email already exists.");
+//                }
+//                user.setEmail(userUpdateDTO.getEmail()); // Cập nhật email nếu hợp lệ
+//            }
+//
+//
+//            // Cập nhật thông tin người dùng
+//            user.setEmail(userUpdateDTO.getEmail());
             user.setPhone(userUpdateDTO.getPhone());
             user.setFullName(userUpdateDTO.getFullName());
 
@@ -287,7 +279,6 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         try {
             // Ánh xạ từ UserCreateDTO sang User
-            user.setUsername(userCreateDTO.getUsername());
             user.setFullName(userCreateDTO.getFullName());
             user.setEmail(userCreateDTO.getEmail());
             user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
@@ -358,12 +349,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserBasicDTO> getByUsernameEmailAndRole(String userName, String email, String roleName, int page, int size) {
-        System.out.println("userName" +  userName);
+    public Page<UserBasicDTO> getByEmailPhoneAndRole(String email, String phone, String roleName, int page, int size) {
         System.out.println("email" +  email);
         System.out.println("roleName" +  roleName);
 
-        Page<User> userPage = userRepository.findByUsernamePhoneAndRole(userName, email, roleName, PageRequest.of(page, size));
+        Page<User> userPage = userRepository.findByEmailPhoneAndRole(email, phone, roleName, PageRequest.of(page, size));
         return userPage.map(userMapper::toBasicDTO);
     }
 

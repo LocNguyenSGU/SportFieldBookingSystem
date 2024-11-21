@@ -106,12 +106,6 @@ public class UserController {
             hasErrors = true;
         }
 
-        // Kiểm tra username đã tồn tại chưa
-        if (userService.existsUserByUsername(userCreateDTO.getUsername())) {
-            errorMap.put("username", "Username has already been used");
-            hasErrors = true;
-        }
-
         // Kiểm tra mật khẩu khớp hay không
         if (!userCreateDTO.getRePassword().equals(userCreateDTO.getPassword())) {
             errorMap.put("password", "Passwords do not match");
@@ -142,8 +136,8 @@ public class UserController {
 
     @GetMapping("/search")
     public ResponseEntity<ResponseData> searchUsers(
-            @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone,
             @RequestParam(required = false) String roleName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -151,7 +145,7 @@ public class UserController {
         ResponseData responseData = new ResponseData();
         try {
             // Call service with search parameters and pagination details
-            Page<UserBasicDTO> userBasicDTOPage = userService.getByUsernameEmailAndRole(username, email, roleName, page, size);
+            Page<UserBasicDTO> userBasicDTOPage = userService.getByEmailPhoneAndRole(email, phone, roleName, page, size);
 
             // Set up response data with results and success status
             responseData.setStatusCode(200);
