@@ -1,9 +1,12 @@
 package com.example.SportFieldBookingSystem.Controller;
 
+import com.example.SportFieldBookingSystem.DTO.UserDTO.ChangPasswordDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
+import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
+import com.example.SportFieldBookingSystem.Security.JwtToken;
 import com.example.SportFieldBookingSystem.Service.Impl.UserServiceImpl;
 import com.example.SportFieldBookingSystem.Service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +30,11 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtToken jwtToken;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public ResponseEntity<?> getAllUser( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
@@ -161,6 +170,55 @@ public class UserController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("/update_password")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody ChangPasswordDTO changPasswordDTO) {
+        ResponseData responseData = new ResponseData();
+        Map<String, String> errorMap = new HashMap<>();
+        boolean isError = false;
+
+        // Lấy tên đăng nhập từ Authentication
+        String accessToken = changPasswordDTO.getAccessToken();
+        String email = "";
+        if (jwtToken.validateJwtToken(accessToken)) {
+            email = jwtToken.getUsernameFromJwtToken(accessToken);
+        }
+
+        // Kiểm tra mật khẩu cũ có chính xác không
+       Optional<User> userOptional = userService.getUserEntityByEmail(email);
+        if (userOptional.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("Người dùng không tồn tại.");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(changPasswordDTO.getMatKhauCu(), userOptional.get().getPassword())) {
+            errorMap.put("matKhauCu", "Mật khẩu cũ không chính xác");
+            isError = true;
+        }
+
+        // Kiểm tra mật khẩu mới và re_password có khớp không
+        if (!changPasswordDTO.getMatKhau().equals(changPasswordDTO.getReMatKhau())) {
+            errorMap.put("matKhauMoi", "Mật khẩu mới không khớp");
+            isError = true;
+        }
+
+        // Nếu có lỗi
+        if (isError) {
+            responseData.setStatusCode(409);
+            responseData.setMessage("Đổi mật khẩu không thành công");
+            responseData.setData(errorMap); // Trả về errorMap chứa các lỗi
+            return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+        }
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(changPasswordDTO.getMatKhau()));
+        userService.updateUserEntity(user);
+        responseData.setStatusCode(200);
+        responseData.setMessage("Đổi mật khẩu thành công!");
+        responseData.setData("");
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserByUserId(@PathVariable int userId) {
@@ -218,6 +276,7 @@ public class UserController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 

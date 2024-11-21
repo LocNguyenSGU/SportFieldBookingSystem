@@ -6,7 +6,9 @@ import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Email;
+import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.User;
+import com.example.SportFieldBookingSystem.Entity.UserRole;
 import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Repository.UserRepository;
@@ -58,11 +60,28 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleService roleService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         ResponseData responseData = new ResponseData();
         try {
+            Optional<User> userOptional =  userService.getUserEntityByEmail(loginDTO.getEmail());
+            if(userOptional.isEmpty()) {
+                responseData.setStatusCode(400);
+                responseData.setMessage("Không có tài khoản với email này");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+            }
+            else {
+                if(userOptional.get().getIsLoginGoogle() == 1) {
+                    responseData.setStatusCode(888);
+                    responseData.setMessage("Tài khoản này được đăng ký bằng Google. Vui lòng sử dụng \"Đăng nhập bằng Google\".");
+                    responseData.setData("");
+                    return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+                }
+            }
             if (loginService.checkLogin(loginDTO.getEmail(), loginDTO.getPassword())) {
                 String refreshToken = jwtToken.generateRefreshToken(loginDTO.getEmail());
                 String accessToken = jwtToken.generateToken(loginDTO.getEmail());
@@ -121,7 +140,18 @@ public class AuthController {
                 user.setEmail(email);
                 user.setFullName(fullName);
                 user.setPassword(passwordEncoder.encode("123456"));
-                userRepository.save(user);
+                user.setThoiGianTao(LocalDateTime.now());
+                user.setIsLoginGoogle(1);
+                User savedUser = userRepository.save(user);
+                Role role = roleService.getRoleByRoleId_ReturnRole(3); // 3 là khách hàng
+                UserRole userRole = new UserRole();
+                userRole.setRole(role);
+                userRole.setUser(savedUser);
+                List<UserRole> userRoleList = new ArrayList<>();
+                userRoleList.add(userRole);
+                savedUser.setUserRoleList(userRoleList);
+
+                userRepository.save(savedUser);
             }
 
             // Tạo JWT token
@@ -160,12 +190,6 @@ public class AuthController {
         // Kiểm tra email đã tồn tại chưa
         if (userService.existsUserByEmail(signupDTO.getEmail())) {
             errorMap.put("email", "Email has already been used");
-            hasErrors = true;
-        }
-
-        // Kiểm tra username đã tồn tại chưa
-        if (userService.existsUserByUsername(signupDTO.getUsername())) {
-            errorMap.put("username", "Username has already been used");
             hasErrors = true;
         }
 
@@ -278,6 +302,12 @@ public class AuthController {
             responseData.setMessage("tai khoan khong co voi " + email);
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+        if(userBasicDTO.getIsLoginGoogle() == 1) {
+            responseData.setStatusCode(799);
+            responseData.setMessage("Vui lòng đăng nhập bằng google cho tài khoản này");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
 
         String refreshTokenPassword = userService.createPasswordResetToken(email);

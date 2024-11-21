@@ -25,6 +25,7 @@ public interface UserService {
     void updateUser(int userId, UserUpdateDTO userUpdateDTO);
 
     boolean updateUser(UserUpdateDTO userUpdateDTO);
+    void updateUserEntity(User user);
 
     boolean existsUserByUsername(String userName);
 

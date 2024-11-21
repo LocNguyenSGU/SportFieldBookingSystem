@@ -27,7 +27,7 @@ public class User { // nguoi dung
     @Column(name = "user_name", nullable = true, length = 30)
     private String username;
 
-    @Column(name = "password", nullable = false, length = 90)
+    @Column(name = "password", nullable = true, length = 90)
     private String password;
 
     @Column(name = "full_name", length = 50)
@@ -65,6 +65,9 @@ public class User { // nguoi dung
 
     @Column(name="refresh_password_token")
     private String refreshPasswordToken;
+
+    @Column(name = "is_login_google", nullable = false)
+    private int isLoginGoogle = 0;
 
     @Column(name="date_create")
     private LocalDateTime thoiGianTao;

@@ -27,6 +27,7 @@ public class UserMapper {
         userBasicDTO.setThoiGianTao(user.getThoiGianTao());
         userBasicDTO.setPhone(user.getPhone());
         userBasicDTO.setStatus(String.valueOf(user.getStatus()));
+        userBasicDTO.setIsLoginGoogle(user.getIsLoginGoogle());
         userBasicDTO.setRole(RoleMapper.toRoleResponseDTO(user.getUserRoleList().getFirst().getRole()));
         return userBasicDTO;
     }

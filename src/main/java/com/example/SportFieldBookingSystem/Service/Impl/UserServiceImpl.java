@@ -245,6 +245,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserEntity(User user) {
+        userRepository.save(user);
+    }
+
+    @Override
     public boolean existsUserByUsername(String userName) {
         return userRepository.existsUserByUsername(userName);
     }
@@ -315,7 +320,6 @@ public class UserServiceImpl implements UserService {
     public boolean createUserSignUp(SignupDTO signupDTO) {
         User user = new User();
         try {
-            user.setUsername(signupDTO.getUsername());
             user.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
             user.setEmail(signupDTO.getEmail());
             user.setStatus(UserEnum.valueOf(UserEnum.ACTIVE.name()));

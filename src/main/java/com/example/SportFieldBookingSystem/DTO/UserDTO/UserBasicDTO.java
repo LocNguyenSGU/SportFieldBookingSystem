@@ -22,4 +22,5 @@ public class UserBasicDTO {
     private String status;
     private LocalDateTime thoiGianTao;
     private RoleResponseDTO role;
+    private int isLoginGoogle;
 }
