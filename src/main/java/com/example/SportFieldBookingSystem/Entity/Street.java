@@ -19,7 +19,4 @@ public class Street { // duong pho
     @JoinColumn(name = "district_id")
     private District district;
 
-    @OneToMany(mappedBy = "street")
-    private List<Location> locationList;
-
 }

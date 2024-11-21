@@ -6,6 +6,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
 import com.example.SportFieldBookingSystem.Repository.FieldRepository;
 import com.example.SportFieldBookingSystem.Repository.FieldTypeRepository;
 import com.example.SportFieldBookingSystem.Repository.LocationRepository;
@@ -79,4 +80,14 @@ public class FieldServiceImpl implements FieldService {
         }
         return false;
     }
+
+    @Override
+    public List<FieldListDTO> getFieldsByTimKiem(int loai, String ten, String diaChi) {
+        List<Field> fields = fieldRepository.findFieldsByCriteria(loai, ten, diaChi);
+
+        return fields.stream()
+                .map(field -> FieldMapper.mapToFieldListDTO(field)) // Use your custom FieldMapper
+                .collect(Collectors.toList());
+    }
+
 }

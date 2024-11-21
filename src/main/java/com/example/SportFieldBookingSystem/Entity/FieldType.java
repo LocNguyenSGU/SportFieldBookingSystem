@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +23,6 @@ public class FieldType { // loai san
     @Column(name="field_type_desc")
     private String fieldTypeDesc;
     @OneToMany(mappedBy = "fieldType")
+    @JsonIgnore
     private List<Field> fields;
 }

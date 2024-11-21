@@ -13,9 +13,6 @@ public class Location { // dia diem
     private int locationId;
     @Column(name = "location_number")
     private String locationNumber; // so nha; vd: 54/32/4D
-    @ManyToOne
-    @JoinColumn(name="street_id")
-    private Street street;
 
     @OneToMany(mappedBy = "location")
     private List<Field> fields;

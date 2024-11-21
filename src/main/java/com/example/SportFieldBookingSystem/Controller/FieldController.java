@@ -5,6 +5,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
+import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.modelmapper.internal.bytebuddy.description.field.FieldList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,4 +52,22 @@ public class FieldController {
         FieldGetDTO updatedDTO = fieldService.updateField(id, fieldUpdateDTO);
         return ResponseEntity.ok(updatedDTO);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FieldListDTO>> getFieldsByTimKiem(
+            @RequestParam(required = false) Integer loai,
+            @RequestParam(required = false) String ten,
+            @RequestParam(required = false) String diaChi) {
+        // Gọi service để tìm danh sách field
+        List<FieldListDTO> result = fieldService.getFieldsByTimKiem(loai, ten, diaChi);
+
+        // Nếu danh sách rỗng, trả về HTTP 404
+        if (result.isEmpty()) {
+            return ResponseEntity.status(404).body(null);
+        }
+
+        // Trả về danh sách cùng với HTTP 200
+        return ResponseEntity.ok(result);
+    }
+
 }

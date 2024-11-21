@@ -21,4 +21,7 @@ public interface FieldService {
 
     // Xóa Field theo ID
     boolean deleteField(int fieldId);
+
+    // tìm field theo loại, tên, địa chỉ
+    List<FieldListDTO> getFieldsByTimKiem(int loai, String ten, String diaChi);
 }
