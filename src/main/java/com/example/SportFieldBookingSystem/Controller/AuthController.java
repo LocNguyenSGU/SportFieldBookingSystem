@@ -125,8 +125,8 @@ public class AuthController {
             }
 
             // Tạo JWT token
-            String myAccessToken = jwtToken.generateToken(user.getEmail());
-            String refreshToken = jwtToken.generateRefreshToken(user.getEmail());
+            String myAccessToken = jwtToken.generateToken(email);
+            String refreshToken = jwtToken.generateRefreshToken(email);
 
             // Set refresh token vào cookie
             ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
@@ -137,6 +137,7 @@ public class AuthController {
                     .build();
 
             responseData.setStatusCode(200);
+
             responseData.setMessage("Google Login Success");
             responseData.setData(myAccessToken);
 
