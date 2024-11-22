@@ -69,6 +69,9 @@ public class User { // nguoi dung
     @Column(name = "is_login_google", nullable = false)
     private int isLoginGoogle = 0;
 
+    @Column(name = "is_login_github", nullable = false)
+    private int isLoginGithub= 0;
+
     @Column(name="date_create")
     private LocalDateTime thoiGianTao;
 }

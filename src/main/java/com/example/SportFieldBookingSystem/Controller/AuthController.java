@@ -25,14 +25,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -62,6 +62,10 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleService roleService;
+    @Value("${spring.security.oauth2.client.registration.github.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.github.client-secret}")
+    private String clientSecretId;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
@@ -81,6 +85,13 @@ public class AuthController {
                     responseData.setData("");
                     return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
                 }
+                if(userOptional.get().getIsLoginGithub() == 1) {
+                    responseData.setStatusCode(777);
+                    responseData.setMessage("Tài khoản này được đăng ký bằng Github. Vui lòng sử dụng \"Đăng nhập bằng Github\".");
+                    responseData.setData("");
+                    return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+                }
+
             }
             if (loginService.checkLogin(loginDTO.getEmail(), loginDTO.getPassword())) {
                 String refreshToken = jwtToken.generateRefreshToken(loginDTO.getEmail());
@@ -139,7 +150,7 @@ public class AuthController {
             if (!existsUserByEmail) {
                 user.setEmail(email);
                 user.setFullName(fullName);
-                user.setPassword(passwordEncoder.encode("123456"));
+//                user.setPassword(passwordEncoder.encode("123456"));
                 user.setThoiGianTao(LocalDateTime.now());
                 user.setIsLoginGoogle(1);
                 User savedUser = userRepository.save(user);
@@ -180,6 +191,112 @@ public class AuthController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/github/{codeGithub}")
+    public ResponseEntity<ResponseData> loginGithub(@PathVariable String codeGithub) {
+        ResponseData responseData = new ResponseData();
+
+        try {
+
+            // Đổi mã code để lấy access_token từ GitHub
+            String tokenUrl = "https://github.com/login/oauth/access_token";
+            RestTemplate restTemplate = new RestTemplate();
+
+            // Tạo request để đổi mã code lấy access_token
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+            body.add("client_id", clientId);
+            body.add("client_secret", clientSecretId);
+            body.add("code", codeGithub);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> tokenResponse = restTemplate.postForEntity(tokenUrl, request, Map.class);
+
+            // Lấy access_token từ phản hồi
+            String accessToken = (String) tokenResponse.getBody().get("access_token");
+
+            if (accessToken == null) {
+                responseData.setStatusCode(401);
+                responseData.setMessage("Failed to retrieve access token from GitHub");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
+
+            // Lấy thông tin người dùng từ GitHub API
+            String userUrl = "https://api.github.com/user";
+            HttpHeaders userHeaders = new HttpHeaders();
+            userHeaders.setBearerAuth(accessToken);
+            HttpEntity<?> userRequest = new HttpEntity<>(userHeaders);
+
+            ResponseEntity<Map> userResponse = restTemplate.exchange(userUrl, HttpMethod.GET, userRequest, Map.class);
+            Map<String, Object> userInfo = userResponse.getBody();
+
+            if (userInfo == null || !userInfo.containsKey("email")) {
+                responseData.setStatusCode(401);
+                responseData.setMessage("Failed to retrieve user information from GitHub");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
+
+            // Lấy thông tin người dùng
+            String email = (String) userInfo.get("email");
+            String username = (String) userInfo.get("login");
+
+            System.out.println("Email lay duoc tu github: " +  email);
+
+            // Kiểm tra người dùng đã tồn tại trong hệ thống chưa
+            Boolean existsUserByEmail = userService.existsUserByEmail(email);
+            User user = new User();
+            if (!existsUserByEmail) {
+                user.setEmail(email);
+                user.setFullName(username);
+//                user.setPassword(passwordEncoder.encode("123456")); // Mật khẩu mặc định
+                user.setThoiGianTao(LocalDateTime.now());
+                user.setIsLoginGithub(1);
+
+                User savedUser = userRepository.save(user);
+
+                // Gán role mặc định cho người dùng mới
+                Role role = roleService.getRoleByRoleId_ReturnRole(3); // 3 là role khách hàng
+                UserRole userRole = new UserRole();
+                userRole.setRole(role);
+                userRole.setUser(savedUser);
+
+                List<UserRole> userRoleList = new ArrayList<>();
+                userRoleList.add(userRole);
+                savedUser.setUserRoleList(userRoleList);
+
+                userRepository.save(savedUser);
+            }
+
+            // Tạo JWT token
+            String myAccessToken = jwtToken.generateToken(email);
+            String refreshToken = jwtToken.generateRefreshToken(email);
+
+            // Set refresh token vào cookie
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)
+                    .build();
+
+            responseData.setStatusCode(200);
+            responseData.setMessage("GitHub Login Success");
+            responseData.setData(myAccessToken);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    .body(responseData);
+
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("GitHub Login Failed: " + e.getMessage());
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerAccount(@Valid @RequestBody SignupDTO signupDTO) {
