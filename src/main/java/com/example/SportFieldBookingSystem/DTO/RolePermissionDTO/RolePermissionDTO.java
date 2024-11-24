@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.DTO.RolePermissionDTO;
 
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,4 +14,5 @@ public class RolePermissionDTO {
     private int permissionId;
     private String permissionName;
     private RolePermissionActionEnum action;
+    private ActiveEnum trangThaiActive;
 }

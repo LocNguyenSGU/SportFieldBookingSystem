@@ -5,6 +5,7 @@ import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.RolePermissionDTO.RolePermissionDTO;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.RolePermission;
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
@@ -39,9 +40,9 @@ public class RoleMapper {
         if (rolePermissionList == null) {
             rolePermissionList = new ArrayList<>();
         }
-
+        // fix chi tra ve action la active
         List<RolePermissionDTO> rolePermissionDTOList = rolePermissionList.stream()
-                .filter(Objects::nonNull)
+                .filter(rp -> rp.getStatus() != ActiveEnum.IN_ACTIVE)
                 .map(RolePermissionMapper::toRolePermissionDTO)
                 .collect(Collectors.toList());
 

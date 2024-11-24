@@ -18,7 +18,7 @@ public interface RoleService {
     boolean existsByRoleName(String roleName);
 
     RoleByUserDTO
-    getListRoleByUserRoleList_User_UserName(String userName);
+    getListRoleByUserRoleList_User_Email(String email);
 
     int getRoleIdByRoleName(String roleName);
 

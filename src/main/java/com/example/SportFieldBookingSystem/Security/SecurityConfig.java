@@ -54,15 +54,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/role/update")
-                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí quyền", "EDIT"))
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí nhóm quyền", "EDIT"))
                         .requestMatchers("/user/update/**")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí người dùng", "EDIT"))
                         .requestMatchers("/user/username/**")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí người dùng", "VIEW"))
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         http.sessionManagement(session ->session

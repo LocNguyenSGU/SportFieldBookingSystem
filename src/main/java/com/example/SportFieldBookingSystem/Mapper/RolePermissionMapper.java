@@ -9,6 +9,7 @@ public class RolePermissionMapper {
         rolePermissionDTO.setPermissionName(rolePermission.getPermission().getPermissionName());
         rolePermissionDTO.setPermissionId(rolePermission.getPermission().getPermissionId());
         rolePermissionDTO.setAction(rolePermission.getAction());
+        rolePermissionDTO.setTrangThaiActive(rolePermission.getStatus());
         return rolePermissionDTO;
     }
 }

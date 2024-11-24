@@ -15,7 +15,6 @@ import java.util.List;
 public class UserBasicDTO {
     private int userId;
     private String userCode;
-    private String username;
     private String fullName;
     private String email;
     private String phone;
@@ -23,4 +22,5 @@ public class UserBasicDTO {
     private LocalDateTime thoiGianTao;
     private RoleResponseDTO role;
     private int isLoginGoogle;
+    private int isLoginGithub;
 }

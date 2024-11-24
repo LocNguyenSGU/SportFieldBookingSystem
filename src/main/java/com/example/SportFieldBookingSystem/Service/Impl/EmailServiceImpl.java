@@ -42,11 +42,11 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendHtmlEMail(Email email, String resetLink, String userName) {
+    public void sendHtmlEMail(Email email, String resetLink, String fullName) {
         try { // ham nay la gui html cho chuc nang quen mat khau
             // Create Thymeleaf context and add variables
             Context context = new Context();
-            context.setVariable("name", userName);
+            context.setVariable("name", fullName);
             context.setVariable("resetLink", resetLink);
 
             // Process HTML template with Thymeleaf

@@ -41,20 +41,20 @@ public class RoleController {
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/user/{userName}")
-    public ResponseEntity<?> getRoleByUserName(@PathVariable String userName) {
+    @GetMapping("/user/{email}")
+    public ResponseEntity<?> getRoleByEmail(@PathVariable String email) {
         ResponseData responseData = new ResponseData();
         try {
-            RoleByUserDTO roleByUserDTO = roleService.getListRoleByUserRoleList_User_UserName(userName);
+            RoleByUserDTO roleByUserDTO = roleService.getListRoleByUserRoleList_User_Email(email);
             if(roleByUserDTO == null) {
-                responseData.setMessage("khong lay duoc role theo userName");
+                responseData.setMessage("khong lay duoc role theo email");
                 return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
             }
             responseData.setData(roleByUserDTO);
-            responseData.setMessage("Lay role name theo userName");
+            responseData.setMessage("Lay role name theo email");
             return new  ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
-            responseData.setMessage("Error get role by userName: " + e.getMessage());
+            responseData.setMessage("Error get role by email: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }

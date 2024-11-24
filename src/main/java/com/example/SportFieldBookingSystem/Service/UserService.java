@@ -27,11 +27,7 @@ public interface UserService {
     boolean updateUser(UserUpdateDTO userUpdateDTO);
     void updateUserEntity(User user);
 
-    boolean existsUserByUsername(String userName);
-
     boolean existsUserByEmail(String email);
-
-    Optional<UserBasicDTO> getUserByUsername(String userName);
 
     boolean createUser(UserCreateDTO userCreateDTO);
     boolean createUserSignUp(SignupDTO signupDTO);

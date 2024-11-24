@@ -4,5 +4,4 @@ public enum RolePermissionActionEnum {
     CREATE,
     VIEW,
     EDIT,
-    DELETE
 }

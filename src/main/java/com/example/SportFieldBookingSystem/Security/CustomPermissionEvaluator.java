@@ -1,8 +1,8 @@
 package com.example.SportFieldBookingSystem.Security;
 
 import com.example.SportFieldBookingSystem.DTO.RoleDTO.RoleByUserDTO;
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
-import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import com.example.SportFieldBookingSystem.Service.PermissionService;
 import com.example.SportFieldBookingSystem.Service.RolePermissionService;
 import com.example.SportFieldBookingSystem.Service.RoleService;
@@ -23,16 +23,19 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
     private PermissionService permissionService;
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object action) {
-        String username = authentication.getName();
+        String email = authentication.getName();
+        System.out.println("Email authentication: " +  email);
+
         String permissionName = (String) targetDomainObject;
         String actionName = (String) action;
 
         // Lấy các role của người dùng từ bảng UserRole
-        RoleByUserDTO roleByUserDTO = roleService.getListRoleByUserRoleList_User_UserName(username);
+        RoleByUserDTO roleByUserDTO = roleService.getListRoleByUserRoleList_User_Email(email);
         String userRoleName = roleByUserDTO.getRoleName();
+        System.out.println("userRoleName : " +  userRoleName);
         int roleId = roleService.getRoleIdByRoleName(userRoleName);
         int permissionId = permissionService.getPermissionIdByPermissionName(permissionName);
-        return rolePermissionService.existsByRoleIdAndPermissionIdAndActionAndStatus(roleId, permissionId, RolePermissionActionEnum.valueOf(actionName), RolePermissionEnum.ACTIVE);
+        return rolePermissionService.existsByRoleIdAndPermissionIdAndActionAndStatus(roleId, permissionId, RolePermissionActionEnum.valueOf(actionName), ActiveEnum.ACTIVE);
     }
 
 

@@ -426,13 +426,19 @@ public class AuthController {
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
+        if(userBasicDTO.getIsLoginGithub() == 1) {
+            responseData.setStatusCode(666);
+            responseData.setMessage("Vui lòng đăng nhập bằng github cho tài khoản này");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
 
         String refreshTokenPassword = userService.createPasswordResetToken(email);
         String resetLink = "http://localhost:5173/reset_password?token=" + refreshTokenPassword;
         Email emailSend = new Email();
         emailSend.setToEmail(email);
         emailSend.setSubject("Reset Your Password");
-        emailService.sendHtmlEMail(emailSend, resetLink, userBasicDTO.getUsername());
+        emailService.sendHtmlEMail(emailSend, resetLink, userBasicDTO.getFullName());
         responseData.setStatusCode(200);
         responseData.setMessage("Reset password link has been sent to your email");
         responseData.setData("");

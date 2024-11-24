@@ -7,11 +7,10 @@ import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.RolePermission;
 import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
-import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import com.example.SportFieldBookingSystem.Repository.PermissionRepository;
 import com.example.SportFieldBookingSystem.Repository.RolePermissionRepository;
-import com.example.SportFieldBookingSystem.Repository.RoleRepository;
 import com.example.SportFieldBookingSystem.Mapper.RoleMapper;
+import com.example.SportFieldBookingSystem.Repository.RoleRepository;
 import com.example.SportFieldBookingSystem.Service.PermissionService;
 import com.example.SportFieldBookingSystem.Service.RolePermissionService;
 import com.example.SportFieldBookingSystem.Service.RoleService;
@@ -150,11 +149,11 @@ public class RoleServiceImpl implements RoleService {
 
             // Nếu quyền cũ không có trong quyền mới, set trạng thái thành INACTIVE
             if (!newPermissionsSet.contains(existingKey)) {
-                existingPermission.setStatus(RolePermissionEnum.INACTIVE);
+                existingPermission.setStatus(ActiveEnum.IN_ACTIVE);
                 rolePermissionRepository.save(existingPermission);
             } else {
                 // Nếu quyền vẫn còn trong danh sách mới, giữ trạng thái là ACTIVE
-                existingPermission.setStatus(RolePermissionEnum.ACTIVE);
+                existingPermission.setStatus(ActiveEnum.ACTIVE);
                 rolePermissionRepository.save(existingPermission);
                 newPermissionsSet.remove(existingKey);  // Xóa khỏi set để xử lý quyền mới còn lại
             }
@@ -187,14 +186,14 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleByUserDTO getListRoleByUserRoleList_User_UserName(String userName) {
+    public RoleByUserDTO getListRoleByUserRoleList_User_Email(String email) {
         try{
-            List<Role> roleList = roleRepository.findListRoleByUserRoleList_User_Username(userName);
+            List<Role> roleList = roleRepository.findListRoleByUserRoleList_User_Email(email);
             RoleByUserDTO roleByUserDTO = new RoleByUserDTO();
             if(roleList == null) {
                 return null;
             }
-            roleByUserDTO.setUserName(userName);
+            roleByUserDTO.setEmail(email);
             for(Role role : roleList) {
                 roleByUserDTO.setRoleName(role.getRoleName());
                 break;
@@ -218,7 +217,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<RoleResponseDTO> getAllRole() {
-        List<Role> roleList = roleRepository.findAllByRolePermissionList_status(RolePermissionEnum.ACTIVE);
+        List<Role> roleList = roleRepository.findAllByRolePermissionList_status(ActiveEnum.ACTIVE);
         return roleList.stream()
                 .map(RoleMapper::toRoleResponseDTO)
                 .collect(Collectors.toList());
@@ -236,7 +235,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = roleRepository.findRoleByRoleId(roleId);
         role.setRolePermissionList(
                 role.getRolePermissionList().stream()
-                        .filter(rp -> rp.getStatus() == RolePermissionEnum.ACTIVE)
+                        .filter(rp -> rp.getStatus() == ActiveEnum.ACTIVE)
                         .collect(Collectors.toList())
         );
         return RoleMapper.toRoleResponseDTO(role);

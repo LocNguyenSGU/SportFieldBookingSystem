@@ -4,8 +4,8 @@ import com.example.SportFieldBookingSystem.DTO.RolePermissionDTO.RolePermissionC
 import com.example.SportFieldBookingSystem.Entity.Permission;
 import com.example.SportFieldBookingSystem.Entity.Role;
 import com.example.SportFieldBookingSystem.Entity.RolePermission;
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
-import com.example.SportFieldBookingSystem.Enum.RolePermissionEnum;
 import com.example.SportFieldBookingSystem.Repository.RolePermissionRepository;
 import com.example.SportFieldBookingSystem.Service.PermissionService;
 import com.example.SportFieldBookingSystem.Service.RolePermissionService;
@@ -34,7 +34,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
             rolePermission.setRole(role);
             rolePermission.setPermission(permission);
             rolePermission.setAction(RolePermissionActionEnum.valueOf(rolePermissionCreateDTO.getAction().name()));
-            rolePermission.setStatus(RolePermissionEnum.ACTIVE);
+            rolePermission.setStatus(ActiveEnum.ACTIVE);
             rolePermissionRepository.save(rolePermission);
             return true;
         }catch (Exception e) {
@@ -44,7 +44,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
-    public boolean existsByRoleIdAndPermissionIdAndActionAndStatus(int roleId, int permissionId, RolePermissionActionEnum action, RolePermissionEnum status) {
+    public boolean existsByRoleIdAndPermissionIdAndActionAndStatus(int roleId, int permissionId, RolePermissionActionEnum action, ActiveEnum status) {
         return rolePermissionRepository.existsByRole_RoleIdAndPermission_PermissionIdAndActionAndStatus(roleId, permissionId, action, status);
     }
 
@@ -59,7 +59,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
         // Cập nhật các thuộc tính cần thiết (chỉ cần cập nhật trạng thái active)
         RolePermission updatedRolePermission = existingRolePermission.get();
-        updatedRolePermission.setStatus(RolePermissionEnum.ACTIVE);
+        updatedRolePermission.setStatus(ActiveEnum.ACTIVE);
 
         rolePermissionRepository.save(updatedRolePermission);
     }

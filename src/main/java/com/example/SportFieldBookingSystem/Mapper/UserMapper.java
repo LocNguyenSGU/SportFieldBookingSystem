@@ -20,7 +20,6 @@ public class UserMapper {
 
         UserBasicDTO userBasicDTO = new UserBasicDTO();
         userBasicDTO.setUserId(user.getUserId());
-        userBasicDTO.setUsername(user.getUsername());
         userBasicDTO.setUserCode(user.getUserCode());
         userBasicDTO.setEmail(user.getEmail());
         userBasicDTO.setFullName(user.getFullName());
@@ -28,6 +27,7 @@ public class UserMapper {
         userBasicDTO.setPhone(user.getPhone());
         userBasicDTO.setStatus(String.valueOf(user.getStatus()));
         userBasicDTO.setIsLoginGoogle(user.getIsLoginGoogle());
+        userBasicDTO.setIsLoginGithub(user.getIsLoginGithub());
         userBasicDTO.setRole(RoleMapper.toRoleResponseDTO(user.getUserRoleList().getFirst().getRole()));
         return userBasicDTO;
     }

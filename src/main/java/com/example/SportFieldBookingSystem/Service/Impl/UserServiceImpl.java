@@ -124,10 +124,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserBasicDTO findUserWithRolesByUserName(String username) {
+    public UserBasicDTO findUserWithRolesByUserName(String email) {
         try {
             // Tìm người dùng dựa trên userCode
-            Optional<User> userOptional = userRepository.findUserWithRolesByUsername(username);
+            Optional<User> userOptional = userRepository.findUserWithRolesByEmail(email);
 
             // Kiểm tra xem người dùng có tồn tại hay không
             if (userOptional.isPresent()) {
@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
                 return userMapper.toBasicDTO(user); // Chuyển đổi sang DTO và trả về
             } else {
                 // Xử lý khi không tìm thấy người dùng
-                System.out.println("Không tìm thấy người dùng với userName: " + username);
+                System.out.println("Không tìm thấy người dùng với userName: " + email);
                 return null; // Hoặc ném ngoại lệ tùy theo yêu cầu
             }
         } catch (Exception e) {
@@ -250,20 +250,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsUserByUsername(String userName) {
-        return userRepository.existsUserByUsername(userName);
-    }
-
-    @Override
     public boolean existsUserByEmail(String email) {
         return userRepository.existsUserByEmail(email);
     }
 
-    @Override
-    public Optional<UserBasicDTO> getUserByUsername(String userName) {
-        Optional<User> userOptional = userRepository.findByUsername(userName);
-        return Optional.ofNullable(userMapper.toBasicDTO(userOptional.get()));
-    }
 
     @Override
     public UserBasicDTO getUserByEmail(String email) {
@@ -324,6 +314,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(signupDTO.getEmail());
             user.setStatus(UserEnum.valueOf(UserEnum.ACTIVE.name()));
             user.setThoiGianTao(LocalDateTime.now());
+            user.setFullName(signupDTO.getHoTen());
             User newUser = userRepository.save(user);
 
             Role role = roleService.getRoleByRoleId_ReturnRole(3); // role 3: khach hang
