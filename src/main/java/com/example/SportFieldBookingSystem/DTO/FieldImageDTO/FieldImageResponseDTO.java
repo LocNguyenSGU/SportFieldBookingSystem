@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class FieldImageResponseDTO {
-    private int fieldImageId;
+    private int fieldId;
     private String fieldImageURL;
-    private FieldResponseDTO field;
 }

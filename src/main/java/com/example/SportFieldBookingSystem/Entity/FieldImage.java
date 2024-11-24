@@ -17,7 +17,7 @@ public class FieldImage {
     private int imageId;
 
     @ManyToOne
-    @JoinColumn(name = "field_id")
+    @JoinColumn(name = "field_id" , nullable = false)
     private Field field;
 
     @Column(name = "image_url", length = 255, nullable = false)

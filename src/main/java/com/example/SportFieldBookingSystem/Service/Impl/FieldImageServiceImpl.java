@@ -34,7 +34,6 @@ public class FieldImageServiceImpl implements FieldImageService {
             FieldImage fieldImgSave = fieldImageRepository.save(fieldImage);
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
-            fieldImageResponseDTO.setFieldImageId(fieldImgSave.getImageId());
             fieldImageResponseDTO.setFieldImageURL(fieldImgSave.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
@@ -51,7 +50,6 @@ public class FieldImageServiceImpl implements FieldImageService {
             FieldImage fieldImgSave = fieldImageRepository.save(fieldImage);
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
-            fieldImageResponseDTO.setFieldImageId(fieldImgSave.getImageId());
             fieldImageResponseDTO.setFieldImageURL(fieldImgSave.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
@@ -64,7 +62,6 @@ public class FieldImageServiceImpl implements FieldImageService {
             FieldImage fieldImage = fieldImageRepository.findById(id).get();
 
             FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
-            fieldImageResponseDTO.setFieldImageId(fieldImage.getImageId());
             fieldImageResponseDTO.setFieldImageURL(fieldImage.getImageUrl());
             return fieldImageResponseDTO;
         } catch (Exception e) {
@@ -78,7 +75,6 @@ public class FieldImageServiceImpl implements FieldImageService {
             List<FieldImage> fieldImageList = fieldImageRepository.findAll();
             for (FieldImage fieldImage : fieldImageList) {
                 FieldImageResponseDTO fieldImageResponseDTO = new FieldImageResponseDTO();
-                fieldImageResponseDTO.setFieldImageId(fieldImage.getImageId());
                 fieldImageResponseDTO.setFieldImageURL(fieldImage.getImageUrl());
                 fieldImageResponseDTOList.add(fieldImageResponseDTO);
             }

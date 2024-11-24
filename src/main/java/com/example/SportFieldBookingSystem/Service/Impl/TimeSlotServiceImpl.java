@@ -10,11 +10,13 @@ import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Repository.TimeSlotRepository;
 import com.example.SportFieldBookingSystem.Service.TimeSlotService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,15 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository, ModelMapper modelMapper) {
         this.timeSlotRepository = timeSlotRepository;
         this.modelMapper = modelMapper;
+    }
+
+    // Scheduled task chạy mỗi ngày vào lúc 1h sáng để xóa các TimeSlot đã hết hạn
+    @Scheduled(cron = "0 0 0 * * ?") // Chạy mỗi ngày vào lúc 0 giờ sáng
+    @Transactional
+    public void deleteExpiredTimeSlots() {
+        Date currentDate = new Date(); // Lấy thời gian hiện tại
+        // Xóa tất cả các TimeSlot có ngày nhỏ hơn ngày hiện tại
+        timeSlotRepository.deleteByDateBefore(currentDate);
     }
 
     // create
