@@ -230,7 +230,7 @@ public class BookingService implements BookingServiceImpl {
                 } else {
                     System.err.println("TimeSlot with ID " + selectedEvent.getId() + " not found!");
                 }
-
+                finalizeBooking(savedBooking.getBookingId());
                 // Thêm booking đã tạo vào danh sách kết quả
                 createdBookings.add(savedBooking);
             }

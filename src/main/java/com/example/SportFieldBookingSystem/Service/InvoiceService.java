@@ -84,6 +84,7 @@ public class InvoiceService implements InvoiceServiceImpl {
         try {
             Invoice invoice = new Invoice();
             invoice.setInvoiceCode(UUID.randomUUID().toString().substring(0, 10));
+            invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
             invoice.setName(invoiceBookingRequestDTO.getName());
             invoice.setEmail(invoiceBookingRequestDTO.getEmail());
             invoice.setPhoneNumber(invoiceBookingRequestDTO.getPhoneNumber());
