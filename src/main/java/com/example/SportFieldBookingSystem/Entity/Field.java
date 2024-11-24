@@ -70,6 +70,9 @@ public class Field { // san
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldMaintenance> fieldMaintenanceList ;
 
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    private List<FieldTimeRule> fieldTimeRuleList;
+
     public int getFieldId() {
         return fieldId;
     }

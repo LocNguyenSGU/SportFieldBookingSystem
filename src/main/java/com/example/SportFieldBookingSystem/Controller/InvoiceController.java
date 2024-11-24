@@ -1,6 +1,4 @@
 package com.example.SportFieldBookingSystem.Controller;
-
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceRequestDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
@@ -85,25 +83,25 @@ public class InvoiceController {
 //    }
 
     // Cập nhật hóa đơn
-    @PutMapping("/invoice/{id}")
-    public ResponseEntity<ResponseData> updateInvoice(@PathVariable int id, @RequestBody InvoiceResponseDTO invoiceRequestDTO) {
-        ResponseData responseData = new ResponseData();
-
-        try {
-            InvoiceResponseDTO updatedInvoice = invoiceServiceImpl.updateInvoice(id, invoiceRequestDTO);
-            if (updatedInvoice == null) {
-                responseData.setMessage("Invoice not found for update");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
-            }
-
-            responseData.setMessage("Update invoice success");
-            responseData.setData(updatedInvoice);
-            return ResponseEntity.ok(responseData);
-        } catch (Exception e) {
-            responseData.setMessage("An error occurred while updating the invoice: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
-        }
-    }
+//    @PutMapping("/invoice/{id}")
+//    public ResponseEntity<ResponseData> updateInvoice(@PathVariable int id, @RequestBody InvoiceResponseDTO invoiceRequestDTO) {
+//        ResponseData responseData = new ResponseData();
+//
+//        try {
+//            InvoiceResponseDTO updatedInvoice = invoiceServiceImpl.updateInvoice(id, invoiceRequestDTO);
+//            if (updatedInvoice == null) {
+//                responseData.setMessage("Invoice not found for update");
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+//            }
+//
+//            responseData.setMessage("Update invoice success");
+//            responseData.setData(updatedInvoice);
+//            return ResponseEntity.ok(responseData);
+//        } catch (Exception e) {
+//            responseData.setMessage("An error occurred while updating the invoice: " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+//        }
+//    }
 
     // Xóa hóa đơn
     @DeleteMapping("/invoice/{id}")

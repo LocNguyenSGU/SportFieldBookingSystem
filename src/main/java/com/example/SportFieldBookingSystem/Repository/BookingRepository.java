@@ -24,5 +24,5 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
                                           @Param("endTime") LocalTime endTime);
 
     @Query("SELECT SUM(b.totalPrice) FROM Booking b WHERE b.invoice.invoiceId = :invoiceId AND b.status != 'CANCELLED'")
-    Double findTotalAmountByInvoiceId(@Param("invoiceId") int invoiceId);
+    double findTotalAmountByInvoiceId(@Param("invoiceId") int invoiceId);
 }

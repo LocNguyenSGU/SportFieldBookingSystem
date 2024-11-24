@@ -16,4 +16,6 @@ public interface BookingServiceImpl {
     public BookingResponseDTO updateBooking(int id, Booking bookingDetails);
     public boolean checkForOverlappingBookings(int bookingId, int fieldId, LocalDate bookingDate, LocalTime startTime, LocalTime endTime);
     public List<BookingRequestDTO> createBookings(BookingRequestDTO bookingRequestDTO, Invoice invoice);
+    public void finalizeBooking(int bookingId);
+    public void cancelBooking(int bookingId);
 }
