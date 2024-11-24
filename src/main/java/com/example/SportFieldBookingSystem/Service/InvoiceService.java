@@ -1,13 +1,16 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceRequestDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingRequestDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
 import com.example.SportFieldBookingSystem.Enum.BookingEnum;
 import com.example.SportFieldBookingSystem.Enum.InvoiceEnum;
 import com.example.SportFieldBookingSystem.Repository.InvoiceRepository;
+import com.example.SportFieldBookingSystem.Service.Impl.BookingServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +25,12 @@ public class InvoiceService implements InvoiceServiceImpl {
 
     private final InvoiceRepository invoiceRepo;
     private final ModelMapper modelMapper;
-
+    private final BookingServiceImpl bookingService;
     @Autowired
-    public InvoiceService(InvoiceRepository invoiceRepo, ModelMapper modelMapper){
+    public InvoiceService(InvoiceRepository invoiceRepo, ModelMapper modelMapper, BookingServiceImpl bookingService) {
         this.invoiceRepo = invoiceRepo;
         this.modelMapper = modelMapper;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -74,46 +78,47 @@ public class InvoiceService implements InvoiceServiceImpl {
         return invoiceResponseDTO;
     }
 
+    @Transactional
     @Override
-    public Invoice createInvoice(InvoiceRequestDTO invoiceDTO) {
+    public InvoiceBookingResponseDTO createInvoice(InvoiceBookingRequestDTO invoiceBookingRequestDTO) {
         try {
             Invoice invoice = new Invoice();
-            invoice.setInvoiceCode(UUID.randomUUID().toString().substring(0, 10).toUpperCase());
-            invoice.setName(invoiceDTO.getName());
-            invoice.setPhoneNumber(invoiceDTO.getPhoneNumber());
-            invoice.setEmail(invoiceDTO.getEmail());
-            invoice.setTotalAmount(invoiceDTO.getTotalAmount());
+            invoice.setInvoiceCode(UUID.randomUUID().toString().substring(0, 10));
+            invoice.setName(invoiceBookingRequestDTO.getName());
+            invoice.setEmail(invoiceBookingRequestDTO.getEmail());
+            invoice.setPhoneNumber(invoiceBookingRequestDTO.getPhoneNumber());
             invoice.setInvDate(new Date());
+            invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
             invoice.setStatus(InvoiceEnum.PENDING);
-
-
-            return invoiceRepo.save(invoice);
+            invoiceRepo.save(invoice);
+            bookingService.createBookings(invoiceBookingRequestDTO.getBooking(), invoice);
+            return modelMapper.map(invoiceBookingRequestDTO, InvoiceBookingResponseDTO.class);
         } catch (Exception e) {
             System.err.println("Error creating invoice: " + e.getMessage());
             return null;
         }
     }
 
-    @Override
-    public InvoiceResponseDTO updateInvoice(int id, InvoiceResponseDTO invoiceRequestDTO) {
-        try {
-            Invoice invoice = invoiceRepo.findById(id).orElse(null);
-            if (invoice == null) {
-                return null;
-            }
-
-            invoice.setInvDate(invoiceRequestDTO.getInvDate());
-            invoice.setTotalAmount(invoiceRequestDTO.getTotalAmount());
-            invoice.setStatus(invoiceRequestDTO.getPaymentStatus());
-
-            invoiceRepo.save(invoice);
-
-            return new InvoiceResponseDTO(invoice.getInvoiceId(), invoice.getInvoiceCode(), invoice.getInvDate(), invoice.getTotalAmount(), invoice.getStatus());
-        } catch (Exception e) {
-            System.err.println("Error updating invoice: " + e.getMessage());
-            return null;
-        }
-    }
+//    @Override
+//    public InvoiceResponseDTO updateInvoice(int id, InvoiceResponseDTO invoiceRequestDTO) {
+//        try {
+//            Invoice invoice = invoiceRepo.findById(id).orElse(null);
+//            if (invoice == null) {
+//                return null;
+//            }
+//
+//            invoice.setInvDate(invoiceRequestDTO.getInvDate());
+//            invoice.setTotalAmount(invoiceRequestDTO.getTotalAmount());
+//            invoice.setStatus(invoiceRequestDTO.getPaymentStatus());
+//
+//            invoiceRepo.save(invoice);
+//
+//            return new InvoiceResponseDTO(invoice.getInvoiceId(), invoice.getInvoiceCode(), invoice.getInvDate(), invoice.getTotalAmount(), invoice.getStatus());
+//        } catch (Exception e) {
+//            System.err.println("Error updating invoice: " + e.getMessage());
+//            return null;
+//        }
+//    }
     @Override
     public boolean deleteInvoice(int id) {
         try {

@@ -7,6 +7,7 @@ import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
+import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Repository.TimeSlotRepository;
 import com.example.SportFieldBookingSystem.Service.TimeSlotService;
 import org.modelmapper.ModelMapper;
@@ -86,6 +87,17 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             timeSlotRepository.delete(timeSlot);
         } catch (Exception e) {
             throw new RuntimeException("Time slot deletion failed");
+        }
+    }
+
+    public TimeSlotResponseDTO setStatus(int id, TimeSlotEnum status) {
+        try {
+            TimeSlot timeSlot = timeSlotRepository.findById(id).get();
+            timeSlot.setStatus(status);
+            TimeSlot timeSlotSave = timeSlotRepository.save(timeSlot);
+            return modelMapper.map(timeSlotSave, TimeSlotResponseDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Time slot set status failed");
         }
     }
 }

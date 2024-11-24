@@ -1,5 +1,7 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.example.SportFieldBookingSystem.Enum.BookingEnum;
+import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +11,6 @@ import java.sql.Time;
 import java.sql.Date;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "time_slot")
 public class TimeSlot { //TimeSlot sẽ lưu trữ thông tin về các khoảng thời gian trống của sân thể dục để người dùng có thể đặt sân.
@@ -32,4 +32,12 @@ public class TimeSlot { //TimeSlot sẽ lưu trữ thông tin về các khoảng
 
     @Column(name = "end_time", nullable = false)
     private Time endTime;
+
+    @Column(name = "status", length = 20)
+    @Enumerated(EnumType.STRING)
+    private TimeSlotEnum status;
+
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
 }
