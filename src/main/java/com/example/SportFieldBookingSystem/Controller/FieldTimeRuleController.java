@@ -32,7 +32,7 @@ public class FieldTimeRuleController {
         return fieldTimeRuleService.getAllFieldTimeRule();
     }
 
-    @DeleteMapping("{/id}")
+    @DeleteMapping("{id}")
     public boolean deleteFieldTimeRule(@PathVariable int id) {
         return fieldTimeRuleService.deleteFieldTimeRule(id);
     }

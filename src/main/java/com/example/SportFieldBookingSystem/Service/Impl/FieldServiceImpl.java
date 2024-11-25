@@ -6,6 +6,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.*;
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
 import com.example.SportFieldBookingSystem.Repository.*;
@@ -167,13 +168,56 @@ public class FieldServiceImpl implements FieldService {
     // Cập nhật Field
     @Override
     public FieldGetDTO updateField(int fieldId, FieldUpdateDTO fieldUpdateDTO) {
-        Field field = fieldRepository.findById(fieldId).orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
-        modelMapper.map(fieldUpdateDTO, field); // Map các thuộc tính từ DTO vào entity
-        field.setFieldType(fieldTypeRepository.findById(fieldUpdateDTO.getFieldTypeId()).orElseThrow());
-        field.setLocation(locationRepository.findById(fieldUpdateDTO.getLocationId()).orElseThrow());
+        // Tìm Field hiện tại
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
+
+        // Cập nhật các thuộc tính cho phép
+        if (fieldUpdateDTO.getFieldName() != null) {
+            field.setFieldName(fieldUpdateDTO.getFieldName());
+        }
+
+        if (fieldUpdateDTO.getCapacity() > 0) {
+            field.setCapacity(fieldUpdateDTO.getCapacity());
+        }
+
+        if (fieldUpdateDTO.getPricePerHour() > 0) {
+            field.setPricePerHour(fieldUpdateDTO.getPricePerHour());
+        }
+        FieldType newFieldType = fieldTypeRepository.findById(fieldUpdateDTO.getFieldTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("FieldType not found with id: " + fieldUpdateDTO.getFieldTypeId()));
+        field.setFieldType(newFieldType);
+
+        if (fieldUpdateDTO.getStatus() != null) {
+            field.setStatus(FieldEnum.valueOf(fieldUpdateDTO.getStatus()));
+        }
+
+        if (fieldUpdateDTO.getAddress() != null) {
+            field.setFieldAddress(fieldUpdateDTO.getAddress());
+        }
+
+        // Cập nhật FieldImage
+        if (fieldUpdateDTO.getFieldImageList() != null) {
+            Field finalField = field;
+            List<FieldImage> images = fieldUpdateDTO.getFieldImageList().stream()
+                    .map(imageDTO -> {
+                        FieldImage fieldImage = new FieldImage();
+                        fieldImage.setImageUrl(imageDTO.getImageUrl());
+                        fieldImage.setField(finalField);
+                        return fieldImage;
+                    })
+                    .collect(Collectors.toList());
+            field.setFieldImageList(images);
+        }
+
+        // Lưu Field
         field = fieldRepository.save(field);
+
+        // Trả về DTO
         return modelMapper.map(field, FieldGetDTO.class);
     }
+
+
 
     // Xóa Field
     @Override
