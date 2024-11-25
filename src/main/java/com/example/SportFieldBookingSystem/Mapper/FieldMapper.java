@@ -1,8 +1,10 @@
 package com.example.SportFieldBookingSystem.Mapper;
 
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
+import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeResponseDTO;
+import com.example.SportFieldBookingSystem.Entity.FieldTimeRule;
 
 public class FieldMapper {
 
@@ -26,4 +28,16 @@ public class FieldMapper {
 
         return dto;
     }
+
+    public static FieldTimeRuleDTO mapToFieldTimeRuleDTO(FieldTimeRule entity) {
+        FieldTimeRuleDTO dto = new FieldTimeRuleDTO();
+        dto.getField().setFieldId(entity.getId());
+        dto.setStartTime(entity.getStartTime());
+        dto.setEndTime(entity.getEndTime());
+        dto.setStartDate(entity.getStartDate());
+        dto.setEndDate(entity.getEndDate());
+        dto.setDaysOfWeek(entity.getDaysOfWeek());
+        return dto;
+    }
+
 }

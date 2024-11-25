@@ -6,6 +6,7 @@ import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Entity.FieldTimeRule;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
+import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
 import com.example.SportFieldBookingSystem.Repository.FieldTimeRuleRepository;
 import com.example.SportFieldBookingSystem.Repository.TimeSlotRepository;
 import com.example.SportFieldBookingSystem.Service.FieldTimeRuleService;
@@ -36,6 +37,38 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
         this.timeSlotRepository = timeSlotRepository;
         this.modelMapper = modelMapper;
     }
+
+    @Override
+    public List<FieldTimeRuleDTO> getAllFieldTimeRule() {
+        List<FieldTimeRule> fieldTimeRules = fieldTimeRuleRepository.findAll();
+
+        return fieldTimeRules.stream()
+                .map(fieldTimeRule -> modelMapper.map(fieldTimeRule, FieldTimeRuleDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public FieldTimeRuleDTO updateFieldTimeRule(int id,FieldTimeRuleDTO fieldTimeRuleDTO) {
+        FieldTimeRule fieldTimeRule = fieldTimeRuleRepository.findById(id).get();
+        modelMapper.map(fieldTimeRuleDTO, fieldTimeRule);
+        fieldTimeRule = fieldTimeRuleRepository.save(fieldTimeRule);
+        return modelMapper.map(fieldTimeRule, FieldTimeRuleDTO.class);
+    }
+
+    @Override
+    public FieldTimeRuleDTO getFieldTimeRuleById(int id) {
+        FieldTimeRule fieldTimeRule = fieldTimeRuleRepository.findById(id).orElse(null);
+        return modelMapper.map(fieldTimeRule, FieldTimeRuleDTO.class);
+    }
+
+    public boolean deleteFieldTimeRule(int id) {
+        if(fieldTimeRuleRepository.existsById(id)) {
+            fieldTimeRuleRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
 
     @Transactional
     public FieldTimeRuleDTO createFieldTimeRule(FieldTimeRuleDTO rule) {
@@ -143,5 +176,6 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
             }
         }
     }
+
 
 }

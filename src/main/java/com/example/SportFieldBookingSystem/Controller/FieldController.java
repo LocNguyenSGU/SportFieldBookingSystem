@@ -4,13 +4,9 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
-import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
-import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Service.FieldService;
-import org.modelmapper.internal.bytebuddy.description.field.FieldList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;

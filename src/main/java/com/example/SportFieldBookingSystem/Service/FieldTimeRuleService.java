@@ -1,8 +1,13 @@
 package com.example.SportFieldBookingSystem.Service;
 
 import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleDTO;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 public interface FieldTimeRuleService {
-    public FieldTimeRuleDTO createFieldTimeRule(FieldTimeRuleDTO fieldTimeRuleDTO);
+    FieldTimeRuleDTO createFieldTimeRule(FieldTimeRuleDTO fieldTimeRuleDTO);
+    List<FieldTimeRuleDTO> getAllFieldTimeRule();
+    FieldTimeRuleDTO getFieldTimeRuleById(int id);
+    FieldTimeRuleDTO updateFieldTimeRule(int id, FieldTimeRuleDTO fieldTimeRuleDTO);
+    boolean deleteFieldTimeRule(int id);
 }
