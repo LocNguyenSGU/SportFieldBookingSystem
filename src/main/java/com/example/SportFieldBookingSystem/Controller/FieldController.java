@@ -4,10 +4,13 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
+import com.example.SportFieldBookingSystem.Service.FieldImageService;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,12 +21,15 @@ import java.util.List;
 public class FieldController {
     private final FieldService fieldService;
     @Autowired
+    private FieldImageService fieldImageService;
+    @Autowired
     public FieldController(FieldService fieldService) {
         this.fieldService = fieldService;
     }
 
     @PostMapping
     public ResponseEntity<?> createField(@RequestBody FieldCreateDTO fieldCreateDTO) throws URISyntaxException {
+        System.out.println("San: " + fieldCreateDTO.getFieldName());
         FieldGetDTO savedDTO = fieldService.createField(fieldCreateDTO);
         return ResponseEntity.created(new URI("/api/fields" + savedDTO.getFieldId())).body(savedDTO);
     }

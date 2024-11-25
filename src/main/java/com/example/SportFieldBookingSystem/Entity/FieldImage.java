@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,4 +23,8 @@ public class FieldImage {
 
     @Column(name = "image_url", length = 255, nullable = false)
     private String imageUrl;
+
+    @Column(name = "active_status")
+    @Enumerated(EnumType.STRING)
+    private ActiveEnum activeEnum = ActiveEnum.ACTIVE;
 }

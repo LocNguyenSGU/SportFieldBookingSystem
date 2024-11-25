@@ -5,7 +5,9 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
+import com.example.SportFieldBookingSystem.DTO.FieldImageDTO.FieldImageResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.*;
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
@@ -23,20 +25,20 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FieldServiceImpl implements FieldService {
+    @Autowired
     private final FieldRepository fieldRepository;
     private final FieldTypeRepository fieldTypeRepository;
     private final LocationRepository locationRepository;
     private final ModelMapper modelMapper;
     private final TimeSlotRepository timeSlotRepository;
     private final UserRepository userRepository;
+    @Autowired
+    private FieldImageRepository fieldImageRepository;
 
     @Autowired
     public FieldServiceImpl(FieldRepository fieldRepository, FieldTypeRepository fieldTypeRepository,
@@ -63,37 +65,59 @@ public class FieldServiceImpl implements FieldService {
     @Transactional
     public FieldGetDTO createField(FieldCreateDTO fieldCreateDTO) {
         // Map the basic fields from DTO to Field entity
+        System.out.println("Starting to create field...");
+
         Field field = new Field();
-        field.setFieldCode(generateFieldCode());
+
+        // Generate field code
+        String fieldCode = generateFieldCode();
+        System.out.println("Generated field code: " + fieldCode);
+        field.setFieldCode(fieldCode);
+
+        // Set field name
         field.setFieldName(fieldCreateDTO.getFieldName());
+        System.out.println("Field name: " + fieldCreateDTO.getFieldName());
+
+        // Set field address
         field.setFieldAddress(fieldCreateDTO.getAddress());
+        System.out.println("Field address: " + fieldCreateDTO.getAddress());
+
+        // Set capacity
         field.setCapacity(fieldCreateDTO.getCapacity());
+        System.out.println("Field capacity: " + fieldCreateDTO.getCapacity());
+
+        // Set price per hour
         field.setPricePerHour(fieldCreateDTO.getPricePerHour());
+        System.out.println("Price per hour: " + fieldCreateDTO.getPricePerHour());
 
-        FieldType fieldType = fieldTypeRepository.findById(fieldCreateDTO.getFieldTypeId()).get();
-        field.setFieldType(fieldType );
+        // Fetch field type by ID
+        FieldType fieldType = fieldTypeRepository.findById(fieldCreateDTO.getFieldTypeId())
+                .orElseThrow(() -> new RuntimeException("Field type not found"));
+        field.setFieldType(fieldType);
+        System.out.println("Field type: " + fieldType.getFieldTypeName());
 
-
-        // User (assuming you get userId from the session or security context)
+        // Fetch user by ID
         User user = userRepository.findById(fieldCreateDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         field.setUser(user);
+        System.out.println("User ID: " + user.getUserId());
 
-        // Status (Enum)
+        // Set status
         field.setStatus(fieldCreateDTO.getStatus());
+        System.out.println("Field status: " + fieldCreateDTO.getStatus());
 
-        // Handle Field Images (creating FieldImage entities and linking to Field)
-        if (fieldCreateDTO.getFieldImageList() != null) {
-            List<FieldImage> fieldImages = fieldCreateDTO.getFieldImageList().stream()
-                    .map(imageUrl -> {
-                        FieldImage fieldImage = new FieldImage();
-                        fieldImage.setImageUrl(String.valueOf(imageUrl));
-                        fieldImage.setField(field);  // Set the reference to the field
-                        return fieldImage;
-                    })
-                    .collect(Collectors.toList());
-            field.setFieldImageList(fieldImages);
-        }
+//        // Handle Field Images (creating FieldImage entities and linking to Field)
+//        if (fieldCreateDTO.getFieldImageList() != null) {
+//            List<FieldImage> fieldImages = fieldCreateDTO.getFieldImageList().stream()
+//                    .map(imageUrl -> {
+//                        FieldImage fieldImage = new FieldImage();
+//                        fieldImage.setImageUrl(String.valueOf(imageUrl));
+//                        fieldImage.setField(field);  // Set the reference to the field
+//                        return fieldImage;
+//                    })
+//                    .collect(Collectors.toList());
+//            field.setFieldImageList(fieldImages);
+//        }
 
         // Handle Field Time Rules (creating FieldTimeRule entities)
 //        if (fieldCreateDTO.getFieldTimeRuleList() != null) {
@@ -152,9 +176,20 @@ public class FieldServiceImpl implements FieldService {
     // Lấy Field theo ID
     @Override
     public FieldGetDTO getFieldById(int fieldId) {
-        Field field = fieldRepository.findById(fieldId).orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
-//        Hibernate.initialize(field.getTimeSlotList());
-        return modelMapper.map(field, FieldGetDTO.class);
+        Field field = fieldRepository.findById(fieldId)
+                .orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
+
+        // Lọc các hình ảnh có trạng thái ACTIVE
+        List<FieldImageResponseDTO> activeFieldImageDTOs = field.getFieldImageList().stream()
+                .filter(image -> image.getActiveEnum() == ActiveEnum.ACTIVE)
+                .map(image -> modelMapper.map(image, FieldImageResponseDTO.class))
+                .collect(Collectors.toList());
+
+        // Chuyển đổi Field sang DTO
+        FieldGetDTO fieldGetDTO = modelMapper.map(field, FieldGetDTO.class);
+        fieldGetDTO.setFieldImageList(activeFieldImageDTOs);
+
+        return fieldGetDTO;
     }
 
 //     Lấy tất cả Fields
@@ -195,20 +230,7 @@ public class FieldServiceImpl implements FieldService {
         if (fieldUpdateDTO.getAddress() != null) {
             field.setFieldAddress(fieldUpdateDTO.getAddress());
         }
-
-        // Cập nhật FieldImage
-        if (fieldUpdateDTO.getFieldImageList() != null) {
-            Field finalField = field;
-            List<FieldImage> images = fieldUpdateDTO.getFieldImageList().stream()
-                    .map(imageDTO -> {
-                        FieldImage fieldImage = new FieldImage();
-                        fieldImage.setImageUrl(imageDTO.getImageUrl());
-                        fieldImage.setField(finalField);
-                        return fieldImage;
-                    })
-                    .collect(Collectors.toList());
-            field.setFieldImageList(images);
-        }
+        deleteStringUrlNotExists(fieldId, fieldUpdateDTO.getFieldImageList());
 
         // Lưu Field
         field = fieldRepository.save(field);
@@ -216,8 +238,52 @@ public class FieldServiceImpl implements FieldService {
         // Trả về DTO
         return modelMapper.map(field, FieldGetDTO.class);
     }
+    @Transactional
+    public void deleteStringUrlNotExists(int fieldId, ArrayList<String> listImageURLNew) {
+        // Log danh sách URL mới
+        System.out.println("listImageURLNew1: " + listImageURLNew);
+        System.out.println("FieldID là: " + fieldId);
 
+        // Lấy FieldDTO từ service
+        FieldGetDTO field = getFieldById(fieldId);
+        if (field == null) {
+            throw new ResourceNotFoundException("Field not found with id: " + fieldId);
+        }
 
+        // Lấy danh sách URL cũ từ FieldDTO
+        List<FieldImageResponseDTO> fieldImageResponseDTOS = field.getFieldImageList();
+        if (fieldImageResponseDTOS == null || fieldImageResponseDTOS.isEmpty()) {
+            System.out.println("No existing images found. Nothing to delete.");
+            return;
+        }
+
+        ArrayList<String> urlCu = new ArrayList<>();
+        for (FieldImageResponseDTO responseDTO : fieldImageResponseDTOS) {
+            urlCu.add(responseDTO.getFieldImageURL());
+        }
+        System.out.println("listImageURlOld: " + urlCu);
+
+        // Tìm các URL cần xóa (URL cũ không nằm trong danh sách mới)
+        List<String> urlsToDelete = urlCu.stream()
+                .filter(url -> !listImageURLNew.contains(url))
+                .collect(Collectors.toList());
+        System.out.println("urlsToDelete: " + urlsToDelete);
+
+        for (String url : urlsToDelete) {
+            Optional<FieldImage> fieldImageToRemove = fieldImageRepository.findFieldImageNative(url, fieldId);
+            if (fieldImageToRemove.isPresent()) {
+                FieldImage fieldImage = fieldImageToRemove.get();
+                fieldImage.setActiveEnum(ActiveEnum.IN_ACTIVE); // Cập nhật trạng thái
+                fieldImageRepository.save(fieldImage); // Lưu đối tượng đã sửa
+                System.out.println("Set FieldImage to INACTIVE: " + fieldImage.getImageId());
+            } else {
+                System.out.println("FieldImage not found for URL: " + url + " with FieldID: " + fieldId);
+            }
+        }
+
+        // Log trạng thái sau khi xử lý
+        System.out.println("Completed deleting non-existing URLs.");
+    }
 
     // Xóa Field
     @Override
