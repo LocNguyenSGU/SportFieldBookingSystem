@@ -18,6 +18,7 @@ public class FieldType { // loai san
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "field_type_id")
     private int fieldTypeId;
+
     @Column(name="field_type_name")
     private String fieldTypeName;
     @Column(name="field_type_desc")
