@@ -1,8 +1,10 @@
 package com.example.SportFieldBookingSystem.Controller;
 
+import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleDTO;
 import com.example.SportFieldBookingSystem.Service.FieldTimeRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,8 @@ public class FieldTimeRuleController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createFieldTimeRule(@RequestBody FieldTimeRuleDTO fieldTimeRuleDTO) throws URISyntaxException {
-        FieldTimeRuleDTO result = fieldTimeRuleService.createFieldTimeRule(fieldTimeRuleDTO);
+    public ResponseEntity<?> createFieldTimeRule(@RequestBody FieldTimeRuleCreateDTO fieldTimeRuleCreateDTO) throws URISyntaxException {
+        FieldTimeRuleDTO result = fieldTimeRuleService.createFieldTimeRule(fieldTimeRuleCreateDTO);
         return ResponseEntity.created(new URI("/api/fieldTimeRules" + result.getField().getFieldId())).body(result);
     }
 
@@ -43,4 +45,12 @@ public class FieldTimeRuleController {
         return ResponseEntity.ok(rs);
     }
 
+    @GetMapping("/getByFieldId")
+    public ResponseEntity<?> getFieldTimeRulesByFieldId(
+            @RequestParam int fieldId,
+            @RequestParam int page,
+            @RequestParam int pageSize) {
+        Page<FieldTimeRuleDTO> fieldTimeRules = fieldTimeRuleService.getFieldTimeRuleByFieldId(fieldId, page, pageSize);
+        return ResponseEntity.ok(fieldTimeRules);
+    }
 }

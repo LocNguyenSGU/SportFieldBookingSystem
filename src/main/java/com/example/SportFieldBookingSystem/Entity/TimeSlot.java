@@ -40,4 +40,8 @@ public class TimeSlot { //TimeSlot sẽ lưu trữ thông tin về các khoảng
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
+
+    @ManyToOne
+    @JoinColumn(name = "field_time_rule_id", nullable = false)
+    private FieldTimeRule fieldTimeRule;
 }

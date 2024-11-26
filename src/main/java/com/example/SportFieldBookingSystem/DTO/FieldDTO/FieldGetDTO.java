@@ -27,7 +27,5 @@ public class FieldGetDTO {
 //    private String ownerName;     // Tên người sở hữu
     private String status;
     private List<FieldImageResponseDTO> fieldImageList; // URL của các ảnh
-//    private List<FieldFacilityResponseDTO> fieldFacilityList;     // Danh sách tên các tiện ích sân
     private List<TimeSlotDTO> timeSlotList;
-//    private List<ReviewDTO> reviews;     // Danh sách review của sân (nếu cần thiết)
 }

@@ -1,18 +1,23 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
 
+import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Entity.FieldTimeRule;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
+import com.example.SportFieldBookingSystem.Repository.FieldRepository;
 import com.example.SportFieldBookingSystem.Repository.FieldTimeRuleRepository;
 import com.example.SportFieldBookingSystem.Repository.TimeSlotRepository;
 import com.example.SportFieldBookingSystem.Service.FieldTimeRuleService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -28,14 +33,17 @@ import java.util.stream.Collectors;
 @Service
 public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
     private final FieldTimeRuleRepository fieldTimeRuleRepository;
+    private final FieldRepository fieldRepository;
     private final TimeSlotRepository timeSlotRepository;
     private ModelMapper modelMapper;
 
     @Autowired
-    FieldTimeRuleServiceImpl(FieldTimeRuleRepository fieldTimeRuleRepository, TimeSlotRepository timeSlotRepository, ModelMapper modelMapper) {
+    FieldTimeRuleServiceImpl(FieldTimeRuleRepository fieldTimeRuleRepository, TimeSlotRepository timeSlotRepository,
+                             ModelMapper modelMapper, FieldRepository fieldRepository) {
         this.fieldTimeRuleRepository = fieldTimeRuleRepository;
         this.timeSlotRepository = timeSlotRepository;
         this.modelMapper = modelMapper;
+        this.fieldRepository = fieldRepository;
     }
 
     @Override
@@ -45,6 +53,17 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
         return fieldTimeRules.stream()
                 .map(fieldTimeRule -> modelMapper.map(fieldTimeRule, FieldTimeRuleDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<FieldTimeRuleDTO> getFieldTimeRuleByFieldId(int fieldId, int page, int pageSize) {
+        try {
+            Pageable pageable = PageRequest.of(page - 1, pageSize );
+            Page<FieldTimeRule> fieldTimeRuleList = fieldTimeRuleRepository.findAllByFieldFieldId(fieldId, pageable);
+            return fieldTimeRuleList.map(fieldTimeRule -> modelMapper.map(fieldTimeRule, FieldTimeRuleDTO.class));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -71,10 +90,21 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
 
 
     @Transactional
-    public FieldTimeRuleDTO createFieldTimeRule(FieldTimeRuleDTO rule) {
+    public FieldTimeRuleDTO createFieldTimeRule(FieldTimeRuleCreateDTO rule) {
         try {
+            if (isTimeSlotConflict(rule)) {
+                throw new IllegalArgumentException("Time slot conflict detected for the specified field.");
+            }
             // Lưu FieldTimeRule
-            FieldTimeRule entity = modelMapper.map(rule, FieldTimeRule.class);
+            FieldTimeRule entity = new FieldTimeRule();
+            entity.setStartDate(rule.getStartDate());
+            entity.setEndDate(rule.getEndDate());
+            entity.setStartTime(rule.getStartTime());
+            entity.setEndTime(rule.getEndTime());
+            Field field = fieldRepository.findById(rule.getFieldId()).get();
+            entity.setField(field);
+            entity.setDaysOfWeek(rule.getDaysOfWeek());
+
             FieldTimeRule savedRule = fieldTimeRuleRepository.save(entity);
 
             // Tạo TimeSlot từ FieldTimeRule
@@ -86,6 +116,18 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
         }
 
     }
+
+    private boolean isTimeSlotConflict(FieldTimeRuleCreateDTO dto) {
+        // Kiểm tra xem các TimeSlot có trùng khung giờ không
+        return timeSlotRepository.existsByFieldIdAndDateBetweenAndTimeOverlap(
+                dto.getFieldId(),
+                dto.getStartDate(),
+                dto.getEndDate(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+    }
+
 
     private void generateTimeSlotsFromRule(FieldTimeRule rule) {
         List<DayOfWeek> daysOfWeek = Arrays.stream(rule.getDaysOfWeek().split(","))
@@ -106,6 +148,7 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
                     timeSlot.setStartTime(Time.valueOf(startTime));
                     timeSlot.setEndTime(Time.valueOf(endTime));
                     timeSlot.setStatus(TimeSlotEnum.AVAILABLE); // Trạng thái mặc định
+                    timeSlot.setFieldTimeRule(rule);
                     timeSlots.add(timeSlot);
             }
         }

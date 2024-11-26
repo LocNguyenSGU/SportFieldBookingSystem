@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -12,7 +13,7 @@ import java.time.LocalTime;
 public class FieldTimeRule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "field_id", nullable = false)
@@ -32,4 +33,7 @@ public class FieldTimeRule {
 
     @Column(name = "days_of_week", nullable = false, length = 50)
     private String daysOfWeek;
+
+    @OneToMany(mappedBy = "fieldTimeRule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeSlot> timeSlots;
 }

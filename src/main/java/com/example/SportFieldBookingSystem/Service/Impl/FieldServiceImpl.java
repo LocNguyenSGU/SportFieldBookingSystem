@@ -171,30 +171,14 @@ public class FieldServiceImpl implements FieldService {
         // Tìm Field hiện tại
         Field field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ResourceNotFoundException("Field not found with id: " + fieldId));
-
-        // Cập nhật các thuộc tính cho phép
-        if (fieldUpdateDTO.getFieldName() != null) {
-            field.setFieldName(fieldUpdateDTO.getFieldName());
-        }
-
-        if (fieldUpdateDTO.getCapacity() > 0) {
-            field.setCapacity(fieldUpdateDTO.getCapacity());
-        }
-
-        if (fieldUpdateDTO.getPricePerHour() > 0) {
-            field.setPricePerHour(fieldUpdateDTO.getPricePerHour());
-        }
+        field.setFieldName(fieldUpdateDTO.getFieldName());
+        field.setCapacity(fieldUpdateDTO.getCapacity());
+        field.setPricePerHour(fieldUpdateDTO.getPricePerHour());
         FieldType newFieldType = fieldTypeRepository.findById(fieldUpdateDTO.getFieldTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("FieldType not found with id: " + fieldUpdateDTO.getFieldTypeId()));
         field.setFieldType(newFieldType);
-
-        if (fieldUpdateDTO.getStatus() != null) {
-            field.setStatus(FieldEnum.valueOf(fieldUpdateDTO.getStatus()));
-        }
-
-        if (fieldUpdateDTO.getAddress() != null) {
-            field.setFieldAddress(fieldUpdateDTO.getAddress());
-        }
+        field.setStatus(FieldEnum.valueOf(fieldUpdateDTO.getStatus()));
+        field.setFieldAddress(fieldUpdateDTO.getAddress());
 
         // Cập nhật FieldImage
         if (fieldUpdateDTO.getFieldImageList() != null) {

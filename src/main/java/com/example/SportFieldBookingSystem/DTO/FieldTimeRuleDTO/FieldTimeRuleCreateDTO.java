@@ -7,12 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
-public class FieldTimeRuleDTO {
-    private int id;
+public class FieldTimeRuleCreateDTO {
     private LocalTime startTime;
     private LocalTime endTime;
     private LocalDate startDate;
     private LocalDate endDate;
-    private FieldGetDTO field;
+    private int fieldId;
     private String daysOfWeek; // Example: "Monday,Wednesday,Friday"
 }
