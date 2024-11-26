@@ -6,12 +6,12 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Mapper.FieldMapper;
 import com.example.SportFieldBookingSystem.Repository.FieldRepository;
 import com.example.SportFieldBookingSystem.Repository.FieldTypeRepository;
 import com.example.SportFieldBookingSystem.Repository.LocationRepository;
 import com.example.SportFieldBookingSystem.Service.FieldService;
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +33,18 @@ public class FieldServiceImpl implements FieldService {
         this.locationRepository = locationRepository;
         this.modelMapper = modelMapper;
     }
+
+    @Override
+    public long countTotalFields() {
+        return fieldRepository.countTotalFields();
+    }
+
+    @Override
+    public long countFieldsByStatus(FieldEnum status) {
+        return fieldRepository.countFieldsByStatus(status);
+    }
+
+
 
     // Tạo mới một Field
     @Override

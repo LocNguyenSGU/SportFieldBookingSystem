@@ -2,11 +2,16 @@ package com.example.SportFieldBookingSystem.Service;
 
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.*;
 import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface FieldService {
+    // Đếm số lượng sân theo trạng thái
+    long countFieldsByStatus(FieldEnum status);
+
+
     // Tạo mới một Field
     FieldGetDTO createField(FieldCreateDTO fieldCreateDTO);
 
@@ -24,4 +29,8 @@ public interface FieldService {
 
     // tìm field theo loại, tên, địa chỉ
     List<FieldListDTO> getFieldsByTimKiem(int loai, String ten, String diaChi);
+
+    // Đếm tổng số sân
+    long countTotalFields();
+
 }

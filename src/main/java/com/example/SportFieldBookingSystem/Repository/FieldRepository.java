@@ -1,5 +1,6 @@
 package com.example.SportFieldBookingSystem.Repository;
 
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import org.springframework.data.jpa.repository.Query;
@@ -21,5 +22,9 @@ public interface FieldRepository extends JpaRepository<Field, Integer> {
             @Param("ten") String ten,
             @Param("diaChi") String diaChi
     );
+    @Query("SELECT COUNT(f) FROM Field f")
+    long countTotalFields();
 
+    @Query("SELECT COUNT(f) FROM Field f WHERE f.status = :status")
+    long countFieldsByStatus(@Param("status") FieldEnum status);
 }

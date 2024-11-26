@@ -1,7 +1,7 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingRequestDTO;
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.*;
+import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
 
@@ -18,4 +18,10 @@ public interface BookingServiceImpl {
     public List<BookingRequestDTO> createBookings(BookingRequestDTO bookingRequestDTO, Invoice invoice);
     public void finalizeBooking(int bookingId);
     public void cancelBooking(int bookingId);
+    List<FieldGetDTO> getBookedFields();
+    List<BookingResponseDTO> getBookedFieldsWithTime();
+    List<RevenueDTO> getRevenueStatistics();
+    List<QuarterlyRevenueDTO> getRevenueStatisticsByQuarter();
+    List<MostBookedFieldDTO> getMostBookedFields();
+
 }

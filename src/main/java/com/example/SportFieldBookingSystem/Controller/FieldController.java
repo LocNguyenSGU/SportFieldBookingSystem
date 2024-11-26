@@ -6,6 +6,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.modelmapper.internal.bytebuddy.description.field.FieldList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,18 @@ public class FieldController {
     public ResponseEntity<?> createField(@RequestBody FieldCreateDTO fieldCreateDTO) throws URISyntaxException {
         FieldGetDTO savedDTO = fieldService.createField(fieldCreateDTO);
         return ResponseEntity.created(new URI("/api/fields" + savedDTO.getFieldId())).body(savedDTO);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countFields() {
+        long totalFields = fieldService.countTotalFields();
+        return ResponseEntity.ok(totalFields);
+    }
+
+    @GetMapping("/count/status")
+    public ResponseEntity<Long> countFieldsByStatus(@RequestParam FieldEnum status) {
+        long count = fieldService.countFieldsByStatus(status);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping
