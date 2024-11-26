@@ -17,4 +17,14 @@ public class TimeSlotDTO {
     private Time startTime;
     private Time endTime;
     private TimeSlotEnum status;
+    @Override
+    public String toString() {
+        return "TimeSlotDTO{" +
+                "id=" + id +
+                ", date=" + date +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", status=" + status +
+                '}';
+    }
 }
