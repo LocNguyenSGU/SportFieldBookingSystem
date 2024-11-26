@@ -3,6 +3,7 @@ package com.example.SportFieldBookingSystem.Service;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.*;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,5 +34,5 @@ public interface FieldService {
 
     // Đếm tổng số sân
     long countTotalFields();
-
+    Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, int page, int size);
 }

@@ -17,6 +17,9 @@ import jakarta.transaction.Transactional;
 import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -321,6 +324,22 @@ public class FieldServiceImpl implements FieldService {
         return fields.stream()
                 .map(field -> FieldMapper.mapToFieldListDTO(field)) // Use your custom FieldMapper
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Tìm các field theo tiêu chí tìm kiếm
+        Page<Field> fieldPage = fieldRepository.findFields(
+                fieldName,
+                fieldTypeId != null ? fieldTypeId : null,
+                minCapacity,
+                maxCapacity,
+                pageable
+        );
+
+        // Chuyển đổi từ Field sang FieldGetDTO
+        return fieldPage.map(field -> modelMapper.map(field, FieldGetDTO.class));
     }
 
     @Override

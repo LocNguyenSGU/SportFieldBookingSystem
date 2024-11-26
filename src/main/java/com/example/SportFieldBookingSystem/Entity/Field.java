@@ -44,14 +44,11 @@ public class Field { // san
     private String fieldAddress;
     @Column(name = "longitude")
     private String longitude;
-
     @Column(name = "latitude")
     private String latitude;
-
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
-
     @Column(name = "status", length = 20)
     @Enumerated(EnumType.STRING)
     private FieldEnum status;

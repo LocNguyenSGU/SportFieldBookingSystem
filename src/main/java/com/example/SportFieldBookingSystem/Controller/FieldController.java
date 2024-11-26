@@ -7,9 +7,13 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
+import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.FieldImageService;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -85,6 +89,32 @@ public class FieldController {
 
         // Trả về danh sách cùng với HTTP 200
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/search/admin")
+    public ResponseEntity<ResponseData> searchFields(
+            @RequestParam(required = false) String fieldName,
+            @RequestParam(required = false) Integer fieldTypeId,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) Integer maxCapacity,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        ResponseData responseData = new ResponseData();
+        try {
+            Page<FieldGetDTO> fieldPage = fieldService.searchFields(fieldName, fieldTypeId, minCapacity, maxCapacity, page, size);
+
+            responseData.setStatusCode(200);
+            responseData.setMessage("Search successful");
+            responseData.setData(fieldPage);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("Error occurred: " + e.getMessage());
+            responseData.setData(null);
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
