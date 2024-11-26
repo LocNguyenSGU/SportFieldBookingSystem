@@ -82,6 +82,10 @@ public class FieldServiceImpl implements FieldService {
         field.setFieldAddress(fieldCreateDTO.getAddress());
         System.out.println("Field address: " + fieldCreateDTO.getAddress());
 
+        field.setLongitude(fieldCreateDTO.getLongitude());
+        System.out.println("Field long longtitude: " + fieldCreateDTO.getLongitude());
+        field.setLatitude(fieldCreateDTO.getLatitude());
+
         // Set capacity
         field.setCapacity(fieldCreateDTO.getCapacity());
         System.out.println("Field capacity: " + fieldCreateDTO.getCapacity());
@@ -219,6 +223,16 @@ public class FieldServiceImpl implements FieldService {
         if (fieldUpdateDTO.getPricePerHour() > 0) {
             field.setPricePerHour(fieldUpdateDTO.getPricePerHour());
         }
+        if(fieldUpdateDTO.getFieldAddress() != null) {
+            field.setFieldAddress(fieldUpdateDTO.getFieldAddress());
+        }
+        if(fieldUpdateDTO.getLatitude() != null) {
+            field.setLatitude(fieldUpdateDTO.getLatitude());
+        }
+        if(fieldUpdateDTO.getLongitude() != null) {
+            field.setLongitude(fieldUpdateDTO.getLongitude());
+        }
+
         FieldType newFieldType = fieldTypeRepository.findById(fieldUpdateDTO.getFieldTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("FieldType not found with id: " + fieldUpdateDTO.getFieldTypeId()));
         field.setFieldType(newFieldType);

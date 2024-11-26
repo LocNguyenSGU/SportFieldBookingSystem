@@ -25,6 +25,8 @@ public class FieldGetDTO {
     private double pricePerHour;
     private FieldTypeResponseDTO fieldType;     // Tên của FieldType (ví dụ: sân bóng, sân tennis)
     private String fieldAddress;    // Tên địa điểm
+    private String longitude;
+    private String latitude;
 //    private String ownerName;     // Tên người sở hữu
     private String status;
     private List<FieldImageResponseDTO> fieldImageList; // URL của các ảnh

@@ -42,6 +42,11 @@ public class Field { // san
 
     @Column(name = "field_address")
     private String fieldAddress;
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Column(name = "latitude")
+    private String latitude;
 
     @ManyToOne
     @JoinColumn(name="user_id")

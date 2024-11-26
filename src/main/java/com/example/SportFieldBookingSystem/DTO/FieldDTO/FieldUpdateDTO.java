@@ -20,5 +20,8 @@ public class FieldUpdateDTO {
     private int fieldTypeId;
     private String status;
     private String address;
+    private String fieldAddress;
+    private String longitude;
+    private String latitude;
     private ArrayList<String> fieldImageList;
 }
