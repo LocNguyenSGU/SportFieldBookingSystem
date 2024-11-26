@@ -20,4 +20,6 @@ public interface TimeSlotService {
     void deleteTimeSlot(int id);
 
     TimeSlotResponseDTO setStatus(int id, TimeSlotEnum status);
+
+    void deleteExpiredTimeSlots();
 }
