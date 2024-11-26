@@ -5,6 +5,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldTimeRuleDTO.FieldTimeRuleDTO
 import com.example.SportFieldBookingSystem.Service.FieldTimeRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,9 @@ public class FieldTimeRuleController {
 
     @PostMapping
     public ResponseEntity<?> createFieldTimeRule(@RequestBody FieldTimeRuleCreateDTO fieldTimeRuleCreateDTO) throws URISyntaxException {
+        if(fieldTimeRuleService.isTimeSlotConflict(fieldTimeRuleCreateDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi thời gian trống của sân bị trùng khi tạo");
+        }
         FieldTimeRuleDTO result = fieldTimeRuleService.createFieldTimeRule(fieldTimeRuleCreateDTO);
         return ResponseEntity.created(new URI("/api/fieldTimeRules" + result.getField().getFieldId())).body(result);
     }
@@ -34,12 +38,12 @@ public class FieldTimeRuleController {
         return fieldTimeRuleService.getAllFieldTimeRule();
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public boolean deleteFieldTimeRule(@PathVariable int id) {
         return fieldTimeRuleService.deleteFieldTimeRule(id);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateFieldTimeRule(@PathVariable int id, @RequestBody FieldTimeRuleDTO fieldTimeRuleDTO) {
         FieldTimeRuleDTO rs = fieldTimeRuleService.updateFieldTimeRule(id, fieldTimeRuleDTO);
         return ResponseEntity.ok(rs);
@@ -53,4 +57,5 @@ public class FieldTimeRuleController {
         Page<FieldTimeRuleDTO> fieldTimeRules = fieldTimeRuleService.getFieldTimeRuleByFieldId(fieldId, page, pageSize);
         return ResponseEntity.ok(fieldTimeRules);
     }
+
 }

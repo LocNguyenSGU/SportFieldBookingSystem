@@ -117,7 +117,7 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
 
     }
 
-    private boolean isTimeSlotConflict(FieldTimeRuleCreateDTO dto) {
+    public boolean isTimeSlotConflict(FieldTimeRuleCreateDTO dto) {
         // Kiểm tra xem các TimeSlot có trùng khung giờ không
         return timeSlotRepository.existsByFieldIdAndDateBetweenAndTimeOverlap(
                 dto.getFieldId(),

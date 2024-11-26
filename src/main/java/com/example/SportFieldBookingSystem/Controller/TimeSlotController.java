@@ -9,11 +9,15 @@ import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import com.example.SportFieldBookingSystem.Service.TimeSlotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -150,4 +154,18 @@ public class TimeSlotController {
             return ResponseEntity.ok(responseData);
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<TimeSlotResponseDTO>> search(
+            @RequestParam(value = "fieldId", required = false) int fieldId,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate,
+            @RequestParam(value = "status", required = false) TimeSlotEnum status,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        Page<TimeSlotResponseDTO> result = timeSlotService.searchTimeSlots(fieldId, startDate, endDate, status, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 }

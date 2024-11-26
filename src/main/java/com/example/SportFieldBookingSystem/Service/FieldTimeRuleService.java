@@ -13,4 +13,5 @@ public interface FieldTimeRuleService {
     FieldTimeRuleDTO updateFieldTimeRule(int id, FieldTimeRuleDTO fieldTimeRuleDTO);
     boolean deleteFieldTimeRule(int id);
     Page<FieldTimeRuleDTO> getFieldTimeRuleByFieldId(int fieldId, int page, int pageSize);
+    boolean isTimeSlotConflict(FieldTimeRuleCreateDTO fieldTimeRuleCreateDTO);
 }

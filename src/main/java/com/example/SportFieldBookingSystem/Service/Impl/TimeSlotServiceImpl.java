@@ -4,6 +4,7 @@ import com.example.SportFieldBookingSystem.DTO.Exception.ResourceNotFoundExcepti
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotCreateDTO;
+import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
@@ -13,9 +14,14 @@ import com.example.SportFieldBookingSystem.Service.TimeSlotService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,5 +116,40 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         } catch (Exception e) {
             throw new RuntimeException("Time slot set status failed");
         }
+    }
+
+    public Page<TimeSlotResponseDTO> searchTimeSlots(Integer fieldId,
+                                             String startDate,
+                                             String endDate,
+                                             TimeSlotEnum status,
+                                             int page,
+                                             int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Specification<TimeSlot> specification = Specification.where(fieldId != null ? byFieldId(fieldId) : null)
+                .and(startDate != null ? byFromDate(startDate) : null)
+                .and(endDate!= null ? byToDate(endDate) : null)
+                .and(status != null ? byStatus(String.valueOf(status)) : null);
+
+        Page<TimeSlot> timeSlotPage = timeSlotRepository.findAll(specification, pageable);
+
+        // Convert entities to DTOs
+        return timeSlotPage.map(timeSlot -> modelMapper.map(timeSlot, TimeSlotResponseDTO.class));
+    }
+
+    private Specification<TimeSlot> byFieldId(Integer fieldId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("field").get("fieldId"), fieldId);
+    }
+
+    private Specification<TimeSlot> byFromDate(String fromDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get("date"), LocalDate.parse(fromDate));
+    }
+
+    private Specification<TimeSlot> byToDate(String toDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("date"), LocalDate.parse(toDate));
+    }
+
+    private Specification<TimeSlot> byStatus(String status) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), TimeSlotEnum.valueOf(status));
     }
 }

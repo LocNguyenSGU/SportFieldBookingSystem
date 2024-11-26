@@ -2,6 +2,9 @@ package com.example.SportFieldBookingSystem.Repository;
 
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +31,8 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, Integer> {
             @Param("startTime") LocalTime startTime,
             @Param("endTime") LocalTime endTime
     );
+
+    Page<TimeSlot> findByFieldFieldId(Integer fieldId, Pageable pageable);
+
+    Page<TimeSlot> findAll(Specification<TimeSlot> specification, Pageable pageable);
 }

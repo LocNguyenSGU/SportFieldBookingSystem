@@ -5,7 +5,9 @@ import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotUpdateDTO;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
+import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface TimeSlotService {
@@ -22,4 +24,6 @@ public interface TimeSlotService {
     TimeSlotResponseDTO setStatus(int id, TimeSlotEnum status);
 
     void deleteExpiredTimeSlots();
+
+    Page<TimeSlotResponseDTO> searchTimeSlots(Integer fieldId,String startDate, String endDate, TimeSlotEnum status, int page, int size);
 }
