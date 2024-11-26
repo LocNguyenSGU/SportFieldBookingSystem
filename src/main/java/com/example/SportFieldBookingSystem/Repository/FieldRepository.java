@@ -34,12 +34,14 @@ public interface FieldRepository extends JpaRepository<Field, Integer> {
             "WHERE (:fieldName IS NULL OR f.fieldName LIKE %:fieldName%) " +
             "AND (COALESCE(:fieldTypeId, ft.fieldTypeId) = ft.fieldTypeId) " +
             "AND (:minCapacity IS NULL OR f.capacity >= :minCapacity) " +
-            "AND (:maxCapacity IS NULL OR f.capacity <= :maxCapacity)")
+            "AND (:maxCapacity IS NULL OR f.capacity <= :maxCapacity) " +
+            "AND (:fieldAddress IS NULL OR f.fieldAddress LIKE %:fieldAddress%)")
     Page<Field> findFields(
             @Param("fieldName") String fieldName,
             @Param("fieldTypeId") Integer fieldTypeId,
             @Param("minCapacity") Integer minCapacity,
             @Param("maxCapacity") Integer maxCapacity,
+            @Param("fieldAddress") String fieldAddress,
             Pageable pageable
     );
 }

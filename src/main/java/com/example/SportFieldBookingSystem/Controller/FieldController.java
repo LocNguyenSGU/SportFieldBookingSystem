@@ -97,12 +97,13 @@ public class FieldController {
             @RequestParam(required = false) Integer fieldTypeId,
             @RequestParam(required = false) Integer minCapacity,
             @RequestParam(required = false) Integer maxCapacity,
+            @RequestParam(required = false) String fieldAddress,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         ResponseData responseData = new ResponseData();
         try {
-            Page<FieldGetDTO> fieldPage = fieldService.searchFields(fieldName, fieldTypeId, minCapacity, maxCapacity, page, size);
+            Page<FieldGetDTO> fieldPage = fieldService.searchFields(fieldName, fieldTypeId, minCapacity, maxCapacity, fieldAddress, page, size);
 
             responseData.setStatusCode(200);
             responseData.setMessage("Search successful");

@@ -34,5 +34,5 @@ public interface FieldService {
 
     // Đếm tổng số sân
     long countTotalFields();
-    Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, int page, int size);
+    Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, String fieldAddress, int page, int size);
 }

@@ -326,7 +326,7 @@ public class FieldServiceImpl implements FieldService {
                 .collect(Collectors.toList());
     }
     @Override
-    public Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, int page, int size) {
+    public Page<FieldGetDTO> searchFields(String fieldName, Integer fieldTypeId, Integer minCapacity, Integer maxCapacity, String fieldAddress, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         // Tìm các field theo tiêu chí tìm kiếm
@@ -335,6 +335,7 @@ public class FieldServiceImpl implements FieldService {
                 fieldTypeId != null ? fieldTypeId : null,
                 minCapacity,
                 maxCapacity,
+                fieldAddress,
                 pageable
         );
 
