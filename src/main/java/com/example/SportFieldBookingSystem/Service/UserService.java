@@ -41,5 +41,5 @@ public interface UserService {
 
     UserBasicDTO getUserByUserId(int userId);
 
-
+    long getUserCount();
 }

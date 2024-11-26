@@ -13,6 +13,7 @@ public class BookingResponseDTO {
     private String bookingCode;
     private int iduser;
     private int idField;
+    private String fieldName;
     private LocalDate bookingDate;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -20,11 +21,25 @@ public class BookingResponseDTO {
     private double totalPrice;
     private int idInvoice;
 
-    public BookingResponseDTO(int bookingId, String bookingCode, int user, int field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
+
+    public BookingResponseDTO( int bookingId, String bookingCode, int user, int field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
         this.bookingId = bookingId;
         this.bookingCode = bookingCode;
         this.iduser = user;
         this.idField = field;
+        this.bookingDate = bookingDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.idInvoice = invoice;
+    }
+    public BookingResponseDTO(String fieldName, int bookingId, String bookingCode, int user, int field, LocalDate bookingDate, LocalTime startTime, LocalTime endTime, BookingEnum status, double totalPrice, int invoice) {
+        this.bookingId = bookingId;
+        this.bookingCode = bookingCode;
+        this.iduser = user;
+        this.idField = field;
+        this.fieldName = fieldName;
         this.bookingDate = bookingDate;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -48,6 +63,14 @@ public class BookingResponseDTO {
 
     public void setBookingCode(String bookingCode) {
         this.bookingCode = bookingCode;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(String fieldName) {
+        this.fieldName = fieldName;
     }
 
     public int getUser() {

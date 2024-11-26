@@ -1,8 +1,6 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingRequestDTO;
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
-import com.example.SportFieldBookingSystem.DTO.BookingDTO.Event;
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.*;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.UserDTO.UserBasicDTO;
 import com.example.SportFieldBookingSystem.Entity.*;
@@ -11,7 +9,6 @@ import com.example.SportFieldBookingSystem.Enum.TimeSlotEnum;
 import com.example.SportFieldBookingSystem.Repository.*;
 import com.example.SportFieldBookingSystem.Service.Impl.BookingServiceImpl;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -269,4 +266,80 @@ public class BookingService implements BookingServiceImpl {
 //        slots.forEach(slot -> slot.setStatus(TimeSlotEnum.BOOKED));
 //        timeSlotRepo.saveAll(slots);
 //    }
+
+    @Override
+    public List<FieldGetDTO> getBookedFields() {
+        List<Field> bookedFields = bookingRepo.findBookedFields();
+        return bookedFields.stream()
+                .map(field -> {
+                    FieldGetDTO fieldDTO = new FieldGetDTO();
+                    fieldDTO.setFieldId(field.getFieldId());
+                    fieldDTO.setFieldCode(field.getFieldCode());
+                    fieldDTO.setFieldName(field.getFieldName());
+                    fieldDTO.setCapacity(field.getCapacity());
+                    fieldDTO.setPricePerHour(field.getPricePerHour());
+                    return fieldDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDTO> getBookedFieldsWithTime() {
+        List<Object[]> bookedFields = bookingRepo.findBookedFieldsWithTime();
+        return bookedFields.stream()
+                .map(record -> {
+                    Field field = (Field) record[0];
+                    LocalDate bookingDate = (LocalDate) record[1];
+                    LocalTime startTime = (LocalTime) record[2];
+                    LocalTime endTime = (LocalTime) record[3];
+
+                    BookingResponseDTO dto = new BookingResponseDTO();
+                    dto.setField(field.getFieldId());
+                    dto.setFieldName(field.getFieldName());
+                    dto.setBookingDate(bookingDate);
+                    dto.setStartTime(startTime);
+                    dto.setEndTime(endTime);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RevenueDTO> getRevenueStatistics() {
+        List<Object[]> revenueData = bookingRepo.getRevenueByMonthAndYear();
+        return revenueData.stream()
+                .map(record -> new RevenueDTO(
+                        (int) record[0],  // month
+                        (int) record[1],  // year
+                        (double) record[2] // totalRevenue
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<QuarterlyRevenueDTO> getRevenueStatisticsByQuarter() {
+        List<Object[]> revenueData = bookingRepo.getRevenueByQuarterAndYear();
+        return revenueData.stream()
+                .map(record -> new QuarterlyRevenueDTO(
+                        (int) record[1],  // quarter (1-4)
+                        (int) record[0],  // year
+                        (double) record[2] // totalRevenue
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MostBookedFieldDTO> getMostBookedFields() {
+        List<Object[]> bookingData = bookingRepo.getMostBookedFields();
+        return bookingData.stream()
+                .map(record -> new MostBookedFieldDTO(
+                        (int) record[0],        // fieldId
+                        (String) record[1],    // fieldName
+                        (long) record[2]       // bookingCount
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+
 }

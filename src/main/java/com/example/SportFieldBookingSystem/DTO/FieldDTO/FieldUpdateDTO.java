@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,5 +20,8 @@ public class FieldUpdateDTO {
     private int fieldTypeId;
     private String status;
     private String address;
-    private List<FieldImageCreateDTO> fieldImageList; // Danh sách URL mới hoặc đã cập nhật của ảnh sân
+    private String fieldAddress;
+    private String longitude;
+    private String latitude;
+    private ArrayList<String> fieldImageList;
 }

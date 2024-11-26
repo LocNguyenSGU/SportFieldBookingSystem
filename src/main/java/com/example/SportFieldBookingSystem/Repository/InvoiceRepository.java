@@ -13,4 +13,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     public Invoice findByInvoiceCode(String code);
 //    @Query("SELECT i FROM Invoice i WHERE i.bookingList.user.id = :userId")
 //    List<Invoice> findByUserId(@Param("userId") int userId);
+        @Query("SELECT COUNT(f) FROM Field f")
+        long countTotalFields();
 }
+

@@ -277,7 +277,11 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/count")
+    public ResponseEntity<?> getUserCount() {
+        long userCount = userService.getUserCount();
+        return ResponseEntity.ok().body(Map.of("userCount", userCount));
+    }
 
 
 }

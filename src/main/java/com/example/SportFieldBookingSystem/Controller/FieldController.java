@@ -4,10 +4,20 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
+import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
+import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Enum.FieldEnum;
+import com.example.SportFieldBookingSystem.Entity.Field;
+import com.example.SportFieldBookingSystem.Payload.ResponseData;
+import com.example.SportFieldBookingSystem.Service.FieldImageService;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,14 +28,29 @@ import java.util.List;
 public class FieldController {
     private final FieldService fieldService;
     @Autowired
+    private FieldImageService fieldImageService;
+    @Autowired
     public FieldController(FieldService fieldService) {
         this.fieldService = fieldService;
     }
 
     @PostMapping
     public ResponseEntity<?> createField(@RequestBody FieldCreateDTO fieldCreateDTO) throws URISyntaxException {
+        System.out.println("San: " + fieldCreateDTO.getFieldName());
         FieldGetDTO savedDTO = fieldService.createField(fieldCreateDTO);
         return ResponseEntity.created(new URI("/api/fields" + savedDTO.getFieldId())).body(savedDTO);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countFields() {
+        long totalFields = fieldService.countTotalFields();
+        return ResponseEntity.ok(totalFields);
+    }
+
+    @GetMapping("/count/status")
+    public ResponseEntity<Long> countFieldsByStatus(@RequestParam FieldEnum status) {
+        long count = fieldService.countFieldsByStatus(status);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping
@@ -64,6 +89,33 @@ public class FieldController {
 
         // Trả về danh sách cùng với HTTP 200
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/search/admin")
+    public ResponseEntity<ResponseData> searchFields(
+            @RequestParam(required = false) String fieldName,
+            @RequestParam(required = false) Integer fieldTypeId,
+            @RequestParam(required = false) Integer minCapacity,
+            @RequestParam(required = false) Integer maxCapacity,
+            @RequestParam(required = false) String fieldAddress,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        ResponseData responseData = new ResponseData();
+        try {
+            Page<FieldGetDTO> fieldPage = fieldService.searchFields(fieldName, fieldTypeId, minCapacity, maxCapacity, fieldAddress, page, size);
+
+            responseData.setStatusCode(200);
+            responseData.setMessage("Search successful");
+            responseData.setData(fieldPage);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("Error occurred: " + e.getMessage());
+            responseData.setData(null);
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }
