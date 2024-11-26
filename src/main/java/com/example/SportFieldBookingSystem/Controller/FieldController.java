@@ -7,6 +7,7 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
+import com.example.SportFieldBookingSystem.Service.FieldImageService;
 import com.example.SportFieldBookingSystem.Service.FieldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

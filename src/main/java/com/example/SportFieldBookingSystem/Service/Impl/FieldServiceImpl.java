@@ -62,6 +62,11 @@ public class FieldServiceImpl implements FieldService {
     }
 
     @Override
+    public long countFieldsByStatus(FieldEnum status) {
+        return fieldRepository.countFieldsByStatus(status);
+    }
+
+    @Override
     @Transactional
     public FieldGetDTO createField(FieldCreateDTO fieldCreateDTO) {
         // Map the basic fields from DTO to Field entity
@@ -317,5 +322,11 @@ public class FieldServiceImpl implements FieldService {
                 .map(field -> FieldMapper.mapToFieldListDTO(field)) // Use your custom FieldMapper
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public long countTotalFields() {
+        return fieldRepository.countTotalFields();
+    }
+
 
 }

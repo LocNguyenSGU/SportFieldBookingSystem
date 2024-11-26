@@ -40,5 +40,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             Pageable pageable
     );
 
+    @Query("SELECT COUNT(u) FROM User u")
+    long countUsers();
+
 
 }
