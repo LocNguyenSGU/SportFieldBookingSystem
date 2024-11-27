@@ -1,18 +1,27 @@
 package com.example.SportFieldBookingSystem.Controller;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceThongKeDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
+import com.example.SportFieldBookingSystem.Service.Impl.ExcelService;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class InvoiceController {
     private final InvoiceServiceImpl invoiceServiceImpl;
+    @Autowired
+    private ExcelService excelService;
 
     @Autowired
     public InvoiceController(InvoiceServiceImpl invoiceServiceImpl) {
@@ -122,4 +131,55 @@ public class InvoiceController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
     }
+    @GetMapping("/thongke/excel")
+    public ResponseEntity<ResponseData> thongkeExcel(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        ResponseData responseData = new ResponseData();
+
+        try {
+            // Chuyển đổi từ LocalDate sang java.sql.Date
+            java.sql.Date sqlStartDate = java.sql.Date.valueOf(startDate);
+            java.sql.Date sqlEndDate = java.sql.Date.valueOf(endDate);
+
+            // In ra startDate và endDate để kiểm tra
+            System.out.println("Start Date: " + sqlStartDate);
+            System.out.println("End Date: " + sqlEndDate);
+
+            // Gọi hàm trong service để lấy danh sách hóa đơn theo khoảng thời gian
+            List<InvoiceThongKeDTO> invoiceThongKeDTOList = invoiceServiceImpl.findInvoicesByDateRange(sqlStartDate, sqlEndDate);
+
+            // Cập nhật dữ liệu response
+            responseData.setStatusCode(200);
+            responseData.setData(invoiceThongKeDTOList);
+            responseData.setMessage("Danh sách hóa đơn được lấy thành công.");
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            // Nếu có lỗi, cập nhật response với mã lỗi
+            responseData.setStatusCode(400);
+            responseData.setData(null);
+            responseData.setMessage("Lỗi khi lấy danh sách hóa đơn: " + e.getMessage());
+
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("thongke/export")
+    public ResponseEntity<byte[]> exportThongKeToExcel(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) throws IOException {
+        // Chuyển đổi từ LocalDate sang java.sql.Date
+
+        // Adjust endDate by adding 1 day to include the full end date
+        LocalDate adjustedEndDate = endDate.plusDays(1);
+        java.sql.Date sqlStartDate = java.sql.Date.valueOf(startDate);
+        java.sql.Date sqlEndDate = java.sql.Date.valueOf(adjustedEndDate);
+
+        // Gọi service để xuất Excel
+        ByteArrayOutputStream outputStream = excelService.exportThongKeToExcel(sqlStartDate, sqlEndDate);
+
+        // Đặt header cho response để người dùng tải file
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=ThongKeTongQuatSport.xlsx");
+
+        return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
+    }
+
 }

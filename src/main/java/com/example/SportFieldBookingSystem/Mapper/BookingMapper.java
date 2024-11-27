@@ -12,6 +12,9 @@ public class BookingMapper {
         bookingResponseDTO.setBookingId(booking.getBookingId());
         bookingResponseDTO.setUser(booking.getUser().getUserId());
         bookingResponseDTO.setField(booking.getField().getFieldId());
+        bookingResponseDTO.setFieldName(booking.getField().getFieldName());
+        bookingResponseDTO.setStatus(booking.getStatus());
+        bookingResponseDTO.setBookingDate(booking.getBookingDate());
         bookingResponseDTO.setBookingCode(booking.getBookingCode());
         bookingResponseDTO.setStartTime(booking.getStartTime());
         bookingResponseDTO.setEndTime(booking.getEndTime());

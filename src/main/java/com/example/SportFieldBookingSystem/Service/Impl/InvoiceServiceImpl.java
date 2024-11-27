@@ -1,9 +1,9 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingRequestDTO;
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingResponseDTO;
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface InvoiceServiceImpl {
@@ -12,4 +12,8 @@ public interface InvoiceServiceImpl {
     public InvoiceBookingResponseDTO createInvoice(InvoiceBookingRequestDTO invoiceRequestDTO);
 //    public InvoiceResponseDTO updateInvoice(int id, InvoiceResponseDTO invoiceRequestDTO);
     public boolean deleteInvoice(int id);
+
+    public List<InvoiceThongKeDTO> findInvoicesByDateRange(Date startDate, Date endDate);
+
+    public TKTongQuatDTO getTKTongQuat(Date startdate, Date endDate);
 }

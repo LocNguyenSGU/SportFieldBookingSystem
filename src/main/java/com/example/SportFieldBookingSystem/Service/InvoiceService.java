@@ -1,12 +1,11 @@
 package com.example.SportFieldBookingSystem.Service;
 
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingRequestDTO;
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceBookingResponseDTO;
-import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.*;
 import com.example.SportFieldBookingSystem.Entity.Booking;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
 import com.example.SportFieldBookingSystem.Enum.BookingEnum;
 import com.example.SportFieldBookingSystem.Enum.InvoiceEnum;
+import com.example.SportFieldBookingSystem.Mapper.InvoiceMapper;
 import com.example.SportFieldBookingSystem.Repository.InvoiceRepository;
 import com.example.SportFieldBookingSystem.Service.Impl.BookingServiceImpl;
 import com.example.SportFieldBookingSystem.Service.Impl.InvoiceServiceImpl;
@@ -15,10 +14,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService implements InvoiceServiceImpl {
@@ -138,6 +138,8 @@ public class InvoiceService implements InvoiceServiceImpl {
         }
     }
 
+
+
     public void updateInvoiceStatus(int invoiceId, InvoiceEnum status) {
         Invoice invoice = invoiceRepo.findById(invoiceId)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
@@ -150,5 +152,32 @@ public class InvoiceService implements InvoiceServiceImpl {
         invoiceRepo.save(invoice);
     }
 
+    @Override
+    public List<InvoiceThongKeDTO> findInvoicesByDateRange(Date startDate, Date endDate) {
+        List<Invoice> invoiceList = invoiceRepo.findInvoicesByDateRange(startDate, endDate);
+        return invoiceList.stream().map(InvoiceMapper::fromEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public TKTongQuatDTO getTKTongQuat(Date startDate, Date endDate) {
+        // Lấy dữ liệu từ repository
+        List<Object[]> result = invoiceRepo.getTKTongQuatRaw(startDate, endDate);
+
+        // Kiểm tra nếu có dữ liệu trả về
+        if (result != null && !result.isEmpty()) {
+            Object[] row = result.get(0);  // Dữ liệu của dòng đầu tiên
+
+            // Kiểm tra và lấy giá trị từ Object[], nếu là null thì gán giá trị mặc định
+            int tongSoHoaDon = (row[0] != null) ? ((Number) row[0]).intValue() : 0;
+            double tongDoanhThu = (row[1] != null) ? ((Number) row[1]).doubleValue() : 0.0;
+            double doanhThuTrungBinh = (row[2] != null) ? ((Number) row[2]).doubleValue() : 0.0;
+            int tongSoBooking = (row[3] != null) ? ((Number) row[3]).intValue() : 0;
+
+            return new TKTongQuatDTO(tongSoHoaDon, tongDoanhThu, doanhThuTrungBinh, tongSoBooking);
+        }
+
+        // Trả về DTO mặc định nếu không có dữ liệu
+        return new TKTongQuatDTO();
+    }
 
 }

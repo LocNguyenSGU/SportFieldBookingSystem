@@ -4,6 +4,7 @@ import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Entity.Invoice;
 import com.example.SportFieldBookingSystem.Entity.User;
 import com.example.SportFieldBookingSystem.Enum.BookingEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,8 +15,11 @@ public class BookingResponseDTO {
     private int iduser;
     private int idField;
     private String fieldName;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate bookingDate;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
     private BookingEnum status;
     private double totalPrice;
