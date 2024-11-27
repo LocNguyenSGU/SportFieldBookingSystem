@@ -22,7 +22,7 @@ public class FieldCreateDTO {
     private int userId;          // ID của chủ sở hữu
     private FieldEnum status;    // Trạng thái dưới dạng chuỗi
     private List<FieldImageCreateDTO> fieldImageList; // Danh sách URL ảnh của sân
-    private String address;
+    private String fieldAddress;
     private String longitude;
     private String latitude;
 //    private List<FieldTimeRuleDTO> fieldTimeRuleList;
