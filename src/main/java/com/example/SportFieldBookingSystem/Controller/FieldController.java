@@ -4,7 +4,6 @@ import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldGetDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldListDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldDTO.FieldUpdateDTO;
-import com.example.SportFieldBookingSystem.DTO.FieldFacilityDTO.FieldFacilityResponseDTO;
 import com.example.SportFieldBookingSystem.Entity.Field;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Entity.Field;

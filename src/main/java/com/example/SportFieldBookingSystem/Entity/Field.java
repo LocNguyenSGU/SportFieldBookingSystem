@@ -36,10 +36,6 @@ public class Field { // san
     @JoinColumn(name = "fieldType_id", nullable = false)
     private FieldType fieldType;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
-
     @Column(name = "field_address")
     private String fieldAddress;
     @Column(name = "longitude")
@@ -54,23 +50,12 @@ public class Field { // san
     private FieldEnum status;
     @OneToMany(mappedBy = "field")
     private List<Booking> bookingList;
-    @OneToMany(mappedBy = "field")
-    private List<Review> reviewList;
 
     @OneToMany(mappedBy = "field")
     private List<TimeSlot> timeSlotList;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldImage> fieldImageList;
-
-    @OneToMany(mappedBy = "field")
-    private List<Favorite> favoriteList;
-
-    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<FieldFacility> fieldFacilityList;
-
-    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
-    private List<FieldMaintenance> fieldMaintenanceList ;
 
     @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldTimeRule> fieldTimeRuleList;

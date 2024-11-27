@@ -4,6 +4,7 @@ import com.example.SportFieldBookingSystem.Service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
@@ -56,12 +57,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests((request) -> request
 //                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/role/create")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí nhóm quyền", "CREATE"))
                         .requestMatchers("/role/update")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí nhóm quyền", "EDIT"))
                         .requestMatchers("/user/update/**")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí người dùng", "EDIT"))
                         .requestMatchers("/user/username/**")
                         .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí người dùng", "VIEW"))
+                        .requestMatchers(HttpMethod.PUT, "/api/fields/{id}")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí sân", "EDIT"))
+                        .requestMatchers(HttpMethod.POST, "/api/fields")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí sân", "CREATE"))
+                        .requestMatchers(HttpMethod.PUT, "/api/fieldType{id}")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí loại sân", "EDIT"))
+                        .requestMatchers(HttpMethod.POST,"/api/fieldType")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí loại sân", "CREATE"))
+                        .requestMatchers(HttpMethod.POST, "/user/create")
+                        .access((authenticationSupplier, context) -> checkPermission(authenticationSupplier, "Quản lí người dùng", "CREATE"))
                         .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());

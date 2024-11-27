@@ -2,11 +2,8 @@ package com.example.SportFieldBookingSystem.DTO.FieldDTO;
 
 import com.example.SportFieldBookingSystem.DTO.FieldImageDTO.FieldImageResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeResponseDTO;
-import com.example.SportFieldBookingSystem.DTO.LocationDTO.LocationCreateDTO;
-import com.example.SportFieldBookingSystem.DTO.LocationDTO.LocationResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotDTO;
 import com.example.SportFieldBookingSystem.DTO.TimeSlotDTO.TimeSlotResponseDTO;
-import com.example.SportFieldBookingSystem.Entity.Location;
 import com.example.SportFieldBookingSystem.Entity.TimeSlot;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

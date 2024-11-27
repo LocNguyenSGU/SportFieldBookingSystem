@@ -36,7 +36,6 @@ public class FieldServiceImpl implements FieldService {
     @Autowired
     private final FieldRepository fieldRepository;
     private final FieldTypeRepository fieldTypeRepository;
-    private final LocationRepository locationRepository;
     private final ModelMapper modelMapper;
     private final TimeSlotRepository timeSlotRepository;
     private final UserRepository userRepository;
@@ -45,12 +44,10 @@ public class FieldServiceImpl implements FieldService {
 
     @Autowired
     public FieldServiceImpl(FieldRepository fieldRepository, FieldTypeRepository fieldTypeRepository,
-                            LocationRepository locationRepository,
                             ModelMapper modelMapper, TimeSlotRepository timeSlotRepository,
                             UserRepository userRepository) {
         this.fieldRepository = fieldRepository;
         this.fieldTypeRepository = fieldTypeRepository;
-        this.locationRepository = locationRepository;
         this.modelMapper = modelMapper;
         this.timeSlotRepository = timeSlotRepository;
         this.userRepository = userRepository;

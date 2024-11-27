@@ -48,18 +48,6 @@ public class User { // nguoi dung
     @OneToMany(mappedBy = "user")
     private List<Booking> bookingList;
 
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviewList;
-
-    @OneToMany(mappedBy = "user")
-    private List<Favorite> favoriteList;
-
-    @OneToMany(mappedBy = "user")
-    private List<Notification> notificationList ;
-
-    @OneToMany(mappedBy = "user")
-    private List<Coupon> couponList ;
-
     @Column(name="refresh_password_token")
     private String refreshPasswordToken;
 
