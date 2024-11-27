@@ -14,6 +14,7 @@ public class BookingMapper {
         bookingResponseDTO.setField(booking.getField().getFieldId());
         bookingResponseDTO.setFieldName(booking.getField().getFieldName());
         bookingResponseDTO.setStatus(booking.getStatus());
+        bookingResponseDTO.setTotalPrice(booking.getTotalPrice());
         bookingResponseDTO.setBookingDate(booking.getBookingDate());
         bookingResponseDTO.setBookingCode(booking.getBookingCode());
         bookingResponseDTO.setStartTime(booking.getStartTime());

@@ -87,8 +87,8 @@ public class FieldServiceImpl implements FieldService {
         System.out.println("Field name: " + fieldCreateDTO.getFieldName());
 
         // Set field address
-        field.setFieldAddress(fieldCreateDTO.getAddress());
-        System.out.println("Field address: " + fieldCreateDTO.getAddress());
+        field.setFieldAddress(fieldCreateDTO.getFieldAddress());
+        System.out.println("Field address: " + fieldCreateDTO.getFieldAddress());
 
         field.setLongitude(fieldCreateDTO.getLongitude());
         System.out.println("Field long longtitude: " + fieldCreateDTO.getLongitude());

@@ -1,5 +1,7 @@
 package com.example.SportFieldBookingSystem.Service.Impl;
 
+import com.example.SportFieldBookingSystem.DTO.BookingDTO.BookingResponseDTO;
+import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.InvoiceThongKeDTO;
 import com.example.SportFieldBookingSystem.DTO.InvoiceDTO.TKTongQuatDTO;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -14,8 +16,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 @Service
 public class ExcelService {
     @Autowired
@@ -24,13 +26,22 @@ public class ExcelService {
     public ByteArrayOutputStream exportThongKeToExcel(Date startDate, Date endDate) throws IOException {
         // Lấy dữ liệu thống kê từ service
         TKTongQuatDTO thongKe = invoiceService.getTKTongQuat(startDate, endDate);
-//        List<HoaDonDTO> hoaDonDTOList = hoaDonService.getHoaDonByStartAndEndDate(startDate, endDate);
 
+        List<InvoiceThongKeDTO> invoiceThongKeDTOList = invoiceService.findInvoicesByDateRange(startDate, endDate);
         // Tạo workbook mới
         Workbook workbook = new XSSFWorkbook();
 
+        // Trừ đi 1 ngày từ endDate
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        calendar.add(Calendar.DAY_OF_MONTH, -1); // Trừ đi 1 ngày
+        Date adjustedEndDate = calendar.getTime();
+
         // Tạo sheet thứ nhất
-        createSheet1(workbook, thongKe, startDate, endDate);
+        createSheet1(workbook, thongKe, startDate, adjustedEndDate);
+        createSheet2(workbook, invoiceThongKeDTOList);
+        createSheet3(workbook, invoiceThongKeDTOList, thongKe.getTongDoanhThu());
+        createSheet4(workbook, invoiceThongKeDTOList, thongKe.getTongDoanhThu());
 
         // Lưu file Excel vào ByteArrayOutputStream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -67,9 +78,13 @@ public class ExcelService {
         sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));  // Merge các ô để hiển thị tiêu đề
 
         // Tiêu đề headerRow1 (Ngày bắt đầu, ngày kết thúc)
+        // Định dạng ngày theo định dạng YYYY-MM-DD
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = dateFormat.format(endDate);
+
         Row headerRow1 = sheet.createRow(1);
         headerRow1.createCell(0).setCellValue("Ngày Bắt Đầu: " + startDate.toString());
-        headerRow1.createCell(2).setCellValue("Ngày Kết Thúc: " + endDate.toString());
+        headerRow1.createCell(2).setCellValue("Ngày Kết Thúc: " + formattedDate);
 
         // Tạo kiểu dáng cho headerRow1
         CellStyle headerStyle1 = workbook.createCellStyle();
@@ -117,6 +132,208 @@ public class ExcelService {
             sheet.autoSizeColumn(i);
         }
     }
+    private void createSheet2(Workbook workbook, List<InvoiceThongKeDTO> hoaDonDTOList) {
+        // Tạo sheet thứ hai (danh sách hóa đơn)
+        Sheet sheet = workbook.createSheet("Danh sách hóa đơn");
+
+        // Tiêu đề header chính cho sheet thứ 2
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"STT","Mã Hóa Đơn", "Họ tên", "Số điện thoại", "Thời gian tạo", "Số booking", "Tổng Tiền"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        // Tạo các dòng dữ liệu từ danh sách hoaDonDTOList
+        int rowNum = 1;
+        for (InvoiceThongKeDTO hoaDonDTO : hoaDonDTOList) {
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(rowNum - 1); // ben tren ++ roi, ben duoi tru di de lay cai index
+            dataRow.createCell(1).setCellValue("HD" + hoaDonDTO.getInvoiceId());
+            dataRow.createCell(2).setCellValue(hoaDonDTO.getName() != null ? hoaDonDTO.getName() : "N/A");
+            dataRow.createCell(3).setCellValue(hoaDonDTO.getPhoneNumber() != null ? hoaDonDTO.getPhoneNumber() : "N/A");
+            dataRow.createCell(4).setCellValue(hoaDonDTO.getInvDate() != null ?  dateFormat.format(hoaDonDTO.getInvDate()) : "N/A");
+            dataRow.createCell(5).setCellValue(hoaDonDTO.getBookingList().size());
+            dataRow.createCell(6).setCellValue(hoaDonDTO.getTotalAmount());
+        }
+
+        // Cài đặt chiều rộng của cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    public static void createSheet3(Workbook workbook, List<InvoiceThongKeDTO> hoaDonDTOList, double tongDoanhThu) {
+        // Tạo sheet thứ ba (Thống kê theo ngày)
+        Sheet sheet = workbook.createSheet("Thống kê theo ngày");
+
+        // Tiêu đề header chính cho sheet thứ 3
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Ngày", "Doanh thu", "% trong tổng doanh thu"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Tạo Map để tổng hợp doanh thu theo ngày
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Map<String, Double> doanhThuTheoNgay = new TreeMap<>();
+        for (InvoiceThongKeDTO invoice : hoaDonDTOList) {
+            String ngay = dateFormat.format(invoice.getInvDate());
+            double doanhThu = invoice.getTotalAmount();
+
+            doanhThuTheoNgay.put(ngay, doanhThuTheoNgay.getOrDefault(ngay, 0.0) + doanhThu);
+        }
+
+        // Duyệt Map và ghi dữ liệu vào sheet
+        int rowIndex = 1;
+        for (Map.Entry<String, Double> entry : doanhThuTheoNgay.entrySet()) {
+            Row row = sheet.createRow(rowIndex++);
+            String ngay = entry.getKey();
+            double doanhThu = entry.getValue();
+            double phanTram = (tongDoanhThu > 0) ? ((doanhThu / tongDoanhThu)) : 0;
+
+            // Ghi dữ liệu vào các cột
+            row.createCell(0).setCellValue(ngay);
+            row.createCell(1).setCellValue(doanhThu);
+
+            Cell phanTramCell = row.createCell(2);
+            phanTramCell.setCellValue(phanTram);
+
+            // Định dạng phần trăm
+            CellStyle percentStyle = workbook.createCellStyle();
+            percentStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+            phanTramCell.setCellStyle(percentStyle);
+        }
+
+        // Tự động chỉnh độ rộng các cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    public static void createSheet4(Workbook workbook, List<InvoiceThongKeDTO> hoaDonDTOList, double tongDoanhThu) {
+        // Tạo sheet thứ ba (Thống kê theo ngày)
+        Sheet sheet = workbook.createSheet("Thống kê theo sân");
+
+        // Tiêu đề header chính cho sheet thứ 3
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"STT", "ID sân", "Tên sân", "% trong tổng doanh thu"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        // Đặt tiêu đề cho các cột
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Tạo Map để lưu doanh thu theo sân và tên sân
+        Map<Integer, Double> fieldRevenueMap = new HashMap<>();
+        Map<Integer, String> fieldNameMap = new HashMap<>();
+
+        // Kiểm tra hoaDonDTOList có phải null không
+        if (hoaDonDTOList == null || hoaDonDTOList.isEmpty()) {
+            System.out.println("Lỗi: danh sách hóa đơn trống hoặc null.");
+            return;
+        }
+
+        // Duyệt qua danh sách hoaDonDTOList để tính doanh thu theo từng sân
+        for (InvoiceThongKeDTO invoiceThongKeDTO : hoaDonDTOList) {
+            if (invoiceThongKeDTO == null || invoiceThongKeDTO.getBookingList() == null) {
+                continue;
+            }
+
+            List<BookingResponseDTO> bookingResponseDTOList = invoiceThongKeDTO.getBookingList();
+            for (BookingResponseDTO booking : bookingResponseDTOList) {
+                if (booking == null) {
+                    System.out.println("Lỗi: Booking null.");
+                    continue;
+                }
+                int fieldId = booking.getField();
+                String fieldName = booking.getFieldName();
+                double totalPrice = booking.getTotalPrice();
+
+
+                // Kiểm tra fieldName không phải null
+                if (fieldName != null) {
+                    // Cập nhật doanh thu của từng sân trong fieldRevenueMap
+                    fieldRevenueMap.put(fieldId, fieldRevenueMap.getOrDefault(fieldId, 0.0) + totalPrice);
+                    // Lưu tên sân vào fieldNameMap
+                    fieldNameMap.putIfAbsent(fieldId, fieldName);
+                } else {
+                    System.out.println("Tên sân không hợp lệ cho Sân ID: " + fieldId);
+                }
+            }
+        }
+
+        // Kiểm tra kết quả của việc tính toán doanh thu
+        for (Map.Entry<Integer, Double> entry : fieldRevenueMap.entrySet()) {
+            System.out.println("Sân ID: " + entry.getKey() + " - Doanh thu: " + entry.getValue());
+        }
+
+        // Tính tỷ lệ phần trăm doanh thu của từng sân so với tổng doanh thu
+        if (tongDoanhThu == 0) {
+            System.out.println("Lỗi: Tổng doanh thu là 0!");
+            return;
+        }
+
+        int rowIdx = 1;  // Bắt đầu từ dòng 1 vì dòng 0 là header
+        int stt = 1;  // Số thứ tự
+        for (Map.Entry<Integer, Double> entry : fieldRevenueMap.entrySet()) {
+            Row row = sheet.createRow(rowIdx++);
+            int fieldId = entry.getKey();
+            double revenue = entry.getValue();
+            String fieldName = fieldNameMap.get(fieldId);
+            double percentage = (revenue / tongDoanhThu) * 100;
+
+
+            // Điền dữ liệu vào các cột
+            row.createCell(0).setCellValue(stt++);
+            row.createCell(1).setCellValue("SAN" + fieldId);
+            row.createCell(2).setCellValue(fieldName);
+            row.createCell(3).setCellValue(String.format("%.2f", percentage));  // Tỷ lệ phần trăm
+        }
+
+        // Tự động chỉnh độ rộng các cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+    }
+
+
 
     private static String formatDateTime(String dateTimeString) {
         // Parse the string to LocalDateTime
