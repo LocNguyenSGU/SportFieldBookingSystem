@@ -89,7 +89,7 @@ public class InvoiceService implements InvoiceServiceImpl {
             invoice.setPhoneNumber(invoiceBookingRequestDTO.getPhoneNumber());
             invoice.setInvDate(new Date());
             invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
-            invoice.setStatus(InvoiceEnum.PENDING);
+            invoice.setStatus(InvoiceEnum.PAID);
 
             invoiceRepo.save(invoice);
             String formattedId = String.format("INV%03d", invoice.getInvoiceId());
