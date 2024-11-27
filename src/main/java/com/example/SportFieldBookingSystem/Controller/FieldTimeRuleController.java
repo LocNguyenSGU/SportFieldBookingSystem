@@ -58,4 +58,13 @@ public class FieldTimeRuleController {
         return ResponseEntity.ok(fieldTimeRules);
     }
 
+    @GetMapping("/checkBeforeDelete")
+    public ResponseEntity<?> checkBeforeDelete(@RequestParam int id) {
+        boolean isBooked = fieldTimeRuleService.isTimeSlotBooked(id);
+        if (isBooked) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tồn tại 1 time slot đã được book");
+        }
+        return ResponseEntity.ok("Time slot is available for deletion.");
+    }
+
 }

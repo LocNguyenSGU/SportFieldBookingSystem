@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +47,19 @@ public class FieldTimeRuleServiceImpl implements FieldTimeRuleService {
         this.fieldRepository = fieldRepository;
     }
 
+
+    @Override
+    public boolean isTimeSlotBooked(int id) {
+        Optional<FieldTimeRule> fieldTimeRuleList = fieldTimeRuleRepository.findById(id);
+        if (fieldTimeRuleList.isPresent()) {
+            for (TimeSlot timeSlot : fieldTimeRuleList.get().getTimeSlots()) {
+                if(timeSlot.getStatus() != TimeSlotEnum.AVAILABLE) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     @Override
     public List<FieldTimeRuleDTO> getAllFieldTimeRule() {
         List<FieldTimeRule> fieldTimeRules = fieldTimeRuleRepository.findAll();

@@ -91,10 +91,10 @@ public class InvoiceService implements InvoiceServiceImpl {
             invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
             invoice.setStatus(InvoiceEnum.PAID);
 
-            invoiceRepo.save(invoice);
-            String formattedId = String.format("INV%03d", invoice.getInvoiceId());
-            invoice.setInvoiceCode(formattedId);
-            invoiceRepo.save(invoice);
+            Invoice saved = invoiceRepo.save(invoice);
+            String formattedId = String.format("INV%03d", saved.getInvoiceId());
+            saved.setInvoiceCode(formattedId);
+            invoiceRepo.save(saved);
 
             bookingService.createBookings(invoiceBookingRequestDTO.getBooking(), invoice);
             return modelMapper.map(invoiceBookingRequestDTO, InvoiceBookingResponseDTO.class);
