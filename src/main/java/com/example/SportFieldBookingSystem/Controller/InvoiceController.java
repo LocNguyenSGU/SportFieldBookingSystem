@@ -182,4 +182,36 @@ public class InvoiceController {
         return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
     }
 
+    @GetMapping("/invoices/getbydate")
+    public ResponseEntity<ResponseData> getInvoiceByDate(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        ResponseData responseData = new ResponseData();
+
+        try {
+            // Chuyển đổi từ LocalDate sang java.sql.Date
+            java.sql.Date sqlStartDate = java.sql.Date.valueOf(startDate);
+            java.sql.Date sqlEndDate = java.sql.Date.valueOf(endDate);
+
+            // In ra startDate và endDate để kiểm tra
+            System.out.println("Start Date: " + sqlStartDate);
+            System.out.println("End Date: " + sqlEndDate);
+
+            // Gọi hàm trong service để lấy danh sách hóa đơn theo khoảng thời gian
+            List<InvoiceResponseDTO> invoiceList = invoiceServiceImpl.getInvoiceByDate(sqlStartDate, sqlEndDate);
+
+            // Cập nhật dữ liệu response
+            responseData.setStatusCode(200);
+            responseData.setData(invoiceList);
+            responseData.setMessage("Danh sách hóa đơn được lấy thành công.");
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            // Nếu có lỗi, cập nhật response với mã lỗi
+            responseData.setStatusCode(400);
+            responseData.setData(null);
+            responseData.setMessage("Lỗi khi lấy danh sách hóa đơn: " + e.getMessage());
+
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

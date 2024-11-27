@@ -16,4 +16,5 @@ public interface InvoiceServiceImpl {
     public List<InvoiceThongKeDTO> findInvoicesByDateRange(Date startDate, Date endDate);
 
     public TKTongQuatDTO getTKTongQuat(Date startdate, Date endDate);
+    public List<InvoiceResponseDTO> getInvoiceByDate(Date start, Date end);
 }

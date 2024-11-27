@@ -180,4 +180,29 @@ public class InvoiceService implements InvoiceServiceImpl {
         return new TKTongQuatDTO();
     }
 
+    @Override
+    public List<InvoiceResponseDTO> getInvoiceByDate(Date startDate, Date endDate) {
+
+        List<InvoiceResponseDTO> listInvoiceDTO = new ArrayList<>();
+        try {
+            List<Invoice> listInvoice = invoiceRepo.findInvoicesByDateRange(startDate, endDate);
+            for (Invoice invoice : listInvoice) {
+                InvoiceResponseDTO invoiceResponseDTO = new InvoiceResponseDTO();
+                invoiceResponseDTO.setInvoiceId(invoice.getInvoiceId());
+                invoiceResponseDTO.setInvoiceCode(invoice.getInvoiceCode());
+                invoiceResponseDTO.setInvDate(invoice.getInvDate());
+                invoiceResponseDTO.setTotalAmount(invoice.getTotalAmount());
+                invoiceResponseDTO.setPaymentStatus(invoice.getStatus());
+
+                listInvoiceDTO.add(invoiceResponseDTO);
+            }
+        } catch (Exception e) {
+            // Log the error message for debugging
+            System.err.println("Error fetching all invoices: " + e.getMessage());
+            // Optional: you can throw a custom exception here
+        }
+        return listInvoiceDTO;
+
+    }
+
 }
