@@ -7,6 +7,9 @@ import com.example.SportFieldBookingSystem.Entity.FieldType;
 import com.example.SportFieldBookingSystem.Repository.FieldTypeRepository;
 import com.example.SportFieldBookingSystem.Service.FieldTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,21 +54,44 @@ public class FieldTypeServiceImpl implements FieldTypeService {
 
     @Override
     public List<FieldTypeResponseDTO> getAllFieldTypes() {
-        List<FieldTypeResponseDTO> fieldTypeResponseDTOList = new ArrayList<>();
         try {
             List<FieldType> fieldTypeList = fieldTypeRepository.findAll();
+            List<FieldTypeResponseDTO> fieldTypeResponseDTOList = new ArrayList<>();
             for (FieldType fieldType : fieldTypeList) {
-                FieldTypeResponseDTO fieldTypeResponseDTO = new FieldTypeResponseDTO();
-                fieldTypeResponseDTO.setFieldTypeId(fieldType.getFieldTypeId());
-                fieldTypeResponseDTO.setFieldTypeName(fieldType.getFieldTypeName());
-                fieldTypeResponseDTO.setFieldTypeDescription(fieldType.getFieldTypeDesc());
-                fieldTypeResponseDTOList.add(fieldTypeResponseDTO);
+                FieldTypeResponseDTO resultDTO = new FieldTypeResponseDTO();
+                resultDTO.setFieldTypeId(fieldType.getFieldTypeId());
+                resultDTO.setFieldTypeName(fieldType.getFieldTypeName());
+                resultDTO.setFieldTypeDescription(fieldType.getFieldTypeDesc());
+                fieldTypeResponseDTOList.add(resultDTO);
             }
+            return fieldTypeResponseDTOList;
         } catch (Exception e) {
-                System.err.println("Error fetching all field types: " + e.getMessage());
+            throw new RuntimeException("Error getting all FieldType: " + e.getMessage());
         }
-        return fieldTypeResponseDTOList;
     }
+
+
+    @Override
+    public Page<FieldTypeResponseDTO> searchFieldTypes(String keyword, int page, int size) {
+        try {
+            // Khởi tạo Pageable và truy vấn từ repository
+            Pageable pageable = PageRequest.of(page - 1, size);
+            Page<FieldType> fieldTypePage = fieldTypeRepository.searchByFieldTypeName(keyword, pageable);
+
+            // Chuyển đổi từ Page<FieldType> sang Page<FieldTypeResponseDTO>
+            return fieldTypePage.map(fieldType -> {
+                FieldTypeResponseDTO responseDTO = new FieldTypeResponseDTO();
+                responseDTO.setFieldTypeId(fieldType.getFieldTypeId());
+                responseDTO.setFieldTypeName(fieldType.getFieldTypeName());
+                responseDTO.setFieldTypeDescription(fieldType.getFieldTypeDesc());
+                return responseDTO;
+            });
+        } catch (Exception e) {
+            System.err.println("Error fetching all field types: " + e.getMessage());
+            return Page.empty(); // Trả về Page rỗng nếu có lỗi
+        }
+    }
+
 
     @Override
     public FieldTypeResponseDTO getFieldTypeById(int id) {

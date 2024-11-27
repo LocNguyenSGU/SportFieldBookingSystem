@@ -3,6 +3,7 @@ package com.example.SportFieldBookingSystem.Service;
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeCreateDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeResponseDTO;
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeUpdateDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,8 +15,9 @@ public interface FieldTypeService {
     FieldTypeResponseDTO getFieldTypeById(int id);
 
     // Get all FieldTypes
-    List<FieldTypeResponseDTO> getAllFieldTypes();
+    Page<FieldTypeResponseDTO> searchFieldTypes(String keyword, int page, int size);
 
+    List<FieldTypeResponseDTO> getAllFieldTypes();
     // Update an existing FieldType
     FieldTypeResponseDTO updateFieldType(int id, FieldTypeUpdateDTO fieldTypeUpdateDTODTO);
 

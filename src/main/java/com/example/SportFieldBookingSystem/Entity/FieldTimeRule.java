@@ -31,7 +31,7 @@ public class FieldTimeRule {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "days_of_week", nullable = false, length = 50)
+    @Column(name = "days_of_week", nullable = false, length = 60)
     private String daysOfWeek;
 
     @OneToMany(mappedBy = "fieldTimeRule", cascade = CascadeType.ALL, orphanRemoval = true)

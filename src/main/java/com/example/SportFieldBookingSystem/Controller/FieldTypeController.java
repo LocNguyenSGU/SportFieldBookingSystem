@@ -5,12 +5,14 @@ import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeResponseDTO
 import com.example.SportFieldBookingSystem.DTO.FieldTypeDTO.FieldTypeUpdateDTO;
 import com.example.SportFieldBookingSystem.Payload.ResponseData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.SportFieldBookingSystem.Service.FieldTypeService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fieldType")
@@ -83,22 +85,20 @@ public class FieldTypeController {
     }
 
     // Lấy tất cả FieldTypes
-    @GetMapping()
-    public ResponseEntity<?> getAllFieldTypes() {
-        try {
-            ResponseData responseData = new ResponseData();
+    @GetMapping("/search")
+    public ResponseEntity<?> getFieldTypes(
+            @RequestParam(required = false, defaultValue = "") String keyword,
+            @RequestParam int page,
+            @RequestParam int size) {
 
-            List<FieldTypeResponseDTO> fieldTypes = fieldTypeService.getAllFieldTypes();
-            if (fieldTypes.isEmpty()) {
-                responseData.setMessage("No field types found");
-                return new ResponseEntity<>(responseData ,HttpStatus.NO_CONTENT);
-            }
-            responseData.setData(fieldTypes);
-            responseData.setMessage("All field types found");
-            return new ResponseEntity<>(fieldTypes, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Page<FieldTypeResponseDTO> fieldTypes = fieldTypeService.searchFieldTypes(keyword, page, size);
+        return new ResponseEntity<>(fieldTypes, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllFieldTypes() {
+        List<FieldTypeResponseDTO> fieldTypes = fieldTypeService.getAllFieldTypes();
+        return new ResponseEntity<>(fieldTypes, HttpStatus.OK);
     }
 
 

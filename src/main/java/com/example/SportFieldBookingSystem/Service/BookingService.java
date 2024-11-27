@@ -68,6 +68,7 @@ public class BookingService implements BookingServiceImpl {
             for (Booking booking : listBookings) {
                 BookingResponseDTO bookingResponseDTO = new BookingResponseDTO();
                 bookingResponseDTO.setBookingId(booking.getBookingId());
+                bookingResponseDTO.setBookingDate(booking.getBookingDate());
                 bookingResponseDTO.setUser(booking.getUser().getUserId());
                 bookingResponseDTO.setField(booking.getField().getFieldId());
                 bookingResponseDTO.setBookingCode(booking.getBookingCode());

@@ -83,7 +83,6 @@ public class InvoiceService implements InvoiceServiceImpl {
     public InvoiceBookingResponseDTO createInvoice(InvoiceBookingRequestDTO invoiceBookingRequestDTO) {
         try {
             Invoice invoice = new Invoice();
-            invoice.setInvoiceCode("INV" + invoice.getInvoiceId());
             invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
             invoice.setName(invoiceBookingRequestDTO.getName());
             invoice.setEmail(invoiceBookingRequestDTO.getEmail());
@@ -91,10 +90,12 @@ public class InvoiceService implements InvoiceServiceImpl {
             invoice.setInvDate(new Date());
             invoice.setTotalAmount(invoiceBookingRequestDTO.getTotalAmount());
             invoice.setStatus(InvoiceEnum.PENDING);
+
             invoiceRepo.save(invoice);
-            String formattedId = String.format("%03d", invoice.getInvoiceId());
+            String formattedId = String.format("INV%03d", invoice.getInvoiceId());
             invoice.setInvoiceCode(formattedId);
             invoiceRepo.save(invoice);
+
             bookingService.createBookings(invoiceBookingRequestDTO.getBooking(), invoice);
             return modelMapper.map(invoiceBookingRequestDTO, InvoiceBookingResponseDTO.class);
         } catch (Exception e) {
