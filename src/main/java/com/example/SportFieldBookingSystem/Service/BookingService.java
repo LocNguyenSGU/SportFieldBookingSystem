@@ -211,7 +211,7 @@ public class BookingService implements BookingServiceImpl {
                 booking.setInvoice(invoice);
 
                 // Đặt trạng thái mặc định cho booking
-                booking.setStatus(BookingEnum.PENDING);
+                booking.setStatus(BookingEnum.COMPLETED);
                 System.out.println("Booking status set to: " + BookingEnum.PENDING);
 
                 // Lưu booking vào cơ sở dữ liệu
