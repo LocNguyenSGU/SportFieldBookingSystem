@@ -37,7 +37,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "       FUNCTION('YEAR', b.bookingDate) AS year, " +
             "       SUM(b.totalPrice) AS totalRevenue " +
             "FROM Booking b " +
-            "WHERE b.status = 'CONFIRMED' " +
+            "WHERE b.status = 'PENDING' " +
             "GROUP BY FUNCTION('YEAR', b.bookingDate), FUNCTION('MONTH', b.bookingDate) " +
             "ORDER BY year, month")
     List<Object[]> getRevenueByMonthAndYear();
@@ -51,14 +51,14 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "       END) AS quarter, " +
             "       SUM(b.totalPrice) AS totalRevenue " +
             "FROM Booking b " +
-            "WHERE b.status = 'CONFIRMED' " +
+            "WHERE b.status = 'PENDING' " +
             "GROUP BY FUNCTION('YEAR', b.bookingDate), quarter " +
             "ORDER BY year, quarter")
     List<Object[]> getRevenueByQuarterAndYear();
 
     @Query("SELECT b.field.fieldId, b.field.fieldName, COUNT(b) AS bookingCount " +
             "FROM Booking b " +
-            "WHERE b.status = 'CONFIRMED' " +
+            "WHERE b.status = 'PENDING' " +
             "GROUP BY b.field.fieldId, b.field.fieldName " +
             "ORDER BY bookingCount DESC")
     List<Object[]> getMostBookedFields();
