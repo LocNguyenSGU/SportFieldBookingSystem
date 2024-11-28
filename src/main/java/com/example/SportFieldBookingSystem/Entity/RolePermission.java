@@ -1,9 +1,17 @@
 package com.example.SportFieldBookingSystem.Entity;
 
+import com.example.SportFieldBookingSystem.Enum.ActiveEnum;
+import com.example.SportFieldBookingSystem.Enum.RolePermissionActionEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="role_permission")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RolePermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,5 +24,12 @@ public class RolePermission {
     @JoinColumn(name="permission_id")
     private Permission permission;
 
+    @Column(name = "action", length = 20)
+    @Enumerated(EnumType.STRING)
+    private RolePermissionActionEnum action;
+
+    @Column(name = "status", length = 20)
+    @Enumerated(EnumType.STRING)
+    private ActiveEnum status;
 
 }

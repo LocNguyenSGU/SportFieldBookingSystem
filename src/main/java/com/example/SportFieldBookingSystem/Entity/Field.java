@@ -3,9 +3,15 @@ package com.example.SportFieldBookingSystem.Entity;
 import com.example.SportFieldBookingSystem.Enum.FieldEnum;
 import com.example.SportFieldBookingSystem.Enum.UserEnum;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "field")
 public class Field { // san
@@ -27,13 +33,18 @@ public class Field { // san
     private double pricePerHour;
 
     @ManyToOne
-    @JoinColumn(name = "fieldType_id")
+    @JoinColumn(name = "fieldType_id", nullable = false)
     private FieldType fieldType;
 
+    @Column(name = "field_address")
+    private String fieldAddress;
+    @Column(name = "longitude")
+    private String longitude;
+    @Column(name = "latitude")
+    private String latitude;
     @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
-
+    @JoinColumn(name="user_id")
+    private User user;
     @Column(name = "status", length = 20)
     @Enumerated(EnumType.STRING)
     private FieldEnum status;
@@ -43,16 +54,9 @@ public class Field { // san
     @OneToMany(mappedBy = "field")
     private List<TimeSlot> timeSlotList;
 
-    @OneToMany(mappedBy = "field")
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
     private List<FieldImage> fieldImageList;
 
-    @OneToMany(mappedBy = "field")
-    private List<Favorite> favoriteList;
-
-    @OneToMany(mappedBy = "field")
-    private List<FieldFacility> fieldFacilityList;
-
-    @OneToMany(mappedBy = "field")
-    private List<FieldMaintenance> fieldMaintenanceList ;
-
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL)
+    private List<FieldTimeRule> fieldTimeRuleList;
 }
